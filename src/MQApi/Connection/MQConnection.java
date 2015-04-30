@@ -22,18 +22,26 @@ import java.util.Properties;
  */
 public class MQConnection {
      public static MQQueueManager GetMQQueueManager(ConnectionDetailModel connectionDetail) throws MQException{
-        Properties properties = new Properties();
-        properties.put(MQConstants.HOST_NAME_PROPERTY, connectionDetail.Host);
-        properties.put(MQConstants.PORT_PROPERTY, Integer.parseInt(connectionDetail.Port));
-        properties.put(MQConstants.CHANNEL_PROPERTY, connectionDetail.Channel);
-        properties.put("transport", "MQSeries");
-        //properties.put("securityExit", new MQExternalSecurityExit() ); //for MQ ver < 7
-        properties.put("securityExit", new SecurityExit(null, null)); //for MQ ver < 7
-        MQQueueManager queueManager = new MQQueueManager(connectionDetail.QueueManager, properties);
-        MQQueue commandQueue = queueManager.accessQueue(queueManager.getCommandInputQueueName(), CMQC.MQOO_INQUIRE);
-        if(commandQueue.getOpenInputCount() == 0){
-            throw new MQException(2, 1, "Command server is not running on this queue manager");
+        MQQueueManager queueManager = null; 
+        try{
+            Properties properties = new Properties();
+            properties.put(MQConstants.HOST_NAME_PROPERTY, connectionDetail.Host);
+            properties.put(MQConstants.PORT_PROPERTY, Integer.parseInt(connectionDetail.Port));
+            properties.put(MQConstants.CHANNEL_PROPERTY, connectionDetail.Channel);
+            properties.put("transport", "MQSeries");
+            properties.put("securityExit", new SecurityExit(null, null)); //for MQ ver < 7
+            queueManager = new MQQueueManager(connectionDetail.QueueManager, properties);
+            MQQueue commandQueue = queueManager.accessQueue(queueManager.getCommandInputQueueName(), CMQC.MQOO_INQUIRE);
+            if(commandQueue.getOpenInputCount() == 0){
+                throw new MQException(2, 1, "Command server is not running on this queue manager");
+            }
+            return queueManager;
+        }catch(MQException ex){
+            if(queueManager != null){
+                queueManager.disconnect();
+                queueManager.close();
+            }
+            throw ex;
         }
-        return queueManager;
     }   
 }
