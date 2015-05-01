@@ -5,6 +5,7 @@
  */
 package UI;
 
+import MQApi.Enums.ChannelType;
 import MQApi.Enums.LogType;
 import MQApi.Enums.MQObjectType;
 import MQApi.Enums.QueueType;
@@ -32,6 +33,7 @@ import UI.Models.*;
 import UI.ReferenceObjects.ToolStatusReference;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueueManager;
+import com.ibm.mq.headers.MQDataException;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -670,16 +672,30 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     private JPopupMenu getChannelListTablePopupMenu(Object type){
-        JPopupMenu popup = new JPopupMenu();
-        JMenuItem stopMenuItem = new JMenuItem("Stop");
-        stopMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        if(type instanceof ChannelType){
+            ChannelType channelType = (ChannelType)type;
+            
+            JPopupMenu popup = new JPopupMenu();
+            JMenuItem stopMenuItem = new JMenuItem("Stop");
+            JMenuItem propertistMenuItem = new JMenuItem("Properties",iconManager.PropertiesIcon());
+            stopMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
 
-            }
-        });
-        popup.add(stopMenuItem);
+                }
+            });
+            propertistMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    showSetupChannelPropertiesDialog();
+                }
+            });
+            popup.add(stopMenuItem);
+            popup.add(new JPopupMenu.Separator());
+            popup.add(propertistMenuItem);
+            return popup; 
+        }
+        return null;
         
-        return popup;       
+              
     }
 
  // Private methods
@@ -688,7 +704,6 @@ public class MainWindow extends javax.swing.JFrame {
         this.setIconImage(iconManager.Root().getImage()); 
         this.setTitle("MQ Admin Tool");
         //this.timer = new Timer();
-        LogWriter.SetFile();
         this.TreeViewPanel.setMinimumSize(new Dimension(200,400));
         this.SplitPane.setDividerLocation(200);
         this.HostTextBox.setText("127.0.0.1");
@@ -957,6 +972,28 @@ public class MainWindow extends javax.swing.JFrame {
         });
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);  
+    }
+    
+    private void showSetupChannelPropertiesDialog(){
+        MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
+        TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable); 
+        try {
+            MQPCF.GetChannelProperties(queueManager, selectedObject.ObjectName);
+//        QueueProperitiesDialog dialog = DialogFactory.CreateQueueSetupProperitiesDialog(this,true,queueManager,selectedObject.ObjectName);
+//        dialog.AddDialogActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                showTableData(true);
+//            }
+//        });
+//        dialog.setLocationRelativeTo(this);
+//        dialog.setVisible(true);        
+        } catch (MQDataException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void createQueue(QueueType type){

@@ -53,7 +53,13 @@ public class LogWriter {
         
     }
     public static void WriteToLog(String className, String methodName, Exception ex){
-        if(isLoggerReady){
+        if(!isLoggerReady){
+            SetFile();
+            if(isLoggerReady){
+                logger.logp(Level.SEVERE, className, methodName, ex.getMessage());
+            }
+        }
+        else{
             logger.logp(Level.SEVERE, className, methodName, ex.getMessage());
         }
       

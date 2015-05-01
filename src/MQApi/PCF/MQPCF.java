@@ -21,7 +21,9 @@ import MQApi.Models.Query.ConnectionDetailModel;
 import MQApi.Result.Annotations.MQObjectListtAnnotation;
 import MQApi.Result.Annotations.MQObjectPropertyAnnotation;
 import MQApi.QueryModel.MQChannelListResult.ChannelDetailModel;
+import MQApi.QueryModel.MQChannelPropertyModel;
 import MQApi.QueryModel.MQChannelStatusListResult.ChannelStatusModel;
+import MQApi.QueryModel.MQObjectPropertyModel;
 import MQApi.QueryModel.MQQueueListResult.QueueDetailModel;
 import MQApi.Utilities.MQUtility;
 import com.ibm.mq.MQException;
@@ -135,7 +137,8 @@ public class MQPCF {
             agent.setCheckResponses(false);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
             if(pcfResponse.length > 0 && pcfResponse[0].getCompCode() == 0){
-                model = readToPropertyModel(pcfResponse[0]);
+                model = new MQQueuePropertyModel();
+                readToPropertyModel(pcfResponse[0], model);
             }
         
         } catch (MQDataException ex) {
@@ -145,6 +148,33 @@ public class MQPCF {
         } catch (IOException ex) {
             disconnectAgent(agent);
             LogWriter.WriteToLog("MQPCF", "GetQueueProperties", ex);
+            throw ex;
+        }
+        disconnectAgent(agent);
+        return model;
+    }
+    
+    public static MQChannelPropertyModel GetChannelProperties(MQQueueManager queueManager, String name) throws MQDataException, IOException{
+        MQChannelPropertyModel model = null;
+        PCFMessageAgent agent = null;
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_CHANNEL);        
+            pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
+            agent.setCheckResponses(false);
+            PCFMessage[] pcfResponse = agent.send(pcfCmd);
+            if(pcfResponse.length > 0 && pcfResponse[0].getCompCode() == 0){
+                model = new MQChannelPropertyModel();
+                readToPropertyModel(pcfResponse[0], model);
+            }
+        
+        } catch (MQDataException ex) {
+            disconnectAgent(agent);
+            LogWriter.WriteToLog("MQPCF", "GetChannelProperties", ex);
+            throw ex;
+        } catch (IOException ex) {
+            disconnectAgent(agent);
+            LogWriter.WriteToLog("MQPCF", "GetChannelProperties", ex);
             throw ex;
         }
         disconnectAgent(agent);
@@ -532,14 +562,12 @@ public class MQPCF {
         }
     }
     
-    private static MQQueuePropertyModel readToPropertyModel(PCFMessage message){
-        MQQueuePropertyModel model = new MQQueuePropertyModel();
+    private static void readToPropertyModel(PCFMessage message, Object model ){
         for(Field field : model.getClass().getFields()){
             int mqConstant = field.getAnnotation(MQObjectPropertyAnnotation.class).MQConstant();
             VariableType varType = field.getAnnotation(MQObjectPropertyAnnotation.class).VarType();
             SetFieldValue(field, message, model, mqConstant,varType);
         }        
-        return model;
     }    
 
     private static MQCommandResult CreateOrModifyQueueProperties(MQQueueManager queueManager, MQQueuePropertyModel model, boolean isCreate){
