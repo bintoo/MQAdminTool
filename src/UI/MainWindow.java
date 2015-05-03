@@ -22,6 +22,7 @@ import Tasks.*;
 import Tasks.TaskInterface.StopableTask;
 import UI.Dialogs.BackupRestoreMessageDialog;
 import UI.Dialogs.BrowseMessageDialog;
+import UI.Dialogs.ChannelProperitiesDialog;
 import UI.Dialogs.ClearMessagesDialog;
 import UI.Dialogs.DialogFactory;
 import UI.Dialogs.MessageEditDialog;;
@@ -524,11 +525,70 @@ public class MainWindow extends javax.swing.JFrame {
     private JPopupMenu getTreeViewChannelPopupMenu(){
         JPopupMenu popup = new JPopupMenu();
         JMenuItem exportQueuePropertiesMenuItem = new JMenuItem("Export channel properties",iconManager.CSVIcon());
+        JMenu CreateChannelMenu = new JMenu("Create");
+        CreateChannelMenu.setIcon(iconManager.AddNewIcon());
+        JMenuItem CreateSenderChannelMenuItem = new JMenuItem("Sender channel", iconManager.Channel());
+        JMenuItem CreateReceiverChannelMenuItem = new JMenuItem("Receiver channel", iconManager.Channel());
+        JMenuItem CreateServerChannelMenuItem = new JMenuItem("Server channel", iconManager.Channel());
+        JMenuItem CreateRequesterChannelMenuItem = new JMenuItem("Requester channel", iconManager.Channel());
+        JMenuItem CreateServerConnectionChannelMenuItem = new JMenuItem("Server connection channel", iconManager.Channel());
+        JMenuItem CreateClusterSenderMenuItem = new JMenuItem("Cluster-sender", iconManager.Channel());
+        JMenuItem CreateClusterReceiverMenuItem = new JMenuItem("Cluster-receiver", iconManager.Channel());
         exportQueuePropertiesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportProperties(MQObjectType.Channel);
             }
         });
+        CreateSenderChannelMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createChannel(ChannelType.Sender);
+            }
+        });
+        CreateReceiverChannelMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createChannel(ChannelType.Receiver);
+            }
+        });
+        CreateServerChannelMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createChannel(ChannelType.Server);
+            }
+        });
+        CreateRequesterChannelMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createChannel(ChannelType.Requester);
+            }
+        });
+        CreateServerConnectionChannelMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createChannel(ChannelType.Server_Connection);
+            }
+        });
+        CreateClusterSenderMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createChannel(ChannelType.Cluster_Sender);
+            }
+        });
+        CreateClusterReceiverMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createChannel(ChannelType.Cluster_Receiver);
+            }
+        });
+        CreateChannelMenu.add(CreateSenderChannelMenuItem);
+        CreateChannelMenu.add(CreateReceiverChannelMenuItem);
+        CreateChannelMenu.add(CreateServerChannelMenuItem);
+        CreateChannelMenu.add(CreateRequesterChannelMenuItem);
+        CreateChannelMenu.add(CreateServerConnectionChannelMenuItem);
+        CreateChannelMenu.add(CreateClusterSenderMenuItem);
+        CreateChannelMenu.add(CreateClusterReceiverMenuItem);
+        popup.add(CreateChannelMenu);
         popup.add(exportQueuePropertiesMenuItem);
         return popup;
     }
@@ -959,7 +1019,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
     
-    private void  showSetupQueuePropertiesDialog(){
+    private void showSetupQueuePropertiesDialog(){
         MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
         TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable); 
         QueueProperitiesDialog dialog = DialogFactory.CreateQueueSetupProperitiesDialog(this,true,queueManager,selectedObject.ObjectName);
@@ -977,23 +1037,17 @@ public class MainWindow extends javax.swing.JFrame {
     private void showSetupChannelPropertiesDialog(){
         MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
         TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable); 
-        try {
-            MQPCF.GetChannelProperties(queueManager, selectedObject.ObjectName);
-//        QueueProperitiesDialog dialog = DialogFactory.CreateQueueSetupProperitiesDialog(this,true,queueManager,selectedObject.ObjectName);
-//        dialog.AddDialogActionListener(new ActionListener() {
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                showTableData(true);
-//            }
-//        });
-//        dialog.setLocationRelativeTo(this);
-//        dialog.setVisible(true);        
-        } catch (MQDataException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        ChannelProperitiesDialog dialog = DialogFactory.CreateChannelSetupProperitiesDialog(this,true,queueManager,selectedObject.ObjectName);
+        dialog.AddDialogActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showTableData(true);
+            }
+        });
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);  
+
     }
     
     private void createQueue(QueueType type){
@@ -1008,7 +1062,21 @@ public class MainWindow extends javax.swing.JFrame {
         });
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);        
-    }    
+    }  
+    
+    private void createChannel(ChannelType type){
+        MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
+        ChannelProperitiesDialog dialog = DialogFactory.CreateChannelSetupProperitiesDialog(this, true, queueManager, type);
+        dialog.AddDialogActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showTableData(true);
+            }
+        });
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);        
+    }  
     
     private void deleteQueue(){
         MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
@@ -1141,9 +1209,17 @@ public class MainWindow extends javax.swing.JFrame {
     private void TestMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TestMenuItemActionPerformed
         MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
         TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable); 
-        //MQTest.test(queueManager, selectedObject.ObjectName);
-        //MQTest.test2(queueManager, selectedObject.ObjectName);
-        MQTest.test3();
+        ChannelProperitiesDialog dialog = DialogFactory.CreateChannelSetupProperitiesDialog(this,true,queueManager,selectedObject.ObjectName);
+        dialog.AddDialogActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //showTableData(true);
+            }
+        });
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);  
+        
             
 
     }//GEN-LAST:event_TestMenuItemActionPerformed

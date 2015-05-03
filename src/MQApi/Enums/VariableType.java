@@ -11,6 +11,7 @@ package MQApi.Enums;
  */
 public enum VariableType {
     Text,
+    TextArray,
     Number,
     ChannelType,
     QueueType,

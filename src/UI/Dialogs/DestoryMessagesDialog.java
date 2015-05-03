@@ -37,12 +37,14 @@ public class DestoryMessagesDialog extends DialogBase {
     boolean isDeleteAllMessages;
     ArrayList<MQMessageIdModel> ids;
     Component component = this;
-    public DestoryMessagesDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, TableListObject selectedObject, boolean forceOpenGet) {       
+    String stringFilter;
+    public DestoryMessagesDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, TableListObject selectedObject, boolean forceOpenGet, String stringFilter) {       
         super(parent, modal,queueManager,selectedObject);
         initComponents();
         initCustomProperties();
         this.forceOpenGet = forceOpenGet;
         this.isDeleteAllMessages = true;
+        this.stringFilter = stringFilter;
     }
     
     public DestoryMessagesDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, TableListObject selectedObject, ArrayList<MQMessageIdModel> ids, boolean forceOpenGet) {       
@@ -129,10 +131,10 @@ public class DestoryMessagesDialog extends DialogBase {
         boolean isAlias = (QueueType)selectedObject.Type == QueueType.Alias;
         DestoryMessageTask task;
         if(isDeleteAllMessages){
-            task  = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, forceOpenGet,isAlias);
+            task  = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, forceOpenGet,isAlias, stringFilter);
         }
         else{
-            task  = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, ids, forceOpenGet,isAlias);
+            task  = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, ids, forceOpenGet,isAlias, stringFilter);
         }
         task.AddTaskActionSuccessListener(new ActionListener() {
 

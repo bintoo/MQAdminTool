@@ -11,6 +11,7 @@ import com.ibm.mq.MQGetMessageOptions;
 import com.ibm.mq.MQMessage;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
+import com.ibm.mq.MQQueueManagerFactory;
 import com.ibm.mq.constants.CMQC;
 import com.ibm.mq.constants.MQConstants;
 import com.ibm.msg.client.jms.JmsConnectionFactory;
@@ -26,12 +27,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jms.Connection;
 import javax.jms.JMSException;
+import com.ibm.msg.client.commonservices.trace.Trace;
 
 /**
  *
  * @author jzhou
  */
 public class MQTest {
+    
+    private static MQQueueManagerFactory factory;
     
     public static void test(MQQueueManager queueManager, String queueName){
         try {
@@ -96,7 +100,11 @@ public class MQTest {
     public static void test3(){
         int aa = CMQC.MQGMO_BROWSE_NEXT | CMQC.MQGMO_MSG_UNDER_CURSOR | CMQC.MQGMO_ACCEPT_TRUNCATED_MSG ;
         String b = "ASD";
-        //MQSESSION se
+//        factory.getInstance().C
+//        MQQueueManager queueManager = new MQQueueManager("ASd");
+//        queueManager.get
+//        MQSESSION se
+
         
     }
 }

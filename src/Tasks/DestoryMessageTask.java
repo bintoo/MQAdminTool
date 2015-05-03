@@ -32,8 +32,9 @@ public class DestoryMessageTask extends TaskBase {
     boolean isAlias;
     boolean isRemoveAllMessages;
     ArrayList<MQMessageIdModel> ids;
+    String stringFilter;
     
-    public DestoryMessageTask(MQQueueManager queueManager, String queueName, JProgressBar progressBar, Component parent, boolean openGet, boolean isAlias){
+    public DestoryMessageTask(MQQueueManager queueManager, String queueName, JProgressBar progressBar, Component parent, boolean openGet, boolean isAlias, String stringFilter){
         this.queueManager = queueManager;
         this.queueName = queueName;
         this.progressBar = progressBar;
@@ -41,10 +42,11 @@ public class DestoryMessageTask extends TaskBase {
         this.openGet = openGet;
         this.isAlias = isAlias;
         this.isRemoveAllMessages = true;
+        this.stringFilter = stringFilter;
         
     }
     
-    public DestoryMessageTask(MQQueueManager queueManager, String queueName, JProgressBar progressBar, Component parent, ArrayList<MQMessageIdModel> ids, boolean openGet, boolean isAlias){
+    public DestoryMessageTask(MQQueueManager queueManager, String queueName, JProgressBar progressBar, Component parent, ArrayList<MQMessageIdModel> ids, boolean openGet, boolean isAlias,String stringFilter){
         this.queueManager = queueManager;
         this.queueName = queueName;
         this.progressBar = progressBar;
@@ -53,6 +55,7 @@ public class DestoryMessageTask extends TaskBase {
         this.isAlias = isAlias;
         this.isRemoveAllMessages = false;
         this.ids = ids;
+        this.stringFilter = stringFilter;
     }
 
     @Override
@@ -63,7 +66,12 @@ public class DestoryMessageTask extends TaskBase {
     private void destoryMessage(){
         try {
             if(isRemoveAllMessages){
-                MQUtility.ComsumeAllMessages(queueManager, queueName, progressBar, openGet,isAlias);
+                if(stringFilter != null && !stringFilter.isEmpty()){
+                    MQUtility.ComsumeAllMessagesWithFilter(queueManager, queueName, progressBar, openGet,isAlias,stringFilter);
+                }
+                else{
+                    MQUtility.ComsumeAllMessages(queueManager, queueName, progressBar, openGet,isAlias);
+                }
             }
             else{
                 MQUtility.ComsumeSelectedMessages(queueManager, queueName, ids, progressBar, openGet, isAlias);

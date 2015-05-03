@@ -275,6 +275,51 @@ public class MQUtility {
         }
 
     }
+   
+    public static void ComsumeAllMessagesWithFilter(MQQueueManager queueManager, String queueName, JProgressBar progressBar, boolean forceOpenGet, boolean isAlias, String stringfilter) throws MQException{
+        MQQueue queue = null;
+        try {
+            int openQueueOptions;
+            
+            if(isAlias){
+                queueName = MQPCF.ResolveAliasBaseQueueName(queueManager, queueName);
+            }
+            openQueueOptions = forceOpenGet == true? CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE | CMQC.MQOO_INPUT_SHARED | CMQC.MQOO_SET : CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE | CMQC.MQOO_INPUT_SHARED;
+            queue = queueManager.accessQueue(queueName, openQueueOptions);
+            int queueDepth = queue.getCurrentDepth();
+            int index = queueDepth;
+            MQGetMessageOptions options = new MQGetMessageOptions();
+            MQMessage message = new MQMessage();
+            options.matchOptions = MQConstants.MQMO_NONE;
+            options.options = CMQC.MQGMO_BROWSE_NEXT;
+            ArrayList<MQMessageIdModel>ids = new ArrayList<MQMessageIdModel>();
+            while(index > 0){               
+                try{
+                    index--;
+                    options.options = CMQC.MQGMO_BROWSE_NEXT;
+                    queue.get(message, options);
+                    String content = message.readStringOfByteLength(message.getDataLength());
+                    if(content.contains(stringfilter)){
+                        MQMessageIdModel id = new MQMessageIdModel();
+                        id.MessageId = message.messageId;
+                        id.CorrelationdId = message.correlationId;
+                        ids.add(id);
+                    }
+                    resetMessage(message);
+                }
+                 catch (IOException ex) {
+                    Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
+                }               
+            }
+            closeQueue(queue);
+            ComsumeSelectedMessages(queueManager, queueName, ids, progressBar, forceOpenGet, isAlias);
+        } catch (MQException ex) {
+            LogWriter.WriteToLog("MQUtility", "ComsumeAllMessages",ex);
+            closeQueue(queue);
+            throw ex;
+        }
+
+    }
     
     public static void ComsumeSelectedMessages(MQQueueManager queueManager, String queueName, MQMessageIdModel id) throws MQException{
         ArrayList<MQMessageIdModel> ids = new ArrayList<MQMessageIdModel>();

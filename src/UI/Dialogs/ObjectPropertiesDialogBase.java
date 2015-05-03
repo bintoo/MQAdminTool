@@ -68,4 +68,28 @@ public abstract class ObjectPropertiesDialogBase extends DialogBase{
         return field.isVisible() ? field.getText(): null;
     }
     
+    protected String[] getTextFieldArrayValue(JTextField field){
+        if(field.isVisible()){
+            String tmp = field.getText().trim();
+            String[] valueArray = tmp.split(",");
+            return valueArray;
+            
+        }
+        return null;
+    }
+    
+    protected void setTextFieldArrayValue(JTextField field, String[] values){
+        String value = "";
+        for(int i = 0; i < values.length; i++){
+            if(i == values.length - 1 ){
+                value += values[i].trim();
+            }
+            else{
+                value += values[i].trim() + ",";
+            }
+        }
+        
+        field.setText(value);
+    }
+    
 }

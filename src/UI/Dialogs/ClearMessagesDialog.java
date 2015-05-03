@@ -60,6 +60,8 @@ public class ClearMessagesDialog extends DialogBase {
         ClearCommandRadioButton = new javax.swing.JRadioButton();
         MQGETRadioButton = new javax.swing.JRadioButton();
         ForceRadioButton = new javax.swing.JRadioButton();
+        StringFilterLabel = new javax.swing.JLabel();
+        StringFilterTextField = new javax.swing.JTextField();
         ClearButton = new javax.swing.JButton();
         CloseButton = new javax.swing.JButton();
 
@@ -77,16 +79,27 @@ public class ClearMessagesDialog extends DialogBase {
         QueueNameLabel.setPreferredSize(new java.awt.Dimension(300, 25));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Select clear type"));
+        jPanel1.setPreferredSize(new java.awt.Dimension(471, 230));
 
         ClearButtonGroup.add(ClearCommandRadioButton);
         ClearCommandRadioButton.setSelected(true);
         ClearCommandRadioButton.setText("Queue will be cleared using CLEAR command");
+        ClearCommandRadioButton.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                ClearCommandRadioButtonStateChanged(evt);
+            }
+        });
 
         ClearButtonGroup.add(MQGETRadioButton);
         MQGETRadioButton.setText("Queue will be cleared using MQGET API calls");
 
         ClearButtonGroup.add(ForceRadioButton);
         ForceRadioButton.setText("Queue will be cleared by force (open get follow by MQGET calls)");
+
+        StringFilterLabel.setText("Only clear messages with string :");
+        StringFilterLabel.setPreferredSize(new java.awt.Dimension(150, 25));
+
+        StringFilterTextField.setPreferredSize(new java.awt.Dimension(250, 25));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -95,10 +108,17 @@ public class ClearMessagesDialog extends DialogBase {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ClearCommandRadioButton)
-                    .addComponent(MQGETRadioButton)
-                    .addComponent(ForceRadioButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(StringFilterLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(StringFilterTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(ClearCommandRadioButton)
+                            .addComponent(MQGETRadioButton)
+                            .addComponent(ForceRadioButton))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -109,7 +129,11 @@ public class ClearMessagesDialog extends DialogBase {
                 .addComponent(MQGETRadioButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(ForceRadioButton)
-                .addContainerGap(118, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(StringFilterLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(StringFilterTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(94, Short.MAX_VALUE))
         );
 
         ClearButton.setText("Clear");
@@ -135,7 +159,7 @@ public class ClearMessagesDialog extends DialogBase {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -171,7 +195,7 @@ public class ClearMessagesDialog extends DialogBase {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(CloseButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -188,7 +212,10 @@ public class ClearMessagesDialog extends DialogBase {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
         this.QueueManagerNameLabel.setText(queueManagerName);
-        this.QueueNameLabel.setText(selectedObject.ObjectName);       
+        this.QueueNameLabel.setText(selectedObject.ObjectName);   
+        this.StringFilterTextField.setVisible(false);
+        this.StringFilterTextField.setText("");
+        this.StringFilterLabel.setVisible(false);
     }
     
     private void CloseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CloseButtonActionPerformed
@@ -209,19 +236,33 @@ public class ClearMessagesDialog extends DialogBase {
            }           
        }
        else if(MQGETRadioButton.isSelected()){
-            destoryMessagePerform(ParentJFrame, false ,queueManager, selectedObject, false);
+            String stringFilter = this.StringFilterTextField.getText();
+            destoryMessagePerform(ParentJFrame, false ,queueManager, selectedObject, false, stringFilter);
        }
        else if(ForceRadioButton.isSelected()){
-            destoryMessagePerform(ParentJFrame, false ,queueManager, selectedObject, true);
+            String stringFilter = this.StringFilterTextField.getText();
+            destoryMessagePerform(ParentJFrame, false ,queueManager, selectedObject, true, stringFilter);
        }
        else{
            JOptionPane.showMessageDialog(this, "Please select an option");
        }
     }//GEN-LAST:event_ClearButtonActionPerformed
+
+    private void ClearCommandRadioButtonStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_ClearCommandRadioButtonStateChanged
+        if(ClearCommandRadioButton.isSelected()){
+            this.StringFilterTextField.setVisible(false);
+            this.StringFilterTextField.setText("");
+            this.StringFilterLabel.setVisible(false);
+        }
+        else{
+            this.StringFilterTextField.setVisible(true);
+            this.StringFilterLabel.setVisible(true);            
+        }
+    }//GEN-LAST:event_ClearCommandRadioButtonStateChanged
     
-    private void destoryMessagePerform(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, TableListObject selectedObject, boolean forceOpenGet){
+    private void destoryMessagePerform(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, TableListObject selectedObject, boolean forceOpenGet, String stringFilter){
         //DestoryMessagesDialog dialog = new DestoryMessagesDialog(ParentJFrame, false ,queueManager, selectedObject, forceOpenGet);
-        DestoryMessagesDialog dialog = new DestoryMessagesDialog(ParentJFrame, false ,queueManager, selectedObject, forceOpenGet);
+        DestoryMessagesDialog dialog = new DestoryMessagesDialog(ParentJFrame, false ,queueManager, selectedObject, forceOpenGet, stringFilter);
         dialog.AddDialogActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -243,6 +284,8 @@ public class ClearMessagesDialog extends DialogBase {
     private javax.swing.JRadioButton MQGETRadioButton;
     private javax.swing.JLabel QueueManagerNameLabel;
     private javax.swing.JLabel QueueNameLabel;
+    private javax.swing.JLabel StringFilterLabel;
+    private javax.swing.JTextField StringFilterTextField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

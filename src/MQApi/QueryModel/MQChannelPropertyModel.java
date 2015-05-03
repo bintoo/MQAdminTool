@@ -76,10 +76,10 @@ public class MQChannelPropertyModel extends MQObjectPropertyModel{
     public Integer MCAType;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_MCA_USER_ID, VarType = VariableType.Text)
     public String MCAUserIdentifier;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_MSG_COMPRESSION, VarType = VariableType.Number)
-    public Integer MessageCompression;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_MSG_EXIT_NAME, VarType = VariableType.Text)
-    public String MsgExit;
+//    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_MSG_COMPRESSION, VarType = VariableType.Number)
+//    public Integer MessageCompression;
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_MSG_EXIT_NAME, VarType = VariableType.TextArray)
+    public String[] MsgExit;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_MR_COUNT, VarType = VariableType.Number)
     public Integer MsgRetryCount;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_MR_EXIT_NAME, VarType = VariableType.Text)
@@ -88,8 +88,8 @@ public class MQChannelPropertyModel extends MQObjectPropertyModel{
     public Integer MsgRetryInterval;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_MR_EXIT_USER_DATA, VarType = VariableType.Text)
     public String MsgRetryUserData;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_MSG_EXIT_USER_DATA, VarType = VariableType.Text)
-    public String MsgUserData;
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_MSG_EXIT_USER_DATA, VarType = VariableType.TextArray)
+    public String[] MsgUserData;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_NETWORK_PRIORITY, VarType = VariableType.Number)
     public Integer NetworkPriority;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_NPM_SPEED, VarType = VariableType.Number)
@@ -102,18 +102,18 @@ public class MQChannelPropertyModel extends MQObjectPropertyModel{
     public Integer PutAuthority;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_Q_MGR_NAME, VarType = VariableType.Text)
     public String QMgrName;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_RCV_EXIT_NAME, VarType = VariableType.Text)
-    public String ReceiveExit;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_RCV_EXIT_USER_DATA, VarType = VariableType.Text)
-    public String ReceiveUserData;
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_RCV_EXIT_NAME, VarType = VariableType.TextArray)
+    public String[] ReceiveExit;
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_RCV_EXIT_USER_DATA, VarType = VariableType.TextArray)
+    public String[] ReceiveUserData;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_SEC_EXIT_NAME, VarType = VariableType.Text)
     public String SecurityExit;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_SEC_EXIT_USER_DATA, VarType = VariableType.Text)
     public String SecurityUserData;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_SEND_EXIT_NAME, VarType = VariableType.Text)
-    public String SendExit;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_SEND_EXIT_USER_DATA, VarType = VariableType.Text)
-    public String SendUserData;
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_SEND_EXIT_NAME, VarType = VariableType.TextArray)
+    public String[] SendExit;
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_SEND_EXIT_USER_DATA, VarType = VariableType.TextArray)
+    public String[] SendUserData;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_SEQUENCE_NUMBER_WRAP, VarType = VariableType.Number)
     public Integer SeqNumberWrap;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_SHARING_CONVERSATIONS, VarType = VariableType.Number)
@@ -122,10 +122,10 @@ public class MQChannelPropertyModel extends MQObjectPropertyModel{
     public Integer ShortRetryCount;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_SHORT_TIMER, VarType = VariableType.Number)
     public Integer ShortRetryInterval;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_SSL_CIPHER_SPEC, VarType = VariableType.Text)
-    public String SSLCipherSpec;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_SSL_CLIENT_AUTH, VarType = VariableType.Number)
-    public Integer SSLClientAuth;
+//    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_SSL_CIPHER_SPEC, VarType = VariableType.Text)
+//    public String SSLCipherSpec;
+//    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_SSL_CLIENT_AUTH, VarType = VariableType.Number)
+//    public Integer SSLClientAuth;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_XMIT_PROTOCOL_TYPE, VarType = VariableType.Number)
     public Integer TransportType;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_USE_DEAD_LETTER_Q, VarType = VariableType.Number)
@@ -134,4 +134,10 @@ public class MQChannelPropertyModel extends MQObjectPropertyModel{
     public String UserIdentifier;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_XMIT_Q_NAME, VarType = VariableType.Text)
     public String XmitQName;
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_ALTERATION_DATE, VarType = VariableType.Text)
+    public String AlterationDate;
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_ALTERATION_TIME, VarType = VariableType.Text)
+    public String AlterationTime;
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_KEEP_ALIVE_INTERVAL, VarType = VariableType.Number)
+    public Integer KeepAliveInterval;
 }

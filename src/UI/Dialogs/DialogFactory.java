@@ -5,6 +5,7 @@
  */
 package UI.Dialogs;
 
+import MQApi.Enums.ChannelType;
 import MQApi.Enums.QueueType;
 import MQApi.Models.MQMessageIdModel;
 import UI.Helpers.TableHelper;
@@ -50,6 +51,14 @@ public class DialogFactory {
     
     public static QueueProperitiesDialog CreateQueueSetupProperitiesDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, String name){        
         return new QueueProperitiesDialog(parent, modal, queueManager, name);
+    }
+
+    public static ChannelProperitiesDialog CreateChannelSetupProperitiesDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, ChannelType channelType){        
+        return new ChannelProperitiesDialog(parent, modal, queueManager, channelType);
+    }
+    
+    public static ChannelProperitiesDialog CreateChannelSetupProperitiesDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, String name){        
+        return new ChannelProperitiesDialog(parent, modal, queueManager, name);
     }
     
     public static <T extends Enum> SelectObjectDialog CreateSelectObjectDialog(java.awt.Frame parent, boolean modal,  MQQueueManager queueManager, T[] objectType){;

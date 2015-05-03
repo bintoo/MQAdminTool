@@ -197,6 +197,15 @@ public class MQPCF {
             return false;
         }
     }
+    
+    public static boolean CheckChannelExist(MQQueueManager queueManager, String name){
+        try{
+            MQChannelPropertyModel model = GetChannelProperties(queueManager, name);
+            return model != null;
+        }catch(Exception ex){
+            return false;
+        }
+    }
         
     public static MQCommandResult ClearQueue(MQQueueManager queueManager, String queueName, boolean isAlias) {
         PCFMessageAgent agent = null;
@@ -357,6 +366,14 @@ public class MQPCF {
         disconnectAgent(agent); 
         return result;
     }   
+    
+    public static MQCommandResult UpdateChannelProperties(MQQueueManager queueManager, MQChannelPropertyModel model){
+        return CreateOrModifyChannelProperties(queueManager, model, false);
+    }
+    
+    public static MQCommandResult CreateChannel(MQQueueManager queueManager, MQChannelPropertyModel model){
+        return CreateOrModifyChannelProperties(queueManager, model, true);
+    }
     //private
     private static void WriteToQueueDetailModel(PCFMessage[] pcfResponse , MQQueueListResult model, QueueType[] type){
         for(PCFMessage response : pcfResponse){     
@@ -476,8 +493,18 @@ public class MQPCF {
                }
                case Text :{
                    Object value = response.getParameterValue(mqConstant);
-                   if(value != null)
-                        field.set(model, value.toString().trim());
+                   if(value != null){
+                       field.set(model, value.toString().trim());
+                   }
+                   else
+                       field.set(model, null);
+                   break;
+               }
+               case TextArray :{
+                   Object value = response.getParameterValue(mqConstant);
+                   if(value != null){
+                       field.set(model, value);
+                   }
                    else
                        field.set(model, null);
                    break;
@@ -615,6 +642,58 @@ public class MQPCF {
             result.ErrorMessage = getMQReturnMessage(ex.getCompCode(), ex.getReason());
         } catch (IOException ex) {
             LogWriter.WriteToLog("MQPCF", "CreateOrModifyQueueProperties", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = ex.getMessage();
+        }
+        disconnectAgent(agent);
+        return result;
+    }
+    
+    private static MQCommandResult CreateOrModifyChannelProperties(MQQueueManager queueManager, MQChannelPropertyModel model, boolean isCreate){
+        PCFMessageAgent agent = null;
+        MQCommandResult result = new MQCommandResult();
+        try {           
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmd = new PCFMessage(isCreate ? MQConstants.MQCMD_CREATE_CHANNEL : MQConstants.MQCMD_CHANGE_CHANNEL);
+            for(Field field : model.getClass().getFields()){
+                try {
+                    int parameter = field.getAnnotation(MQObjectPropertyAnnotation.class).MQConstant();
+                    VariableType variableType = field.getAnnotation(MQObjectPropertyAnnotation.class).VarType();
+                    Object value = field.get(model);
+                    if(value != null){
+                        switch(variableType){
+                            case Text :
+                                pcfCmd.addParameter(parameter, value.toString());
+                                break;
+                            case TextArray :
+                                pcfCmd.addParameter(parameter, (String[])value);
+                                break;
+                            case Number:    
+                                Integer paraValue = Integer.parseInt(value.toString());
+                                if(parameter == MQConstants.MQIA_DEFINITION_TYPE && paraValue == MQConstants.MQQDT_PREDEFINED){
+                                    
+                                }
+                                else{
+                                    pcfCmd.addParameter(parameter, paraValue);
+                                }
+                                break;
+                        }
+                    }
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            PCFMessage[] pcfResponse = agent.send(pcfCmd);
+            result.QuerySuccess = true;
+            result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(),pcfResponse[0].getReason() );
+        } catch (MQDataException ex) {
+            LogWriter.WriteToLog("MQPCF", "CreateOrModifyChannelProperties", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = getMQReturnMessage(ex.getCompCode(), ex.getReason());
+        } catch (IOException ex) {
+            LogWriter.WriteToLog("MQPCF", "CreateOrModifyChannelProperties", ex);
             result.QuerySuccess = false;
             result.ErrorMessage = ex.getMessage();
         }
