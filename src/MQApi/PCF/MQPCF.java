@@ -374,6 +374,182 @@ public class MQPCF {
     public static MQCommandResult CreateChannel(MQQueueManager queueManager, MQChannelPropertyModel model){
         return CreateOrModifyChannelProperties(queueManager, model, true);
     }
+    
+    public static MQCommandResult StartChannel(MQQueueManager queueManager, String name){
+        MQCommandResult result = new MQCommandResult();
+        PCFMessageAgent agent = null;
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmdQueryDetail = new PCFMessage(MQConstants.MQCMD_START_CHANNEL);
+            pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
+            PCFMessage[] pcfResponse = agent.send(pcfCmdQueryDetail);
+            if(pcfResponse[0].getCompCode() == 0){
+                result.QuerySuccess = true;
+                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
+            }
+            else{
+                result.QuerySuccess = false;
+                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
+            }
+        } catch (MQDataException ex) {
+            LogWriter.WriteToLog("MQPCF", "StartChannel", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = getMQReturnMessage(ex.getCompCode(), ex.getReason());
+        } catch (IOException ex) {
+            LogWriter.WriteToLog("MQPCF", "StartChannel", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = ex.getMessage();
+        }
+        disconnectAgent(agent);
+        return result;
+    }
+
+    public static MQCommandResult StopChannel(MQQueueManager queueManager, String name, ChannelStatusType toStatus, ChannelStopType stopType, String queueManagerName, String connectionName){
+        MQCommandResult result = new MQCommandResult();
+        PCFMessageAgent agent = null;
+        if(toStatus != ChannelStatusType.Inactive && toStatus != ChannelStatusType.Stopped){
+            result.QuerySuccess = false;
+            result.ErrorMessage = "Status error: must be Inactive or Stopped";
+            return result;
+        }
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            agent.setCheckResponses(false);
+            PCFMessage pcfCmdQueryDetail = new PCFMessage(MQConstants.MQCMD_STOP_CHANNEL);
+            pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
+            pcfCmdQueryDetail.addParameter(MQConstants.MQIACH_CHANNEL_STATUS, toStatus == ChannelStatusType.Inactive ? MQConstants.MQCHS_INACTIVE : MQConstants.MQCHS_STOPPED);
+            switch(stopType){
+                case Force:
+                    pcfCmdQueryDetail.addParameter(MQConstants.MQIACF_MODE, MQConstants.MQMODE_FORCE);
+                    break;
+                case Quiesec:
+                    pcfCmdQueryDetail.addParameter(MQConstants.MQIACF_MODE, MQConstants.MQMODE_QUIESCE);
+                    break;
+                case Terminate:
+                    pcfCmdQueryDetail.addParameter(MQConstants.MQIACF_MODE, MQConstants.MQMODE_TERMINATE);
+                    break;
+            }
+            if(toStatus == ChannelStatusType.Inactive){
+                if(queueManagerName != null && !queueManagerName.isEmpty()){
+                    pcfCmdQueryDetail.addParameter(MQConstants.MQCA_Q_MGR_NAME, queueManagerName);
+                }
+                if(connectionName != null && !connectionName.isEmpty()){
+                    pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CONNECTION_NAME, connectionName);
+                }
+            }
+            PCFMessage[] pcfResponse = agent.send(pcfCmdQueryDetail);
+            if(pcfResponse[0].getCompCode() == 0 || pcfResponse[0].getCompCode() == 1){
+                result.QuerySuccess = true;
+                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
+            }
+            else{
+                result.QuerySuccess = false;
+                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
+            }
+        } catch (MQDataException ex) {
+            LogWriter.WriteToLog("MQPCF", "StopChannel", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = getMQReturnMessage(ex.getCompCode(), ex.getReason());
+        } catch (IOException ex) {
+            LogWriter.WriteToLog("MQPCF", "StopChannel", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = ex.getMessage();
+        }
+        disconnectAgent(agent);         
+        return result;
+    }
+    
+    public static MQCommandResult ResetChannel(MQQueueManager queueManager, String name, Integer seq){
+        MQCommandResult result = new MQCommandResult();
+        PCFMessageAgent agent = null;
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmdQueryDetail = new PCFMessage(MQConstants.MQCMD_RESET_CHANNEL);
+            pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
+            pcfCmdQueryDetail.addParameter(MQConstants.MQIACH_MSG_SEQUENCE_NUMBER, seq);
+            PCFMessage[] pcfResponse = agent.send(pcfCmdQueryDetail);
+            if(pcfResponse[0].getCompCode() == 0){
+                result.QuerySuccess = true;
+                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
+            }
+            else{
+                result.QuerySuccess = false;
+                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
+            }
+        } catch (MQDataException ex) {
+            LogWriter.WriteToLog("MQPCF", "ResetChannel", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = getMQReturnMessage(ex.getCompCode(), ex.getReason());
+        } catch (IOException ex) {
+            LogWriter.WriteToLog("MQPCF", "ResetChannel", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = ex.getMessage();
+        }
+        disconnectAgent(agent);
+        return result;
+    }
+    
+    public static MQCommandResult ResolveChannel(MQQueueManager queueManager, String name, ChannelResolveType type){
+        MQCommandResult result = new MQCommandResult();
+        PCFMessageAgent agent = null;
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmdQueryDetail = new PCFMessage(MQConstants.MQCMD_RESOLVE_CHANNEL);
+            pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
+            pcfCmdQueryDetail.addParameter(MQConstants.MQIACH_IN_DOUBT, type == ChannelResolveType.Backout ? MQConstants.MQIDO_BACKOUT : MQConstants.MQIDO_COMMIT);
+            PCFMessage[] pcfResponse = agent.send(pcfCmdQueryDetail);
+            if(pcfResponse[0].getCompCode() == 0){
+                result.QuerySuccess = true;
+                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
+            }
+            else{
+                result.QuerySuccess = false;
+                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
+            }
+        } catch (MQDataException ex) {
+            LogWriter.WriteToLog("MQPCF", "ResolveChannel", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = getMQReturnMessage(ex.getCompCode(), ex.getReason());
+        } catch (IOException ex) {
+            LogWriter.WriteToLog("MQPCF", "ResolveChannel", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = ex.getMessage();
+        }
+        disconnectAgent(agent);
+        return result;
+    }
+    
+    public static MQCommandResult DeleteChannel (MQQueueManager queueManager, String channelName){
+        MQCommandResult result = new MQCommandResult();
+        PCFMessageAgent agent = null;
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_DELETE_CHANNEL);
+            pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, channelName);
+            PCFMessage[] pcfResponse = agent.send(pcfCmd);
+            if(pcfResponse[0].getCompCode() == 0){
+                result.QuerySuccess = true;
+                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
+            }
+            else{
+                result.QuerySuccess = false;
+                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
+            }
+            
+        } catch (MQDataException ex) {
+            LogWriter.WriteToLog("MQPCF", "DeleteChannel", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = getMQReturnMessage(ex.getCompCode(), ex.getReason());
+        } catch (IOException ex) {
+            LogWriter.WriteToLog("MQPCF", "DeleteChannel", ex);
+            result.QuerySuccess = false;
+            result.ErrorMessage = ex.getMessage();
+        }
+        disconnectAgent(agent);
+        return result;
+        
+    }
+    
     //private
     private static void WriteToQueueDetailModel(PCFMessage[] pcfResponse , MQQueueListResult model, QueueType[] type){
         for(PCFMessage response : pcfResponse){     

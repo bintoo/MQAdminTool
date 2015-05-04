@@ -39,7 +39,27 @@ public class IconManager {
     private String AddNew = "Resources/Images/AddNew.png";
     private String Left = "Resources/Images/Left.png";
     private String Right = "Resources/Images/Right.png";
+    private String Start = "Resources/Images/Play.png";
+    private String Stop = "Resources/Images/Stop.png";
+    private String Resolve = "Resources/Images/Questions.png";
+    private String Status = "Resources/Images/Status.png";
  
+    public ImageIcon StatusIcon(){
+        return getImageIcon(Status);
+    }
+ 
+    public ImageIcon ResolveIcon(){
+        return getImageIcon(Resolve);
+    }
+    
+    public ImageIcon StartIcon(){
+        return getImageIcon(Start);
+    }
+     
+    public ImageIcon StopIcon(){
+        return getImageIcon(Stop);
+    }
+     
     public ImageIcon LeftIcon(){
         return getImageIcon(Left);
     }

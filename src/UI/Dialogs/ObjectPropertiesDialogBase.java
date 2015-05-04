@@ -45,11 +45,11 @@ public abstract class ObjectPropertiesDialogBase extends DialogBase{
         dialog.setVisible(true);        
     }
     
-    protected void setComboBoxValue(JComboBox box, int value){
+    protected void setComboBoxValue(JComboBox box, Integer value){
         DefaultComboBoxModel model = (DefaultComboBoxModel)box.getModel();
         for(int i = 0 ; i < model.getSize(); i++){
             ComboBoxItemModel itemModel = (ComboBoxItemModel)model.getElementAt(i);
-            if(itemModel.MQConstantValue == value){
+            if(itemModel.Value == value){
                 box.setSelectedItem(itemModel);
                 return;
             }
@@ -57,7 +57,7 @@ public abstract class ObjectPropertiesDialogBase extends DialogBase{
     }
     
     protected Integer getComboBoxValue(JComboBox box){
-        return box.isVisible() ? ((ComboBoxItemModel)box.getSelectedItem()).MQConstantValue : null;
+        return box.isVisible() ? (Integer)((ComboBoxItemModel)box.getSelectedItem()).Value : null;
     }
     
     protected Integer getSpinnerBoxValue(JSpinner spinner){

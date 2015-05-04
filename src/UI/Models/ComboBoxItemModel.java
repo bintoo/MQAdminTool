@@ -11,11 +11,11 @@ package UI.Models;
  */
 public class ComboBoxItemModel {
     public String DisplayName;
-    public Integer MQConstantValue;
+    public Object Value;
     
-    public ComboBoxItemModel(String name, Integer value){
+    public ComboBoxItemModel(String name, Object value){
         this.DisplayName = name;
-        this.MQConstantValue = value;
+        this.Value = value;
     }
     
     @Override

@@ -36,5 +36,17 @@ public class MQChannelStatusListResult extends MQQueryResultBase{
         public String LastMsgDate;
         @MQObjectListtAnnotation(DisplayName = "Last Msg Time", MQConstant = MQConstants.MQCACH_LAST_MSG_TIME, VarType = VariableType.Text, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
         public String LastMsgTime;
+        @MQObjectListtAnnotation(DisplayName = "Sequence number", MQConstant = MQConstants.MQIACH_CURRENT_SEQ_NUMBER, VarType = VariableType.Number,QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
+        public Integer SequenceNumber;
+        @MQObjectListtAnnotation(DisplayName = "Message in doubt", MQConstant = MQConstants.MQIACH_CURRENT_MSGS, VarType = VariableType.Number,QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
+        public Integer CurrentMsgs;
+        @MQObjectListtAnnotation(DisplayName = "In-doubt status",MQConstant = MQConstants.MQIACH_INDOUBT_STATUS, VarType = VariableType.TrueFalse, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {"Not in-doubt", "In-doubt"})
+        public String InDoubtStatus;
+        @MQObjectListtAnnotation(DisplayName = "Local address", MQConstant = MQConstants.MQCACH_LOCAL_ADDRESS, VarType = VariableType.Text, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
+        public String LocalAddress;
+        @MQObjectListtAnnotation(DisplayName = "MCA user id", MQConstant = MQConstants.MQCACH_MCA_USER_ID, VarType = VariableType.Text, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
+        public String MCAUserIdentifier;
+//        @MQObjectListtAnnotation(DisplayName = "MCA status",MQConstant = MQConstants.MQIACH_MCA_STATUS, VarType = VariableType.TrueFalse, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {"Stopped", "Running"})
+//        public String MCAStatus;
     }
 }

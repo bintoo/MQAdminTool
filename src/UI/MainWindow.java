@@ -23,10 +23,14 @@ import Tasks.TaskInterface.StopableTask;
 import UI.Dialogs.BackupRestoreMessageDialog;
 import UI.Dialogs.BrowseMessageDialog;
 import UI.Dialogs.ChannelProperitiesDialog;
+import UI.Dialogs.ChannelStatusDialog;
 import UI.Dialogs.ClearMessagesDialog;
 import UI.Dialogs.DialogFactory;
 import UI.Dialogs.MessageEditDialog;;
 import UI.Dialogs.QueueProperitiesDialog;
+import UI.Dialogs.ResetChannelDialog;
+import UI.Dialogs.ResolveChannelDialog;
+import UI.Dialogs.StopChannelDialog;
 import UI.Helpers.*;
 import UI.Misc.CustomTableCellRender;
 import UI.Misc.CustomTreeRender;
@@ -736,21 +740,71 @@ public class MainWindow extends javax.swing.JFrame {
             ChannelType channelType = (ChannelType)type;
             
             JPopupMenu popup = new JPopupMenu();
-            JMenuItem stopMenuItem = new JMenuItem("Stop");
-            JMenuItem propertistMenuItem = new JMenuItem("Properties",iconManager.PropertiesIcon());
+            JMenuItem startMenuItem = new JMenuItem("Start", iconManager.StartIcon());
+            JMenuItem stopMenuItem = new JMenuItem("Stop", iconManager.StopIcon());
+            JMenuItem resetMenuItem = new JMenuItem("Reset", iconManager.RefreshIcon());
+            JMenuItem resolveMenuItem = new JMenuItem("Resolve", iconManager.ResolveIcon());
+            JMenuItem deleteMenuItem = new JMenuItem("Delete", iconManager.Delete());
+            JMenuItem propertiesMenuItem = new JMenuItem("Properties",iconManager.PropertiesIcon());
+            JMenuItem statusMenuItem = new JMenuItem("Channel status",iconManager.StatusIcon());
             stopMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-
+                    showStopChannelDialog();
                 }
             });
-            propertistMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            propertiesMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     showSetupChannelPropertiesDialog();
                 }
             });
+            startMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    startChannel();
+                }
+            });
+            resetMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    showResetChannelDialog();
+                }
+            });
+            resolveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    showResolveChannelDialog();
+                }
+            });
+            deleteMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    deleteChannel();
+                }
+            });           
+            statusMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                   showChannelStatusDialog();
+                }
+            });
+            popup.add(statusMenuItem);
+            popup.add(new JPopupMenu.Separator());
+            popup.add(startMenuItem);
             popup.add(stopMenuItem);
             popup.add(new JPopupMenu.Separator());
-            popup.add(propertistMenuItem);
+            switch(channelType){
+                case Cluster_Receiver:
+                case Receiver:
+                case Requester:
+                    popup.add(resetMenuItem);
+                    break;
+                case Cluster_Sender:
+                case Sender:
+                case Server:
+                    popup.add(resetMenuItem);
+                    popup.add(resolveMenuItem);
+                    break;
+                case Server_Connection:
+                    break;
+            }
+            popup.add(deleteMenuItem);
+            popup.add(new JPopupMenu.Separator());           
+            popup.add(propertiesMenuItem);
             return popup; 
         }
         return null;
@@ -1078,6 +1132,70 @@ public class MainWindow extends javax.swing.JFrame {
         dialog.setVisible(true);        
     }  
     
+    private void startChannel(){
+        MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
+        TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable);
+        MQCommandResult result = MQPCF.StartChannel(queueManager, selectedObject.ObjectName);
+        if(result.QuerySuccess){
+            JOptionPane.showMessageDialog(this, "Start command accepted", "Success", JOptionPane.INFORMATION_MESSAGE);
+            showTableData(true);
+        }
+        else{
+            JOptionPane.showMessageDialog(this, result.ErrorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+    }
+    
+    private void showStopChannelDialog(){
+        StopChannelDialog dialog = DialogFactory.CreateOperationalDialog(StopChannelDialog.class, this, true ,TreeView, ContentTable);
+        dialog.AddDialogActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showTableData(true);
+            }
+        });
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);        
+    }
+    
+    private void showResetChannelDialog(){
+        ResetChannelDialog dialog = DialogFactory.CreateOperationalDialog(ResetChannelDialog.class, this, true ,TreeView, ContentTable);
+        dialog.AddDialogActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showTableData(true);
+            }
+        });
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);      
+    }
+    
+    private void showResolveChannelDialog(){
+        ResolveChannelDialog dialog = DialogFactory.CreateOperationalDialog(ResolveChannelDialog.class, this, true ,TreeView, ContentTable);
+        dialog.AddDialogActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showTableData(true);
+            }
+        });
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);      
+    }
+    
+    private void showChannelStatusDialog(){
+        MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
+        TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable);   
+        ChannelStatusDialog dialog = DialogFactory.CreateChannelStatusDialog(this,true,queueManager,selectedObject.ObjectName);
+        dialog.AddDialogActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true); 
+    }
+    
     private void deleteQueue(){
         MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
         TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable); 
@@ -1086,6 +1204,22 @@ public class MainWindow extends javax.swing.JFrame {
             MQCommandResult result = MQPCF.DeleteQueue(queueManager, selectedObject.ObjectName, (QueueType)selectedObject.Type);
             if(result.QuerySuccess){
                 JOptionPane.showMessageDialog(this,"Queue has been deleted", "Success", JOptionPane.INFORMATION_MESSAGE);
+                showTableData(true);
+            }
+            else{
+                JOptionPane.showMessageDialog(this,result.ErrorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    private void deleteChannel(){
+        MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
+        TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable); 
+        int dialogResult = JOptionPane.showConfirmDialog (this, "Are you sure that you want to delete queue " + selectedObject.ObjectName +"?","Warning",JOptionPane.YES_NO_OPTION);
+        if(dialogResult == JOptionPane.YES_OPTION){
+            MQCommandResult result = MQPCF.DeleteChannel(queueManager, selectedObject.ObjectName);
+            if(result.QuerySuccess){
+                JOptionPane.showMessageDialog(this,"Channel has been deleted", "Success", JOptionPane.INFORMATION_MESSAGE);
                 showTableData(true);
             }
             else{

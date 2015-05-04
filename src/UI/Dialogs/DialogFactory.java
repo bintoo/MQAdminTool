@@ -36,6 +36,15 @@ public class DialogFactory {
         else if(dialogClass == ClearMessagesDialog.class){
             return (T) new ClearMessagesDialog(parent, modal, queueManager, selectedObject);
         }
+        else if(dialogClass == StopChannelDialog.class){
+            return (T) new StopChannelDialog(parent, modal, queueManager, selectedObject);
+        }
+        else if(dialogClass == ResetChannelDialog.class){
+            return (T) new ResetChannelDialog(parent, modal, queueManager, selectedObject);
+        }
+        else if(dialogClass == ResolveChannelDialog.class){
+            return (T) new ResolveChannelDialog(parent, modal, queueManager, selectedObject);
+        }
         else{
             return null;
         }       
@@ -65,11 +74,17 @@ public class DialogFactory {
         return new SelectObjectDialog(parent, modal, queueManager, objectType);
     }
     
+    public static <T extends Enum> ChannelStatusDialog CreateChannelStatusDialog(java.awt.Frame parent, boolean modal,  MQQueueManager queueManager, String name){;
+        return new ChannelStatusDialog(parent, modal, queueManager, name);
+    }
+    
     public static MessageEditDialog CreateMessageEditDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, String queueName, MQMessageIdModel messageId){        
         return new MessageEditDialog(parent, modal, queueManager, queueName, messageId);
     }
+    
     public static MessageEditDialog CreateMessageNewDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, String queueName){        
         return new MessageEditDialog(parent, modal, queueManager, queueName);
     }
+    
     
 }
