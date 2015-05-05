@@ -9,10 +9,11 @@ package MQApi.Enums;
  *
  * @author jzhou
  */
-public enum QueryType {
-    QueueDetial,
-    ChannelDetail,
-    ChannelAuthDetail,
-    ChannelStatus,
-    MessageDetail,
+public enum ChannelAuthType {
+    Block_User,
+    Block_Address,
+    SSL_Peer_Map,
+    Address_Map,
+    User_Map,
+    QueueManager_Map
 }

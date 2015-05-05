@@ -43,6 +43,7 @@ import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -88,6 +89,8 @@ public class MainWindow extends javax.swing.JFrame {
     private String activedSearchString = "";
     StopableTask CurrentUpdateTask= null;
     public MainWindow() {      
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width/2-this.getSize().width/2 - 450, dim.height/2-this.getSize().height/2 - 350);
         UIManager.put("ProgressBar.background",Color.YELLOW);
         //UIManager.put("ProgressBar.foreground",Color.RED);
         initComponents();
@@ -816,7 +819,7 @@ public class MainWindow extends javax.swing.JFrame {
     
     private void initCustomProperties(){
         this.setIconImage(iconManager.Root().getImage()); 
-        this.setTitle("MQ Admin Tool");
+        this.setTitle("MQ Admin Toy");
         //this.timer = new Timer();
         this.TreeViewPanel.setMinimumSize(new Dimension(200,400));
         this.SplitPane.setDividerLocation(200);
@@ -834,7 +837,7 @@ public class MainWindow extends javax.swing.JFrame {
         this.ShowTempObjectToggle.setVisible(false);
         
         TreeView.setCellRenderer(new CustomTreeRender());
-        //ContentTable.setDefaultRenderer(TableListObject.class, new CustomTableCellRender());
+        //ContentTable.setDefaultRenderer(TableListObject.class, new CustomTableCellRender());      
         
     }
     
@@ -961,6 +964,10 @@ public class MainWindow extends javax.swing.JFrame {
                     CurrentUpdateTask = displayChannelList(node, loadNewData);
                     break;
                 }
+                case ChannelAuth:{
+                    CurrentUpdateTask = displayChannelAuthList(node, loadNewData);
+                    break;
+                }
                 default:{
                     resetTimmer();
                     TableHelper.ToggleContentTable(ContentTable, false);                   
@@ -1009,6 +1016,40 @@ public class MainWindow extends javax.swing.JFrame {
         final boolean isNewData = loadNewData;
         resetTimmer();
         UpdateChannelListTask task = new UpdateChannelListTask(this, TreeView, ContentTable, node, this.activedSearchString, ShowSystemObjectToggleButton.isSelected(),loadNewData);        
+        showContentTableLoading(true);
+        this.ShowTempObjectToggle.setVisible(false);
+        task.AddTaskActionSuccessListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(isNewData){
+                     UpdateTimeStampLabel.setText("Last updated : " + DateTimeHelper.GetCurrentTimeStamp());
+                }
+                showContentTableLoading(false);
+            }
+        });
+        task.AddTaskActionFailListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showContentTableLoading(false);
+            }
+        });
+        Thread thread = new Thread(task);
+        thread.start();     
+//                    timer.scheduleAtFixedRate(new TimerTask() {
+//                        @Override
+//                        public void run() {
+//                            Thread thread = new Thread(currentUpdateTask);
+//                            thread.start();
+//                        }
+//                    }, 0, 10*1000);   
+        return task;
+    }
+    
+    private StopableTask displayChannelAuthList(DefaultMutableTreeNode node,boolean loadNewData){
+        final boolean isNewData = loadNewData;
+        resetTimmer();
+        UpdateChannelAuthListTask task = new UpdateChannelAuthListTask(this, TreeView, ContentTable, node, this.activedSearchString, ShowSystemObjectToggleButton.isSelected(),loadNewData);        
         showContentTableLoading(true);
         this.ShowTempObjectToggle.setVisible(false);
         task.AddTaskActionSuccessListener(new ActionListener() {

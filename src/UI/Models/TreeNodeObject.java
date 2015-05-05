@@ -42,6 +42,7 @@ public class TreeNodeObject {
         QueueManager,
         Queues,
         Channel,
+        ChannelAuth,
         QueueManagerClusterFolder,
     }
 }

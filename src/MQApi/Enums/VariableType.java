@@ -14,6 +14,7 @@ public enum VariableType {
     TextArray,
     Number,
     ChannelType,
+    ChannelAuthType,
     QueueType,
     ChannelStatusType,
     QueueDefinitionType,

@@ -78,8 +78,11 @@ public class TreeHelper {
             nodeObject.QueueManager = queueManager;
             TreeNodeObject queuesObject = new TreeNodeObject("Queues",TreeNodeObject.TreeNodeObjectType.Queues);
             TreeNodeObject channelObject = new TreeNodeObject("Channels",TreeNodeObject.TreeNodeObjectType.Channel);
+            TreeNodeObject channelAuthObject = new TreeNodeObject("Channel auths",TreeNodeObject.TreeNodeObjectType.ChannelAuth);
             DefaultMutableTreeNode queueNodes = new DefaultMutableTreeNode(queuesObject);
             DefaultMutableTreeNode channelNodes = new DefaultMutableTreeNode(channelObject);
+             DefaultMutableTreeNode channelAuthNodes = new DefaultMutableTreeNode(channelAuthObject);
+            channelNodes.add(channelAuthNodes);
             selectedNode.add(queueNodes);
             selectedNode.add(channelNodes);           
             RepoadTree(TreeView);
@@ -111,15 +114,15 @@ public class TreeHelper {
     public static MQQueueManager GetCurrentSelectedQueueManager(JTree TreeView){
         if(TreeView.getLastSelectedPathComponent() != null){
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) TreeView.getLastSelectedPathComponent();
-            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
-            if(parentNode != null){
-                TreeNodeObject nodeObject = (TreeNodeObject) parentNode.getUserObject();  
+            DefaultMutableTreeNode queueManagerNode = getQueueManagerNode(node);
+            if(queueManagerNode != null){
+                TreeNodeObject nodeObject = (TreeNodeObject) queueManagerNode.getUserObject();  
                 return nodeObject.QueueManager;
             }
         }
         return null;        
     }
-    
+        
     public static boolean CurrentSelectedNodeHasQueueManager(JTree TreeView){
         return GetCurrentSelectedQueueManager(TreeView) != null;
     }
@@ -137,6 +140,15 @@ public class TreeHelper {
         DefaultTreeModel model = (DefaultTreeModel)TreeView.getModel();
         DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
         model.reload(root);
+    }
+    
+    private static DefaultMutableTreeNode getQueueManagerNode(DefaultMutableTreeNode node){
+        if(((TreeNodeObject)node.getUserObject()).Type == TreeNodeObject.TreeNodeObjectType.QueueManager){
+            return node;
+        }
+        else{
+            return getQueueManagerNode((DefaultMutableTreeNode) node.getParent());
+        }
     }
 
 }

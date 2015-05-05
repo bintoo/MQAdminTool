@@ -5,6 +5,7 @@
  */
 package MQApi;
 
+import MQApi.Enums.ChannelAuthType;
 import MQApi.Enums.ChannelStatusType;
 import MQApi.Enums.ChannelType;
 import MQApi.Enums.QueueType;
@@ -125,5 +126,23 @@ public class ConstantConverter {
                 return ChannelStatusType.Initializing;
         }
         return null;      
+    }
+    
+    public static ChannelAuthType ConvertConstantToChannelAuthType(int constnat){
+        switch(constnat){
+            case MQConstants.MQCAUT_BLOCKUSER :
+                return ChannelAuthType.Block_User;
+            case MQConstants.MQCAUT_BLOCKADDR :
+                return ChannelAuthType.Block_Address;
+            case MQConstants.MQCAUT_SSLPEERMAP :
+                return ChannelAuthType.SSL_Peer_Map;
+            case MQConstants.MQCAUT_ADDRESSMAP :
+                return ChannelAuthType.Address_Map;
+            case MQConstants.MQCAUT_USERMAP :
+                return ChannelAuthType.User_Map;
+            case MQConstants.MQCAUT_QMGRMAP :
+                return ChannelAuthType.QueueManager_Map;
+        }
+        return null;
     }
 }

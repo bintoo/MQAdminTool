@@ -43,7 +43,12 @@ public class IconManager {
     private String Stop = "Resources/Images/Stop.png";
     private String Resolve = "Resources/Images/Questions.png";
     private String Status = "Resources/Images/Status.png";
+    private String Auth = "Resources/Images/Auth.png";
  
+    public ImageIcon AuthIcon(){
+        return getImageIcon(Auth);
+    }
+    
     public ImageIcon StatusIcon(){
         return getImageIcon(Status);
     }

@@ -59,7 +59,7 @@ public class TableHelper {
             ArrayList<String> headerNames = new ArrayList<String>();
             ArrayList<String> fieldNames = new ArrayList<String>();
             for(Field field : dataModel.get(0).getClass().getFields()){
-                if(field.getAnnotation(MQObjectListtAnnotation.class) != null){
+                if(field.getAnnotation(MQObjectListtAnnotation.class) != null && field.getAnnotation(MQObjectListtAnnotation.class).ShowOnTable()){
                     headerNames.add(field.getAnnotation(MQObjectListtAnnotation.class).DisplayName());
                     fieldNames.add(field.getName());
                 }

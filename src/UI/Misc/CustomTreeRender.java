@@ -42,6 +42,9 @@ public class CustomTreeRender extends DefaultTreeCellRenderer {
         else if(isChannelFolder(value)){
             setIcon(iconManager.Channel());
         }
+        else if(isChannelAuthFolder(value)){
+            setIcon(iconManager.AuthIcon());
+        }
         return this;
     }
     
@@ -58,6 +61,11 @@ public class CustomTreeRender extends DefaultTreeCellRenderer {
     private boolean isChannelFolder(Object value) {
         TreeNodeObject nodeInfo = getTreeNodeObject(value);
         return nodeInfo.Type == TreeNodeObjectType.Channel;
+    }  
+    
+    private boolean isChannelAuthFolder(Object value) {
+        TreeNodeObject nodeInfo = getTreeNodeObject(value);
+        return nodeInfo.Type == TreeNodeObjectType.ChannelAuth;
     }  
     
     private boolean isQueueManagerNodeAndConnected(Object value) {

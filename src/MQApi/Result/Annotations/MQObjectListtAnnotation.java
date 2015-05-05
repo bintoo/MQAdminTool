@@ -21,4 +21,6 @@ public @interface MQObjectListtAnnotation {
      VariableType VarType();
      QueryType QueryType();
      String[] TrueFalseDisplayValue();
+     boolean ShowOnTable() default true;
+     boolean GetValue() default true;
 }
