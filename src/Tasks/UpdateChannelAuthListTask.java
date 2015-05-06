@@ -40,10 +40,10 @@ public class UpdateChannelAuthListTask extends UpdateContentTableTaskBase{
             else{
                 showErrorMessage(result.ErrorMessage);
                 //TreeView.setSelectionPath(new TreePath(queueManagerNode.getPath())); 
-                try {
-                    TreeHelper.DisconnectQueueManager(TreeView);
-                } catch (MQException ex) {
-                }
+//                try {
+//                    TreeHelper.DisconnectQueueManager(TreeView);
+//                } catch (MQException ex) {
+//                }
                 
                 FireActionFailEvent();
             }         

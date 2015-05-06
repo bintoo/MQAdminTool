@@ -574,9 +574,16 @@ public class MQPCF {
             WriteToChannelAuthDetailModel(pcfResponse, result);
             result.QuerySuccess = true;
         } catch (MQDataException ex) {
-            result.QuerySuccess = false;
-            result.ErrorMessage = MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason());
-            LogWriter.WriteToLog("MQPCF", "GetChannelAuthList", ex);
+            if(ex.getReason() == MQConstants.MQRCCF_CFH_COMMAND_ERROR ||ex.getReason() == MQConstants.MQRCCF_MQOPEN_FAILED ){
+                result.QuerySuccess = true;
+                disconnectAgent(agent);
+                return result;
+            }
+            else{
+                result.QuerySuccess = false;
+                result.ErrorMessage = MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason());
+                LogWriter.WriteToLog("MQPCF", "GetChannelAuthList", ex);
+            }
         } catch (IOException ex) {
             result.QuerySuccess = false;
             result.ErrorMessage = ex.getMessage();

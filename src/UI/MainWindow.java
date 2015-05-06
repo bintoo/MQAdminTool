@@ -1282,7 +1282,7 @@ public class MainWindow extends javax.swing.JFrame {
     
     private void showContentTableLoading(boolean isLoading){
         this.ContentTableProgressBar.setVisible(isLoading);    
-        if(TreeHelper.CurrentSelectedNodeHasQueueManager(TreeView) && !isLoading){
+        if(TreeHelper.ShowSearchBarForCurrentNote(TreeView) && !isLoading){
             this.RefreshButton.setEnabled(true);
             this.ShowSystemObjectToggleButton.setEnabled(true);
             this.ShowTempObjectToggle.setEnabled(true);

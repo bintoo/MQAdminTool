@@ -81,7 +81,7 @@ public class TreeHelper {
             TreeNodeObject channelAuthObject = new TreeNodeObject("Channel auths",TreeNodeObject.TreeNodeObjectType.ChannelAuth);
             DefaultMutableTreeNode queueNodes = new DefaultMutableTreeNode(queuesObject);
             DefaultMutableTreeNode channelNodes = new DefaultMutableTreeNode(channelObject);
-             DefaultMutableTreeNode channelAuthNodes = new DefaultMutableTreeNode(channelAuthObject);
+            DefaultMutableTreeNode channelAuthNodes = new DefaultMutableTreeNode(channelAuthObject);
             channelNodes.add(channelAuthNodes);
             selectedNode.add(queueNodes);
             selectedNode.add(channelNodes);           
@@ -111,6 +111,15 @@ public class TreeHelper {
         return null;
     }
     
+    public static TreeNodeObject GetCurrentSelectedTreeNoteObject(JTree TreeView){
+        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) TreeView.getLastSelectedPathComponent();
+        if(selectedNode != null){
+            TreeNodeObject nodeObject = (TreeNodeObject) selectedNode.getUserObject();   
+            return nodeObject;
+        }
+        return null;
+    }
+    
     public static MQQueueManager GetCurrentSelectedQueueManager(JTree TreeView){
         if(TreeView.getLastSelectedPathComponent() != null){
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) TreeView.getLastSelectedPathComponent();
@@ -123,8 +132,10 @@ public class TreeHelper {
         return null;        
     }
         
-    public static boolean CurrentSelectedNodeHasQueueManager(JTree TreeView){
-        return GetCurrentSelectedQueueManager(TreeView) != null;
+    public static boolean ShowSearchBarForCurrentNote(JTree TreeView){
+        TreeNodeObject nodeObject = GetCurrentSelectedTreeNoteObject(TreeView);
+        
+        return nodeObject != null && nodeObject.Type != TreeNodeObject.TreeNodeObjectType.QueueManager && GetCurrentSelectedQueueManager(TreeView) != null;
     }
     
     public static void RefreshTreeView(JTree TreeView, ConnectionDetailModel connectionDetail){
@@ -145,6 +156,9 @@ public class TreeHelper {
     private static DefaultMutableTreeNode getQueueManagerNode(DefaultMutableTreeNode node){
         if(((TreeNodeObject)node.getUserObject()).Type == TreeNodeObject.TreeNodeObjectType.QueueManager){
             return node;
+        }
+        else if((DefaultMutableTreeNode) node.getParent() == null){
+            return null;
         }
         else{
             return getQueueManagerNode((DefaultMutableTreeNode) node.getParent());
