@@ -34,6 +34,7 @@ import UI.Dialogs.StopChannelDialog;
 import UI.Helpers.*;
 import UI.Misc.CustomTableCellRender;
 import UI.Misc.CustomTreeRender;
+import UI.Misc.ExceptionHandler;
 import UI.Models.*;
 import UI.ReferenceObjects.ToolStatusReference;
 import com.ibm.mq.MQException;
@@ -240,6 +241,11 @@ public class MainWindow extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(900, 700));
         setPreferredSize(new java.awt.Dimension(900, 700));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         TreeViewPanel.setPreferredSize(new java.awt.Dimension(200, 466));
 
@@ -1419,6 +1425,10 @@ public class MainWindow extends javax.swing.JFrame {
     private void TreeViewValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_TreeViewValueChanged
         treeSelectionChangeActionPerform(evt);
     }//GEN-LAST:event_TreeViewValueChanged
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        LogWriter.Close();
+    }//GEN-LAST:event_formWindowClosing
     
     private void addQueueManageMenuItemActionPerformed(java.awt.event.ActionEvent evt){
         this.ConnectionDetailDialog.setLocationRelativeTo(this);
@@ -1458,8 +1468,7 @@ public class MainWindow extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
-        /* Create and display the form */
+        ExceptionHandler.registerExceptionHandler();
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new MainWindow().setVisible(true);

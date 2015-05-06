@@ -22,6 +22,7 @@ import java.util.logging.SimpleFormatter;
 public class LogWriter {
     private static Logger logger = Logger.getLogger("MQApi");
     private static boolean isLoggerReady = false;
+    private static FileHandler fileTxt;
     
     public static void SetFile(){
         String fileName = (new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime())) + "_Logs.txt";
@@ -38,7 +39,7 @@ public class LogWriter {
                     Logger.getLogger(LogWriter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            FileHandler fileTxt = new FileHandler(logFile.getAbsolutePath(),true);
+            fileTxt = new FileHandler(logFile.getAbsolutePath(),true);
             fileTxt.setFormatter(new SimpleFormatter());
             logger.addHandler(fileTxt);
             logger.setUseParentHandlers(false);
@@ -52,6 +53,13 @@ public class LogWriter {
         }
         
     }
+    
+    public static void Close(){
+        if(fileTxt != null){
+            fileTxt.flush();
+            fileTxt.close();
+        }
+    }
     public static void WriteToLog(String className, String methodName, Exception ex){
         if(!isLoggerReady){
             SetFile();
@@ -61,7 +69,28 @@ public class LogWriter {
         }
         else{
             logger.logp(Level.SEVERE, className, methodName, ex.getMessage());
+        }      
+    }
+    public static void WriteToLog(String message){
+        if(!isLoggerReady){
+            SetFile();
+            if(isLoggerReady){
+                logger.log(Level.SEVERE, message);
+            }
         }
-      
+        else{
+            logger.log(Level.SEVERE, message);
+        }      
+    }
+    public static void WriteToLog(Throwable t){
+        if(!isLoggerReady){
+            SetFile();
+            if(isLoggerReady){
+                logger.log(Level.SEVERE, "Uncaught Exception", t);
+            }
+        }
+        else{
+            logger.log(Level.SEVERE, "Uncaught Exception", t);
+        }      
     }
 }
