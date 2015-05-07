@@ -17,4 +17,5 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MQObjectPropertyAnnotation {
     int MQConstant();
     VariableType VarType();
+    boolean SendToPCF() default true;
 }

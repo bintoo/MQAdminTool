@@ -851,20 +851,16 @@ public class MQPCF {
                 try {
                     int parameter = field.getAnnotation(MQObjectPropertyAnnotation.class).MQConstant();
                     VariableType variableType = field.getAnnotation(MQObjectPropertyAnnotation.class).VarType();
+                    boolean sendToPCF = field.getAnnotation(MQObjectPropertyAnnotation.class).SendToPCF();
                     Object value = field.get(model);
-                    if(value != null){
+                    if(value != null && sendToPCF){
                         switch(variableType){
                             case Text :
                                 pcfCmd.addParameter(parameter, value.toString());
                                 break;
                             case Number:    
                                 Integer paraValue = Integer.parseInt(value.toString());
-                                if(parameter == MQConstants.MQIA_DEFINITION_TYPE && paraValue == MQConstants.MQQDT_PREDEFINED){
-                                    
-                                }
-                                else{
-                                    pcfCmd.addParameter(parameter, paraValue);
-                                }
+                                pcfCmd.addParameter(parameter, paraValue);
                                 break;
                         }
                     }
@@ -903,8 +899,9 @@ public class MQPCF {
                 try {
                     int parameter = field.getAnnotation(MQObjectPropertyAnnotation.class).MQConstant();
                     VariableType variableType = field.getAnnotation(MQObjectPropertyAnnotation.class).VarType();
+                    boolean sendToPCF = field.getAnnotation(MQObjectPropertyAnnotation.class).SendToPCF();
                     Object value = field.get(model);
-                    if(value != null){
+                    if(value != null && sendToPCF){
                         switch(variableType){
                             case Text :
                                 pcfCmd.addParameter(parameter, value.toString());
@@ -914,12 +911,7 @@ public class MQPCF {
                                 break;
                             case Number:    
                                 Integer paraValue = Integer.parseInt(value.toString());
-                                if(parameter == MQConstants.MQIA_DEFINITION_TYPE && paraValue == MQConstants.MQQDT_PREDEFINED){
-                                    
-                                }
-                                else{
-                                    pcfCmd.addParameter(parameter, paraValue);
-                                }
+                                pcfCmd.addParameter(parameter, paraValue);
                                 break;
                         }
                     }

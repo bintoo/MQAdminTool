@@ -52,6 +52,7 @@ public class ChannelProperitiesDialog extends ObjectPropertiesDialogBase {
     private String defaultCopyFromClusterReceiver = "SYSTEM.DEF.CLUSRCVR";
     private String defaultCopyFromReceiver = "SYSTEM.DEF.RECEIVER";
     boolean isAtInitialPanel;
+    MQChannelPropertyModel propertyModel;
 
     public ChannelProperitiesDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, ChannelType channelType) {
         super(parent, modal, queueManager, null);
@@ -1635,8 +1636,8 @@ public class ChannelProperitiesDialog extends ObjectPropertiesDialogBase {
            if(isAtInitialPanel){
                try {
                    MQChannelPropertyModel model = MQPCF.GetChannelProperties(queueManager, this.CopyFromTextField.getText());
-                   setUIFromModel(model);
-                   MQChannelPropertyModel createModel = setModelFromUI();
+                   propertyModel = model;
+                   MQChannelPropertyModel createModel = propertyModel;
                    createModel.Name = this.ObjectNameTextField.getText();
                    createModel.ChannelDesc = "";
                    createOrChangeChannel(queueManager, createModel, true);
@@ -1651,13 +1652,13 @@ public class ChannelProperitiesDialog extends ObjectPropertiesDialogBase {
                }
            }
            else{
-               MQChannelPropertyModel model = setModelFromUI();
-               createOrChangeChannel(queueManager, model, true);              
+               setModelFromUI(propertyModel);
+               createOrChangeChannel(queueManager, propertyModel, true);              
            }
        }
        else{
-            MQChannelPropertyModel model = setModelFromUI();
-            createOrChangeChannel(queueManager, model, false);
+            setModelFromUI(propertyModel);
+            createOrChangeChannel(queueManager, propertyModel, false);
        }
     }//GEN-LAST:event_FinishButtonActionPerformed
 
@@ -1856,6 +1857,7 @@ public class ChannelProperitiesDialog extends ObjectPropertiesDialogBase {
                 try {
                     objectLoading();
                     MQChannelPropertyModel model = MQPCF.GetChannelProperties(queueManager, name);
+                    propertyModel = model;
                     if(isCreateNewObject){
                         model.Name = channelName;
                         model.ChannelDesc = "";
@@ -2234,8 +2236,7 @@ public class ChannelProperitiesDialog extends ObjectPropertiesDialogBase {
         }
     }
     
-    private MQChannelPropertyModel setModelFromUI(){
-        MQChannelPropertyModel model = new MQChannelPropertyModel();
+    private void setModelFromUI(MQChannelPropertyModel model){
  
         model.Name = this.channelName;
         model.Type = ConstantConverter.ConvertChannelTypeToConstant(this.channelType);
@@ -2287,7 +2288,6 @@ public class ChannelProperitiesDialog extends ObjectPropertiesDialogBase {
         model.MsgRetryUserData = getTextFieldValue(this.MessageRetryExitUserDataTextField);
         
 
-        return model;
     }
     
     private void initComboBoxValue(){

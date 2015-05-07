@@ -111,6 +111,25 @@ public class MQUtility {
         return message;                
     }
     
+    public static MQMessage GetMessageWithInterval(MQQueueManager queueManager, String queueName, int interval) throws MQException{
+        MQQueue queue = null;
+        MQMessage message = new MQMessage();
+        MQGetMessageOptions options = new MQGetMessageOptions();
+        options.options = CMQC.MQGMO_WAIT | CMQC.MQGMO_NO_SYNCPOINT;
+        options.waitInterval  = interval;
+        try {                 
+            queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE | CMQC.MQOO_OUTPUT | CMQC.MQOO_INPUT_SHARED);
+            queue.get(message, options);
+
+        } catch (MQException ex) {
+            //LogWriter.WriteToLog("MQUtility", "GetMessage", ex);
+            closeQueue(queue);
+            throw ex;           
+        }
+        closeQueue(queue);
+        return message;                
+    }
+    
     public static void UpdateMessage(MQQueueManager queueManager, String queueName, MQMessage message) throws MQException{
         MQQueue queue = null;
         MQPutMessageOptions options = new MQPutMessageOptions();

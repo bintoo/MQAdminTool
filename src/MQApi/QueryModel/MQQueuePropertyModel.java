@@ -45,7 +45,7 @@ public class MQQueuePropertyModel extends MQObjectPropertyModel{
     public Integer MsgDeliverySequence;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_RETENTION_INTERVAL, VarType = VariableType.Number)
     public Integer RetentionInterval;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_DEFINITION_TYPE, VarType = VariableType.Number)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_DEFINITION_TYPE, VarType = VariableType.Number, SendToPCF = false)
     public Integer DefinitionType;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_DIST_LISTS, VarType = VariableType.Number)
     public Integer DistLists;
@@ -55,7 +55,7 @@ public class MQQueuePropertyModel extends MQObjectPropertyModel{
     public Integer DefaultPutResponse;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_PROPERTY_CONTROL, VarType = VariableType.Number)
     public Integer PropertyControl;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_CUSTOM, VarType = VariableType.Text)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_CUSTOM, VarType = VariableType.Text, SendToPCF = false)
     public String Custom;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_CLUS_CHL_NAME, VarType = VariableType.Text)
     public String ClusterChannelName;
@@ -115,19 +115,19 @@ public class MQQueuePropertyModel extends MQObjectPropertyModel{
     public Integer QueueAccounting;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_BASE_OBJECT_NAME, VarType = VariableType.Text)
     public String BaseObjectName;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_CREATION_DATE, VarType = VariableType.Text)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_CREATION_DATE, VarType = VariableType.Text, SendToPCF = false)
     public String CreationDate;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_CREATION_TIME, VarType = VariableType.Text)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_CREATION_TIME, VarType = VariableType.Text, SendToPCF = false)
     public String CreationTime;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_CURRENT_Q_DEPTH, VarType = VariableType.Number)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_CURRENT_Q_DEPTH, VarType = VariableType.Number, SendToPCF = false)
     public Integer CurrentQDepth;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_ALTERATION_DATE, VarType = VariableType.Text)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_ALTERATION_DATE, VarType = VariableType.Text, SendToPCF = false)
     public String AlterationDate;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_ALTERATION_TIME, VarType = VariableType.Text)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_ALTERATION_TIME, VarType = VariableType.Text, SendToPCF = false)
     public String AlterationTime;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_OPEN_INPUT_COUNT, VarType = VariableType.Number)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_OPEN_INPUT_COUNT, VarType = VariableType.Number, SendToPCF = false)
     public Integer OpenInputCount;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_OPEN_OUTPUT_COUNT, VarType = VariableType.Number)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_OPEN_OUTPUT_COUNT, VarType = VariableType.Number, SendToPCF = false)
     public Integer OpenOutputCount;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_REMOTE_Q_NAME, VarType = VariableType.Text)
     public String RemoteQName;
@@ -137,4 +137,14 @@ public class MQQueuePropertyModel extends MQObjectPropertyModel{
     public String XmitQName;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_BASE_TYPE, VarType = VariableType.Number)
     public Integer TargetType;
+//    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACF_COMMAND_SCOPE, VarType = VariableType.Text)
+//    public String CommandScope;
+//    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_CF_STRUC_NAME, VarType = VariableType.Text)
+//    public String CFStructure;
+//    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_INDEX_TYPE, VarType = VariableType.Number)
+//    public Integer IndexType;
+//    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_QSG_DISP, VarType = VariableType.Number)
+//    public Integer QSGDisposition;
+//    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_STORAGE_CLASS, VarType = VariableType.Text)
+//    public String StorageClass;
 }

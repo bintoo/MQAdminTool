@@ -134,9 +134,9 @@ public class MQChannelPropertyModel extends MQObjectPropertyModel{
     public String UserIdentifier;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCACH_XMIT_Q_NAME, VarType = VariableType.Text)
     public String XmitQName;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_ALTERATION_DATE, VarType = VariableType.Text)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_ALTERATION_DATE, VarType = VariableType.Text, SendToPCF = false)
     public String AlterationDate;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_ALTERATION_TIME, VarType = VariableType.Text)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQCA_ALTERATION_TIME, VarType = VariableType.Text, SendToPCF = false)
     public String AlterationTime;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIACH_KEEP_ALIVE_INTERVAL, VarType = VariableType.Number)
     public Integer KeepAliveInterval;

@@ -24,6 +24,7 @@ import com.ibm.mq.internal.MQCommonServices;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
@@ -59,6 +60,7 @@ public class QueueProperitiesDialog extends ObjectPropertiesDialogBase {
     String defaultCopyFromAliasQueue = "SYSTEM.DEFAULT.ALIAS.QUEUE";
     String defaultCopyFromModelQueue = "SYSTEM.DEFAULT.MODEL.QUEUE";
     boolean isAtInitialPanel;
+    MQQueuePropertyModel propertyModel;
 
     public QueueProperitiesDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, QueueType queueType) {
         super(parent, modal, queueManager, null);
@@ -1809,8 +1811,8 @@ public class QueueProperitiesDialog extends ObjectPropertiesDialogBase {
            if(isAtInitialPanel){
                try {
                    MQQueuePropertyModel model = MQPCF.GetQueueProperties(queueManager, this.CopyFromTextField.getText());
-                   setUIFromModel(model);
-                   MQQueuePropertyModel createModel = setModelFromUI();
+                   this.propertyModel = model;
+                   MQQueuePropertyModel createModel = this.propertyModel;
                    createModel.Name = this.ObjectNameTextField.getText();
                    createModel.Description = "";
                    createOrChangeQueue(queueManager, createModel, true);
@@ -1825,13 +1827,13 @@ public class QueueProperitiesDialog extends ObjectPropertiesDialogBase {
                }
            }
            else{
-               MQQueuePropertyModel model = setModelFromUI();
-               createOrChangeQueue(queueManager, model, true);              
+               setModelFromUI(propertyModel);
+               createOrChangeQueue(queueManager, propertyModel, true);              
            }
        }
        else{
-            MQQueuePropertyModel model = setModelFromUI();
-            createOrChangeQueue(queueManager, model, false);
+            setModelFromUI(propertyModel);
+            createOrChangeQueue(queueManager, propertyModel, false);
        }
     }//GEN-LAST:event_FinishButtonActionPerformed
 
@@ -2040,6 +2042,7 @@ public class QueueProperitiesDialog extends ObjectPropertiesDialogBase {
                 try {
                     objectLoading();
                     MQQueuePropertyModel model = MQPCF.GetQueueProperties(queueManager, name);
+                    propertyModel = model;
                     if(isCreateNewObject){
                         model.Name = queueName;
                         model.Description = "";
@@ -2508,8 +2511,7 @@ public class QueueProperitiesDialog extends ObjectPropertiesDialogBase {
         } 
     }
     
-    private MQQueuePropertyModel setModelFromUI(){
-        MQQueuePropertyModel model = new MQQueuePropertyModel();
+    private void setModelFromUI(MQQueuePropertyModel model){
         
         model.Name = this.queueName;
         model.Type = ConstantConverter.ConvertQueueTypeToConstant(this.queueType);
@@ -2571,8 +2573,6 @@ public class QueueProperitiesDialog extends ObjectPropertiesDialogBase {
         model.QueueMonitoring = getComboBoxValue(this.QueueMonitoringComboBox);
         model.QueueAccounting = getComboBoxValue(this.QueueAccountingComboBox);
         model.QueueStatistics = getComboBoxValue(this.QueueStatisticComboBox);
-
-        return model;
     }
     
     private void initComboBoxValue(){
@@ -2728,6 +2728,8 @@ public class QueueProperitiesDialog extends ObjectPropertiesDialogBase {
             JOptionPane.showMessageDialog(this, result.ErrorMessage, "Error", JOptionPane.ERROR_MESSAGE);
         }        
     }
+    
+   
     /**
      * @param args the command line arguments
      */
