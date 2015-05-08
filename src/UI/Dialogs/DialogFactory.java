@@ -7,6 +7,7 @@ package UI.Dialogs;
 
 import MQApi.Enums.ChannelType;
 import MQApi.Enums.QueueType;
+import MQApi.Enums.StatusType;
 import MQApi.Models.MQMessageIdModel;
 import UI.Helpers.TableHelper;
 import UI.Helpers.TreeHelper;
@@ -74,8 +75,8 @@ public class DialogFactory {
         return new SelectObjectDialog(parent, modal, queueManager, objectType);
     }
     
-    public static <T extends Enum> ChannelStatusDialog CreateChannelStatusDialog(java.awt.Frame parent, boolean modal,  MQQueueManager queueManager, String name){;
-        return new ChannelStatusDialog(parent, modal, queueManager, name);
+    public static <T extends Enum> StatusDialog CreateStatusDialog(java.awt.Frame parent, boolean modal,  MQQueueManager queueManager, String name, StatusType type){;
+        return new StatusDialog(parent, modal, queueManager, name, type);
     }
     
     public static MessageEditDialog CreateMessageEditDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, String queueName, MQMessageIdModel messageId){        

@@ -17,10 +17,10 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MQObjectListtAnnotation {
      String DisplayName();
-     int MQConstant();
+     int MQConstant() default 0;
      VariableType VarType();
      QueryType QueryType();
-     String[] TrueFalseDisplayValue();
+     String[] TrueFalseDisplayValue() default {""};
      boolean ShowOnTable() default true;
      boolean GetValue() default true;
 }

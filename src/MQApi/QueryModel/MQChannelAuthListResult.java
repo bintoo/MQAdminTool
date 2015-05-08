@@ -97,7 +97,7 @@ public class MQChannelAuthListResult extends MQQueryResultBase  {
         public String AlterationTime;
         
         public void setDisplayValues(){
-            UserSrcValue = getUserSrcValue(UserSrc);
+            UserSrcValue = UserSrc != null ? getUserSrcValue(UserSrc) : null;
         }
     }
     

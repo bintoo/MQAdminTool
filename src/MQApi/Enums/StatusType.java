@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package MQApi.QueryModel;
-
-import java.util.ArrayList;
+package MQApi.Enums;
 
 /**
  *
  * @author jzhou
  */
-public abstract class MQQueryResultBase {
-    public boolean QuerySuccess;
-    public String ErrorMessage;
+public enum StatusType {
+    ChannelStatus,
+    QueueStatus,
+    QueueHandleStatus,
 }

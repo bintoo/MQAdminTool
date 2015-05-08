@@ -9,6 +9,7 @@ import MQApi.Enums.ChannelType;
 import MQApi.Enums.LogType;
 import MQApi.Enums.MQObjectType;
 import MQApi.Enums.QueueType;
+import MQApi.Enums.StatusType;
 import MQApi.Logs.LogWriter;
 import MQApi.MQTest;
 import MQApi.Models.Query.ConnectionDetailModel;
@@ -23,11 +24,54 @@ import Tasks.TaskInterface.StopableTask;
 import UI.Dialogs.BackupRestoreMessageDialog;
 import UI.Dialogs.BrowseMessageDialog;
 import UI.Dialogs.ChannelProperitiesDialog;
-import UI.Dialogs.ChannelStatusDialog;
+import UI.Dialogs.StatusDialog;
 import UI.Dialogs.ClearMessagesDialog;
 import UI.Dialogs.DialogFactory;
 import UI.Dialogs.MessageEditDialog;;
 import UI.Dialogs.QueueProperitiesDialog;
+import UI.Dialogs.ResetChannelDialog;
+import UI.Dialogs.ResolveChannelDialog;
+import UI.Dialogs.StopChannelDialog;
+import UI.Helpers.*;
+import UI.Misc.CustomTableCellRender;
+import UI.Misc.CustomTreeRender;
+import UI.Misc.ExceptionHandler;
+import UI.Models.*;
+import UI.ReferenceObjects.ToolStatusReference;
+import com.ibm.mq.MQException;
+import com.ibm.mq.MQQueueManager;
+import com.ibm.mq.headers.MQDataException;
+import java.awt.Color;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.OptionalDataException;
+import java.net.URL;
+import java.util.ArrayList;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.UIManager;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;import UI.Dialogs.QueueProperitiesDialog;
 import UI.Dialogs.ResetChannelDialog;
 import UI.Dialogs.ResolveChannelDialog;
 import UI.Dialogs.StopChannelDialog;
@@ -667,6 +711,8 @@ public class MainWindow extends javax.swing.JFrame {
             JMenuItem deleteMenuItem = new JMenuItem("Delete queue",iconManager.Delete());
             JMenuItem backupMessageMenuItem = new JMenuItem("Backup messages to file", iconManager.BackupMessageIcon());
             JMenuItem restoreMessageMenuItem = new JMenuItem("Restore messages from file",iconManager.RestoreMessageIcon());
+            JMenuItem queueHandleStatusMenuItem = new JMenuItem("Queue handle status",iconManager.StatusIcon());
+            JMenuItem queueStatusMenuItem = new JMenuItem("Queue status",iconManager.StatusIcon());
             putMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     showPutMessageDialog();
@@ -702,6 +748,16 @@ public class MainWindow extends javax.swing.JFrame {
                     deleteQueue();
                 }
             });
+            queueHandleStatusMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    showStatusDialog(StatusType.QueueHandleStatus);
+                }
+            });
+            queueStatusMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    showStatusDialog(StatusType.QueueStatus);
+                }
+            });
             switch(queueType){
                 case Local:                   
                     popup.add(putMenuItem);
@@ -711,7 +767,10 @@ public class MainWindow extends javax.swing.JFrame {
                     popup.add(deleteMsgMenuItem);
                     popup.add(new JPopupMenu.Separator());
                     popup.add(deleteMenuItem);
-                    popup.add(new JPopupMenu.Separator());
+                    popup.add(new JPopupMenu.Separator()); 
+                    popup.add(queueStatusMenuItem);
+                    popup.add(queueHandleStatusMenuItem);
+                    popup.add(new JPopupMenu.Separator());                    
                     popup.add(propertistMenuItem);
                     break;
                 case Remote:
@@ -788,7 +847,7 @@ public class MainWindow extends javax.swing.JFrame {
             });           
             statusMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                   showChannelStatusDialog();
+                   showStatusDialog(StatusType.ChannelStatus);
                 }
             });
             popup.add(statusMenuItem);
@@ -1229,10 +1288,10 @@ public class MainWindow extends javax.swing.JFrame {
         dialog.setVisible(true);      
     }
     
-    private void showChannelStatusDialog(){
+    private void showStatusDialog(StatusType type){
         MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
         TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable);   
-        ChannelStatusDialog dialog = DialogFactory.CreateChannelStatusDialog(this,true,queueManager,selectedObject.ObjectName);
+        StatusDialog dialog = DialogFactory.CreateStatusDialog(this,true,queueManager,selectedObject.ObjectName, type);
         dialog.AddDialogActionListener(new ActionListener() {
 
             @Override
@@ -1388,21 +1447,8 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_ContentTableMouseClicked
 
     private void TestMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TestMenuItemActionPerformed
-        MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
-        TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable); 
-        ChannelProperitiesDialog dialog = DialogFactory.CreateChannelSetupProperitiesDialog(this,true,queueManager,selectedObject.ObjectName);
-        dialog.AddDialogActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //showTableData(true);
-            }
-        });
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);  
+        ExcelHelper.ReadExcelFile("test.xls");
         
-            
-
     }//GEN-LAST:event_TestMenuItemActionPerformed
 
     private void RefreshButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RefreshButtonMouseClicked

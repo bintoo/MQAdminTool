@@ -11,6 +11,7 @@ package MQApi.Enums;
  */
 public enum QueryType {
     QueueDetial,
+    QueueStatusDetial,
     ChannelDetail,
     ChannelAuthDetail,
     ChannelStatus,

@@ -8,10 +8,13 @@ package UI.Dialogs;
 import MQApi.Enums.LogType;
 import MQApi.Enums.MQObjectType;
 import MQApi.Enums.QueueType;
+import MQApi.Enums.StatusType;
 import MQApi.Logs.LogWriter;
 import MQApi.PCF.MQPCF;
 import MQApi.QueryModel.MQChannelStatusListResult;
 import MQApi.QueryModel.MQQueueListResult;
+import MQApi.QueryModel.MQQueueStatusHandleListResult;
+import MQApi.QueryModel.MQQueueStatusListResult;
 import Tasks.GetSelectObjectTask;
 import UI.Helpers.TableHelper;
 import UI.Models.TableListObject;
@@ -29,21 +32,23 @@ import javax.swing.JOptionPane;
  *
  * @author jzhou
  */
-public class ChannelStatusDialog<T extends Enum> extends DialogBase {
+public class StatusDialog<T extends Enum> extends DialogBase {
     private T[] selectObjectType;
-    String channelName;
+    String name;
     Component component = this;
+    StatusType statusType;
     
-    public ChannelStatusDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, String channelName) {
+    public StatusDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, String name, StatusType statusType) {
         super(parent, modal, queueManager, null);
         initComponents();
-        this.channelName = channelName;
+        this.name = name;
+        this.statusType = statusType;
         initCustomProperties();
         initTable();
     }
     
     private void initCustomProperties(){
-        this.setTitle("Channel status");
+        this.setTitle("Status");
         this.setIconImage(iconManager.StatusIcon().getImage());   
         String queueManagerName = "";
         try {
@@ -65,15 +70,41 @@ public class ChannelStatusDialog<T extends Enum> extends DialogBase {
 
             @Override
             public void run() {
-                MQChannelStatusListResult result = MQPCF.GetchannelStatusList(queueManager, channelName, null);
-                if(result.QuerySuccess){
-                    TableHelper.UpdateContentTable(Table, result.ChannelStatus);
-                    loadTableSuccess();
+                if(statusType == StatusType.ChannelStatus){
+                    MQChannelStatusListResult result = MQPCF.GetChannelStatusList(queueManager, name, null);
+                    if(result.QuerySuccess){
+                        TableHelper.UpdateContentTable(Table, result.ChannelStatus);
+                        loadTableSuccess();
+                    }
+                    else{
+                        loadTableFail();
+                        JOptionPane.showMessageDialog(component, result.ErrorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+                        Close();
+                    }
                 }
-                else{
-                    loadTableFail();
-                    JOptionPane.showMessageDialog(component, result.ErrorMessage, "Error", JOptionPane.ERROR_MESSAGE);
-                    Close();
+                else if(statusType == StatusType.QueueHandleStatus){
+                    MQQueueStatusHandleListResult result = MQPCF.GetQueueStatusHandleList(queueManager, name);
+                    if(result.QuerySuccess){
+                        TableHelper.UpdateContentTable(Table, result.DataModels);
+                        loadTableSuccess();
+                    }
+                    else{
+                        loadTableFail();
+                        JOptionPane.showMessageDialog(component, result.ErrorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+                        Close();
+                    }
+                }
+                else if(statusType == StatusType.QueueStatus){
+                    MQQueueStatusListResult result = MQPCF.GetQueueStatusList(queueManager, name);
+                    if(result.QuerySuccess){
+                        TableHelper.UpdateContentTable(Table, result.DataModels);
+                        loadTableSuccess();
+                    }
+                    else{
+                        loadTableFail();
+                        JOptionPane.showMessageDialog(component, result.ErrorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+                        Close();
+                    }
                 }
             }
         });

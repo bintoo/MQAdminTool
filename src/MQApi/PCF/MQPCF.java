@@ -27,6 +27,10 @@ import MQApi.QueryModel.MQChannelPropertyModel;
 import MQApi.QueryModel.MQChannelStatusListResult.ChannelStatusModel;
 import MQApi.QueryModel.MQObjectPropertyModel;
 import MQApi.QueryModel.MQQueueListResult.QueueDetailModel;
+import MQApi.QueryModel.MQQueueStatusHandleListResult;
+import MQApi.QueryModel.MQQueueStatusHandleListResult.QueueStatusHandleDetailModel;
+import MQApi.QueryModel.MQQueueStatusListResult;
+import MQApi.QueryModel.MQQueueStatusListResult.QueueStatusDetailModel;
 import MQApi.Utilities.MQUtility;
 import com.ibm.mq.MQException;
 
@@ -298,7 +302,7 @@ public class MQPCF {
             pcfCmdQueryDetail.addParameter(MQConstants.MQIACH_CHANNEL_TYPE, MQConstants.MQCHT_ALL );
             PCFMessage[] pcfResponseDetail = agent.send(pcfCmdQueryDetail);                           
             WriteToChannelDetailModel(pcfResponseDetail, result, type);            
-            MQChannelStatusListResult channelStatus = GetchannelStatusList(queueManager, "*", null);
+            MQChannelStatusListResult channelStatus = GetChannelStatusList(queueManager, "*", null);
             Hashtable<String, ChannelStatusValueModel> statusTable = new Hashtable<String, ChannelStatusValueModel>();
             WriteToHashtable(channelStatus.ChannelStatus, statusTable);
             GetCombinedChannelDetailResult(result, statusTable);
@@ -319,13 +323,13 @@ public class MQPCF {
         return result;
     }
  
-    public static MQChannelStatusListResult GetchannelStatusList(MQQueueManager queueManager, String QueueNameFilter, ChannelType[] type){
+    public static MQChannelStatusListResult GetChannelStatusList(MQQueueManager queueManager, String nameFilter, ChannelType[] type){
         MQChannelStatusListResult result = new MQChannelStatusListResult();
         PCFMessageAgent agent = null;
         try {
             agent = new PCFMessageAgent(queueManager);
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_CHANNEL_STATUS);        
-            pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, QueueNameFilter);
+            pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, nameFilter);
             agent.setCheckResponses(false);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);    
             if(pcfResponse.length > 0 && pcfResponse[0].getCompCode() != 2){
@@ -344,6 +348,68 @@ public class MQPCF {
             result.QuerySuccess = false;
             result.ErrorMessage = ex.getMessage();
             LogWriter.WriteToLog("MQPCF", "GetchannelStatusList", ex);
+        }
+        disconnectAgent(agent);
+        return result;
+    }
+  
+    public static MQQueueStatusHandleListResult GetQueueStatusHandleList(MQQueueManager queueManager, String nameFilter){
+        MQQueueStatusHandleListResult result = new MQQueueStatusHandleListResult();
+        PCFMessageAgent agent = null;
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_Q_STATUS);        
+            pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, nameFilter);
+            pcfCmd.addParameter(MQConstants.MQIACF_Q_STATUS_TYPE, MQConstants.MQIACF_Q_HANDLE);
+            agent.setCheckResponses(false);
+            PCFMessage[] pcfResponse = agent.send(pcfCmd);    
+            if(pcfResponse.length > 0 && pcfResponse[0].getCompCode() != 2){
+                WriteToQueueStatusHandleDetailModel(pcfResponse, result);
+                result.QuerySuccess = true;
+            }
+            else{
+                result.QuerySuccess = false;
+                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
+            }
+        } catch (MQDataException ex) {
+            result.QuerySuccess = false;
+            result.ErrorMessage = MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason());
+            LogWriter.WriteToLog("MQPCF", "GetQueueStatusHandleList", ex);
+        } catch (IOException ex) {
+            result.QuerySuccess = false;
+            result.ErrorMessage = ex.getMessage();
+            LogWriter.WriteToLog("MQPCF", "GetQueueStatusHandleList", ex);
+        }
+        disconnectAgent(agent);
+        return result;
+    }
+    
+    public static MQQueueStatusListResult GetQueueStatusList(MQQueueManager queueManager, String nameFilter){
+        MQQueueStatusListResult result = new MQQueueStatusListResult();
+        PCFMessageAgent agent = null;
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_Q_STATUS);        
+            pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, nameFilter);
+            pcfCmd.addParameter(MQConstants.MQIACF_Q_STATUS_TYPE, MQConstants.MQIACF_Q_STATUS);
+            agent.setCheckResponses(false);
+            PCFMessage[] pcfResponse = agent.send(pcfCmd);    
+            if(pcfResponse.length > 0 && pcfResponse[0].getCompCode() != 2){
+                WriteToQueueStatusDetailModel(pcfResponse, result);
+                result.QuerySuccess = true;
+            }
+            else{
+                result.QuerySuccess = false;
+                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
+            }
+        } catch (MQDataException ex) {
+            result.QuerySuccess = false;
+            result.ErrorMessage = MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason());
+            LogWriter.WriteToLog("MQPCF", "GetQueueStatusList", ex);
+        } catch (IOException ex) {
+            result.QuerySuccess = false;
+            result.ErrorMessage = ex.getMessage();
+            LogWriter.WriteToLog("MQPCF", "GetQueueStatusList", ex);
         }
         disconnectAgent(agent);
         return result;
@@ -599,11 +665,7 @@ public class MQPCF {
         for(PCFMessage response : pcfResponse){     
             if(response.getCompCode() == 0){
                 QueueDetailModel queueDetail = model.new QueueDetailModel();
-                for(Field field : QueueDetailModel.class.getFields()){
-                    int mqConstant = field.getAnnotation(MQObjectListtAnnotation.class).MQConstant();
-                    VariableType varType = field.getAnnotation(MQObjectListtAnnotation.class).VarType();
-                    SetFieldValue(field, response, queueDetail, mqConstant,varType);
-                }
+                setModelValue(queueDetail, response);
                 if(type == null || Arrays.asList(type).contains(queueDetail.Type)){
                     if(queueDetail.QueueName != null){
                         model.DataModels.add(queueDetail);
@@ -617,13 +679,7 @@ public class MQPCF {
         for(PCFMessage response : pcfResponse){     
             if(response.getCompCode() == 0){
                 ChannelAuthDetailModel channelAuthDetail = model.new ChannelAuthDetailModel();
-                for(Field field : ChannelAuthDetailModel.class.getFields()){
-                    if(field.getAnnotation(MQObjectListtAnnotation.class).GetValue() == true){
-                        int mqConstant = field.getAnnotation(MQObjectListtAnnotation.class).MQConstant();
-                        VariableType varType = field.getAnnotation(MQObjectListtAnnotation.class).VarType();
-                        SetFieldValue(field, response, channelAuthDetail, mqConstant,varType);
-                    }
-                }
+                setModelValue(channelAuthDetail, response);
                 channelAuthDetail.setDisplayValues();
                 if(channelAuthDetail.Name != null){
                     model.DataModels.add(channelAuthDetail);
@@ -636,16 +692,7 @@ public class MQPCF {
         for(PCFMessage response : pcfResponseDetail){
             if(response.getCompCode() == 0){
                 ChannelDetailModel channelDetail = model.new ChannelDetailModel();
-                for(Field field : ChannelDetailModel.class.getFields()){
-                    VariableType varTypes = field.getAnnotation(MQObjectListtAnnotation.class).VarType();
-                    QueryType channelQueuetype = field.getAnnotation(MQObjectListtAnnotation.class).QueryType();
-                    if(channelQueuetype == QueryType.ChannelDetail){
-                        int mqConstant = field.getAnnotation(MQObjectListtAnnotation.class).MQConstant();
-                        VariableType varType = field.getAnnotation(MQObjectListtAnnotation.class).VarType();
-                        SetFieldValue(field, response, channelDetail, mqConstant,varType);
-                    }
-                }
-
+                setModelValue(channelDetail, response);
                 if(type == null || Arrays.asList(type).contains(channelDetail.Type)){
                     if(channelDetail.ChannelName != null){
                         model.DataModels.add(channelDetail);
@@ -659,16 +706,7 @@ public class MQPCF {
         for(PCFMessage response : pcfResponse){
             if(response.getCompCode() == 0){
                 ChannelStatusModel channelDetail = model.new ChannelStatusModel();
-                for(Field field : channelDetail.getClass().getFields()){
-                    VariableType varTypes = field.getAnnotation(MQObjectListtAnnotation.class).VarType();
-                    QueryType channelQuerytype = field.getAnnotation(MQObjectListtAnnotation.class).QueryType();
-                    if(channelQuerytype == QueryType.ChannelStatus){
-                        int mqConstant = field.getAnnotation(MQObjectListtAnnotation.class).MQConstant();
-                        VariableType varType = field.getAnnotation(MQObjectListtAnnotation.class).VarType();
-                        SetFieldValue(field, response, channelDetail, mqConstant,varType);
-                    }
-                }
-
+                setModelValue(channelDetail, response);
                 if(type == null || Arrays.asList(type).contains(channelDetail.Type)){
                     if(channelDetail.ChannelName != null){
                         model.ChannelStatus.add(channelDetail);
@@ -676,6 +714,42 @@ public class MQPCF {
                 }
             }
         }
+    }
+    
+    private static void WriteToQueueStatusHandleDetailModel(PCFMessage[] pcfResponse , MQQueueStatusHandleListResult model){
+        for(PCFMessage response : pcfResponse){
+            if(response.getCompCode() == 0){
+                QueueStatusHandleDetailModel channelDetail = model.new QueueStatusHandleDetailModel();
+                setModelValue(channelDetail, response);
+                channelDetail.setDisplayValues();
+                if(channelDetail.QueueName != null){
+                    model.DataModels.add(channelDetail);
+                }
+            }
+        }
+    }
+    
+    private static void WriteToQueueStatusDetailModel(PCFMessage[] pcfResponse , MQQueueStatusListResult model){
+        for(PCFMessage response : pcfResponse){
+            if(response.getCompCode() == 0){
+                QueueStatusDetailModel channelDetail = model.new QueueStatusDetailModel();
+                setModelValue(channelDetail, response);
+                channelDetail.setDisplayValues();
+                if(channelDetail.QueueName != null){
+                    model.DataModels.add(channelDetail);
+                }
+            }
+        }
+    }
+   
+    private static void setModelValue(Object model, PCFMessage response){
+        for(Field field : model.getClass().getFields()){
+            if(field.getAnnotation(MQObjectListtAnnotation.class).GetValue() == true){
+                int mqConstant = field.getAnnotation(MQObjectListtAnnotation.class).MQConstant();
+                VariableType varType = field.getAnnotation(MQObjectListtAnnotation.class).VarType();
+                SetFieldValue(field, response, model, mqConstant,varType);
+            }
+        }        
     }
     
     private static void SetFieldValue(Field field, PCFMessage response, Object model, int mqConstant, VariableType varType){
