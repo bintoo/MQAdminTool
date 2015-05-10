@@ -223,7 +223,7 @@ public class MQUtility {
                 }
                 index--;
                 MessageDetailModel model = turnToMessageModel(result, message, position);
-                result.Messages.add(model);
+                result.DataModels.add(model);
                 position ++;
             }            
         } catch (MQException ex) {

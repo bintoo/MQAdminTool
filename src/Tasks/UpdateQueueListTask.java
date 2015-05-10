@@ -5,6 +5,7 @@
  */
 package Tasks;
 
+import MQApi.Enums.QueueType;
 import MQApi.PCF.MQPCF;
 import MQApi.QueryModel.MQQueueListResult;
 import UI.Helpers.TableHelper;

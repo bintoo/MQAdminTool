@@ -364,7 +364,7 @@ public class BrowseMessageDialog extends DialogBase {
                 MQMessageIdModel from = pageInfoMap.get(currentPage);
                 MQMessageListResult result = MQUtility.GetMessageList(queueManager, selectedObject.ObjectName, maxMessagePerPage, isAlias, from,fromPosition);
                 if(result.QuerySuccess){
-                    TableHelper.UpdateContentTable(MessageListTable, result.Messages);                       
+                    TableHelper.UpdateContentTable(MessageListTable, result.DataModels);                       
                 }
                 else{
                     JOptionPane.showMessageDialog(ParentJFrame, result.ErrorMessage, "Error", JOptionPane.ERROR_MESSAGE);

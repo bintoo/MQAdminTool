@@ -64,7 +64,7 @@ public class MQChannelAuthListResult extends MQQueryResultBase  {
     }
         
     
-    public class ChannelAuthDetailModel{
+    public class ChannelAuthDetailModel extends DetailModelCore{
         @MQObjectListtAnnotation(DisplayName = "Channel profile", MQConstant = MQConstants.MQCACH_CHANNEL_NAME, VarType = VariableType.Text, QueryType = QueryType.ChannelAuthDetail, TrueFalseDisplayValue = {""})
         public String Name;
         @MQObjectListtAnnotation(DisplayName = "Type", MQConstant = MQConstants.MQIACF_CHLAUTH_TYPE, VarType = VariableType.ChannelAuthType,  QueryType = QueryType.ChannelAuthDetail, TrueFalseDisplayValue = {""})
@@ -96,6 +96,7 @@ public class MQChannelAuthListResult extends MQQueryResultBase  {
         @MQObjectListtAnnotation(DisplayName = "Alteration time", MQConstant = MQConstants.MQCA_ALTERATION_TIME, VarType = VariableType.Text, QueryType = QueryType.ChannelAuthDetail, TrueFalseDisplayValue = {})
         public String AlterationTime;
         
+        @Override
         public void setDisplayValues(){
             UserSrcValue = UserSrc != null ? getUserSrcValue(UserSrc) : null;
         }

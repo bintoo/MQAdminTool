@@ -815,6 +815,7 @@ public class MainWindow extends javax.swing.JFrame {
             JMenuItem deleteMenuItem = new JMenuItem("Delete", iconManager.Delete());
             JMenuItem propertiesMenuItem = new JMenuItem("Properties",iconManager.PropertiesIcon());
             JMenuItem statusMenuItem = new JMenuItem("Channel status",iconManager.StatusIcon());
+            JMenuItem statusSavedMenuItem = new JMenuItem("Channel saved status",iconManager.StatusIcon());
             stopMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     showStopChannelDialog();
@@ -850,8 +851,11 @@ public class MainWindow extends javax.swing.JFrame {
                    showStatusDialog(StatusType.ChannelStatus);
                 }
             });
-            popup.add(statusMenuItem);
-            popup.add(new JPopupMenu.Separator());
+            statusSavedMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                   showStatusDialog(StatusType.ChannelSavedStatus);
+                }
+            });
             popup.add(startMenuItem);
             popup.add(stopMenuItem);
             popup.add(new JPopupMenu.Separator());
@@ -871,6 +875,9 @@ public class MainWindow extends javax.swing.JFrame {
                     break;
             }
             popup.add(deleteMenuItem);
+            popup.add(new JPopupMenu.Separator());
+            popup.add(statusMenuItem);
+            popup.add(statusSavedMenuItem);
             popup.add(new JPopupMenu.Separator());           
             popup.add(propertiesMenuItem);
             return popup; 
@@ -1431,17 +1438,19 @@ public class MainWindow extends javax.swing.JFrame {
         if(evt.getButton() == MouseEvent.BUTTON3){
             TableHelper.SetSelectedRow(ContentTable, evt.getPoint());
             TableListObject objectModel = TableHelper.GetCurrentTableSelectRowObject(ContentTable);
-            switch(objectModel.TableType){
-                case QueueList :
-                    JPopupMenu queuePopup = getQueueListTablePopupMenu(objectModel.Type);
-                    queuePopup.show(evt.getComponent(), evt.getPoint().x, evt.getPoint().y);  
-                    break;
-                case ChannelList :
-                    JPopupMenu channelPopup = getChannelListTablePopupMenu(objectModel.Type);
-                    channelPopup.show(evt.getComponent(), evt.getPoint().x, evt.getPoint().y);  
-                    break;
-                default:
-                   break;                       
+            if(objectModel != null){
+                switch(objectModel.TableType){
+                    case QueueList :
+                        JPopupMenu queuePopup = getQueueListTablePopupMenu(objectModel.Type);
+                        queuePopup.show(evt.getComponent(), evt.getPoint().x, evt.getPoint().y);  
+                        break;
+                    case ChannelList :
+                        JPopupMenu channelPopup = getChannelListTablePopupMenu(objectModel.Type);
+                        channelPopup.show(evt.getComponent(), evt.getPoint().x, evt.getPoint().y);  
+                        break;
+                    default:
+                       break;                       
+                }
             }
         }      
     }//GEN-LAST:event_ContentTableMouseClicked

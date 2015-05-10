@@ -21,9 +21,9 @@ public class MQQueueStatusListResult extends MQQueryResultBase  {
     public ArrayList<QueueStatusDetailModel> DataModels = new ArrayList<QueueStatusDetailModel>(); 
    
     
-    public class QueueStatusDetailModel{
+    public class QueueStatusDetailModel extends DetailModelCore{
         @MQObjectListtAnnotation(DisplayName = "Queue Name", MQConstant = MQConstants.MQCA_Q_NAME, VarType = VariableType.Text, QueryType = QueryType.QueueStatusDetial)
-        public String QueueName;
+        public String Name;
         @MQObjectListtAnnotation(DisplayName = "Current depth", MQConstant = MQConstants.MQIA_CURRENT_Q_DEPTH, VarType = VariableType.Number, QueryType = QueryType.QueueStatusDetial)
         public Integer CurrentQDepth;  
         @MQObjectListtAnnotation(DisplayName = "Last get date", MQConstant = MQConstants.MQCACF_LAST_GET_DATE, VarType = VariableType.Text, QueryType = QueryType.QueueStatusDetial)
@@ -43,6 +43,7 @@ public class MQQueueStatusListResult extends MQQueryResultBase  {
         @MQObjectListtAnnotation(DisplayName = "Uncommitted message", MQConstant = MQConstants.MQIACF_UNCOMMITTED_MSGS, VarType = VariableType.Text, QueryType = QueryType.QueueStatusDetial, ShowOnTable = true, GetValue = false)
         public String UncommittedMsgsValue; 
         
+        @Override
         public void setDisplayValues(){
             UncommittedMsgsValue = getUncommittedMsgsValue(UncommittedMsgs);
             OldestMsgAgeValue = getOldestMsgAgeValue(OldestMsgAge);

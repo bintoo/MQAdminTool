@@ -21,9 +21,9 @@ public class MQQueueStatusHandleListResult extends MQQueryResultBase  {
     public ArrayList<QueueStatusHandleDetailModel> DataModels = new ArrayList<QueueStatusHandleDetailModel>(); 
    
     
-    public class QueueStatusHandleDetailModel{
+    public class QueueStatusHandleDetailModel extends DetailModelCore{
         @MQObjectListtAnnotation(DisplayName = "Queue Name", MQConstant = MQConstants.MQCA_Q_NAME, VarType = VariableType.Text, QueryType = QueryType.QueueStatusDetial)
-        public String QueueName;
+        public String Name;
         @MQObjectListtAnnotation(DisplayName = "Open application tag", MQConstant = MQConstants.MQCACF_APPL_TAG, VarType = VariableType.Text, QueryType = QueryType.QueueStatusDetial)
         public String ApplTag;
         @MQObjectListtAnnotation(DisplayName = "ApplType", MQConstant = MQConstants.MQIA_APPL_TYPE, VarType = VariableType.Number, QueryType = QueryType.QueueStatusDetial, ShowOnTable = false)
@@ -47,6 +47,7 @@ public class MQQueueStatusHandleListResult extends MQQueryResultBase  {
         @MQObjectListtAnnotation(DisplayName = "User id", MQConstant = MQConstants.MQCACF_USER_IDENTIFIER, VarType = VariableType.Text, QueryType = QueryType.QueueStatusDetial)
         public String UserIdentifier;
         
+        @Override
         public void setDisplayValues(){
             ApplTypeDisplayValue = ApplType != null ? getApplTypeDisplayValue(ApplType) : null;
             AsynchronousStateValue = AsynchronousState != null ? getAsynchronousStateDisplayValue(AsynchronousState) : null;

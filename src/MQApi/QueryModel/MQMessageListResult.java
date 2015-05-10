@@ -18,7 +18,7 @@ import java.util.ArrayList;
  */
 public class MQMessageListResult extends MQQueryResultBase{
     
-    public ArrayList<MessageDetailModel> Messages = new ArrayList<MessageDetailModel>(); 
+    public ArrayList<MessageDetailModel> DataModels = new ArrayList<MessageDetailModel>(); 
     
     public class MessageDetailModel{
         public byte[] MessageId;

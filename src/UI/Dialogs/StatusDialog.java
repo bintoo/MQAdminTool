@@ -71,9 +71,21 @@ public class StatusDialog<T extends Enum> extends DialogBase {
             @Override
             public void run() {
                 if(statusType == StatusType.ChannelStatus){
-                    MQChannelStatusListResult result = MQPCF.GetChannelStatusList(queueManager, name, null);
+                    MQChannelStatusListResult result = MQPCF.GetChannelStatusList(queueManager, name, null, false);
                     if(result.QuerySuccess){
-                        TableHelper.UpdateContentTable(Table, result.ChannelStatus);
+                        TableHelper.UpdateContentTable(Table, result.DataModels);
+                        loadTableSuccess();
+                    }
+                    else{
+                        loadTableFail();
+                        JOptionPane.showMessageDialog(component, result.ErrorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+                        Close();
+                    }
+                }
+                if(statusType == StatusType.ChannelSavedStatus){
+                    MQChannelStatusListResult result = MQPCF.GetChannelStatusList(queueManager, name, null, true);
+                    if(result.QuerySuccess){
+                        TableHelper.UpdateContentTable(Table, result.DataModels);
                         loadTableSuccess();
                     }
                     else{

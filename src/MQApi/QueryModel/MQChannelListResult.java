@@ -34,7 +34,7 @@ public class MQChannelListResult extends MQQueryResultBase{
             ArrayList<ChannelDetailModel> toBeRemoved = new ArrayList<ChannelDetailModel>();
             if(!showSystem){
                 for(ChannelDetailModel t : resultDataModels){
-                    if( t.ChannelName != null && t.ChannelName.startsWith("SYSTEM")){
+                    if( t.Name != null && t.Name.startsWith("SYSTEM")){
                         toBeRemoved.add(t);
                     }
                 }
@@ -43,12 +43,12 @@ public class MQChannelListResult extends MQQueryResultBase{
             if(nameSearchString != null && !nameSearchString.isEmpty()){
                 for(ChannelDetailModel t : resultDataModels){
                     if( !isMatchExact){
-                        if(!t.ChannelName.startsWith(nameSearchString)){
+                        if(!t.Name.startsWith(nameSearchString)){
                             toBeRemoved.add(t);
                         }
                     }
                     else{
-                        if(!t.ChannelName.equals(nameSearchString)){
+                        if(!t.Name.equals(nameSearchString)){
                             toBeRemoved.add(t);
                         }
                     }
@@ -61,9 +61,9 @@ public class MQChannelListResult extends MQQueryResultBase{
         }
         return null;
     }
-    public class ChannelDetailModel{        
+    public class ChannelDetailModel extends DetailModelCore{        
         @MQObjectListtAnnotation(DisplayName = "Channel Name", MQConstant = MQConstants.MQCACH_CHANNEL_NAME, VarType = VariableType.Text, QueryType = QueryType.ChannelDetail, TrueFalseDisplayValue = {""})
-        public String ChannelName;
+        public String Name;
         @MQObjectListtAnnotation(DisplayName = "Type", MQConstant = MQConstants.MQIACH_CHANNEL_TYPE, VarType = VariableType.ChannelType,QueryType = QueryType.ChannelDetail, TrueFalseDisplayValue = {""})
         public ChannelType Type;
         @MQObjectListtAnnotation(DisplayName = "Running Status", MQConstant = MQConstants.MQIACH_CHANNEL_STATUS, VarType = VariableType.ChannelStatusType,QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
@@ -98,5 +98,9 @@ public class MQChannelListResult extends MQQueryResultBase{
 //        public String ChannelStartDate;
 //        @MQObjectListtAnnotation(DisplayName = "Start Time", MQConstant = MQConstants.MQCACH_CHANNEL_START_TIME, VarType = VariableType.Text)
 //        public String ChannelStartTime;
+
+        @Override
+        public void setDisplayValues() {
+        }
     }
 }

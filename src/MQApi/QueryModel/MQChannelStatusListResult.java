@@ -18,10 +18,10 @@ import java.util.ArrayList;
  * @author jzhou
  */
 public class MQChannelStatusListResult extends MQQueryResultBase{
-    public ArrayList<ChannelStatusModel> ChannelStatus = new ArrayList<ChannelStatusModel>();
-    public class ChannelStatusModel{        
+    public ArrayList<ChannelStatusModel> DataModels = new ArrayList<ChannelStatusModel>();
+    public class ChannelStatusModel extends DetailModelCore{        
         @MQObjectListtAnnotation(DisplayName = "Channel Name", MQConstant = MQConstants.MQCACH_CHANNEL_NAME, VarType = VariableType.Text, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
-        public String ChannelName;
+        public String Name;
         @MQObjectListtAnnotation(DisplayName = "Type", MQConstant = MQConstants.MQIACH_CHANNEL_TYPE, VarType = VariableType.ChannelType,QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
         public ChannelType Type;
         @MQObjectListtAnnotation(DisplayName = "Running Status", MQConstant = MQConstants.MQIACH_CHANNEL_STATUS, VarType = VariableType.ChannelStatusType,QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
@@ -46,7 +46,11 @@ public class MQChannelStatusListResult extends MQQueryResultBase{
         public String LocalAddress;
         @MQObjectListtAnnotation(DisplayName = "MCA user id", MQConstant = MQConstants.MQCACH_MCA_USER_ID, VarType = VariableType.Text, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
         public String MCAUserIdentifier;
-//        @MQObjectListtAnnotation(DisplayName = "MCA status",MQConstant = MQConstants.MQIACH_MCA_STATUS, VarType = VariableType.TrueFalse, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {"Stopped", "Running"})
+//        @MQObjectListtAnnotation(DisplayName = "MCA status",MQConstant = MQConstants.MQIACH_MCA_STATUS, VarType = VariableType.TrueFalse, QueryType = QueryType.DataModels, TrueFalseDisplayValue = {"Stopped", "Running"})
 //        public String MCAStatus;
+
+        @Override
+        public void setDisplayValues() {
+        }
     }
 }

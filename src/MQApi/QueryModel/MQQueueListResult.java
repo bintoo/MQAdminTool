@@ -16,12 +16,11 @@ import java.util.ArrayList;
  *
  * @author jzhou
  */
-public class MQQueueListResult extends MQQueryResultBase  {
+public class MQQueueListResult extends MQQueryResultBase{
     
     public ArrayList<QueueDetailModel> DataModels = new ArrayList<QueueDetailModel>(); 
     
     public ArrayList<QueueDetailModel> GetFilterDataModels(String searchString, boolean showTemp, boolean showSystem){
-        
         if(DataModels != null && DataModels.size() > 0){
             searchString = searchString.trim();
             if(searchString == null || searchString.isEmpty()){
@@ -40,7 +39,7 @@ public class MQQueueListResult extends MQQueryResultBase  {
             }
             if(!showSystem){
                 for(QueueDetailModel t : resultDataModels){
-                    if( t.QueueName != null && t.QueueName.startsWith("SYSTEM")){
+                    if( t.Name != null && t.Name.startsWith("SYSTEM")){
                         toBeRemoved.add(t);
                     }
                 }
@@ -49,12 +48,12 @@ public class MQQueueListResult extends MQQueryResultBase  {
             if(nameSearchString != null && !nameSearchString.isEmpty()){
                 for(QueueDetailModel t : resultDataModels){
                     if( !isMatchExact){
-                        if(t.QueueName != null && !t.QueueName.startsWith(nameSearchString)){
+                        if(t.Name != null && !t.Name.startsWith(nameSearchString)){
                             toBeRemoved.add(t);
                         }
                     }
                     else{
-                        if(t.QueueName != null && !t.QueueName.equals(nameSearchString)){
+                        if(t.Name != null && !t.Name.equals(nameSearchString)){
                             toBeRemoved.add(t);
                         }
                     }
@@ -85,9 +84,9 @@ public class MQQueueListResult extends MQQueryResultBase  {
         return null;
     }
     
-    public class QueueDetailModel{
+    public class QueueDetailModel extends DetailModelCore{
         @MQObjectListtAnnotation(DisplayName = "Queue Name", MQConstant = MQConstants.MQCA_Q_NAME, VarType = VariableType.Text, QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
-        public String QueueName;
+        public String Name;
         @MQObjectListtAnnotation(DisplayName = "Queue Type", MQConstant = MQConstants.MQIA_Q_TYPE, VarType = VariableType.QueueType,  QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
         public QueueType Type;
         @MQObjectListtAnnotation(DisplayName = "Current Depth", MQConstant = MQConstants.MQIA_CURRENT_Q_DEPTH, VarType = VariableType.Number,  QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
@@ -126,5 +125,10 @@ public class MQQueueListResult extends MQQueryResultBase  {
         public Integer BackoutThreshold;
         @MQObjectListtAnnotation(DisplayName = "Definition type", MQConstant = MQConstants.MQIA_DEFINITION_TYPE, VarType = VariableType.QueueDefinitionType,  QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
         public String DefinitionType;
+
+        @Override
+        public void setDisplayValues() {
+            
+        }
     }
 }

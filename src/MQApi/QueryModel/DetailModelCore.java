@@ -3,15 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package MQApi.Enums;
+package MQApi.QueryModel;
 
 /**
  *
  * @author jzhou
  */
-public enum StatusType {
-    ChannelStatus,
-    ChannelSavedStatus,
-    QueueStatus,
-    QueueHandleStatus,
+public abstract class  DetailModelCore {
+    public abstract void setDisplayValues();
 }
