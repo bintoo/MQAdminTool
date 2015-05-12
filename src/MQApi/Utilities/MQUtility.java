@@ -21,9 +21,11 @@ import com.ibm.mq.constants.CMQC;
 import com.ibm.mq.constants.MQConstants;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -475,6 +477,85 @@ public class MQUtility {
                 disposeOutputStreamObject(fileOutPutStream, bufferedOutputStream, gzipOutStream, objectOutputStream);
                 removeFile(filePath);
                 closeQueue(queue);
+                throw new Exception(getMQReturnMessage(ex.getCompCode(), ex.getReason()));                
+            }
+    
+        
+    }
+    
+    public static void SaveMessageContentToFile(MQQueueManager queueManager, String queueName, String filePath, JProgressBar progressBar, ArrayList<MQMessageIdModel>ids) throws Exception{
+            BufferedWriter out = new BufferedWriter(new FileWriter(new File(filePath)));
+            MQQueue queue = null;
+            try{
+                queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE);
+                int queueDepth = queue.getCurrentDepth();            
+                if(queueDepth > 0){
+                    int index = queueDepth;
+                    if(ids == null){
+                        int pos = 1;
+                        while(index > 0){
+                            MQMessage message = new MQMessage();
+                            MQGetMessageOptions options = new MQGetMessageOptions();
+                            options.options = CMQC.MQGMO_BROWSE_NEXT;
+                            queue.get(message, options);
+                            out.write("Message position : " + pos);
+                            out.write("\r\n"); 
+                            out.write("\r\n");
+                            out.write(message.readStringOfByteLength(message.getMessageLength()));
+                            out.write("\r\n"); 
+                            out.write("\r\n"); 
+                            index--;
+                            pos++;
+                            if(progressBar != null){
+                                int value = ((queueDepth - index)*100)/queueDepth;
+                                progressBar.setValue(value);
+                            }
+                        }
+                    }
+                    else{
+                        int i = 1;
+                        for(MQMessageIdModel id : ids){
+                            MQMessage message = new MQMessage();
+                            message.messageId = id.MessageId;
+                            message.correlationId = id.CorrelationdId;
+                            MQGetMessageOptions options = new MQGetMessageOptions();
+                            options.options = CMQC.MQGMO_BROWSE_NEXT;
+                            options.matchOptions = MQConstants.MQMO_MATCH_MSG_ID  | MQConstants.MQMO_MATCH_CORREL_ID;
+                            queue.get(message, options);   
+                            out.write("Message position : " + i);
+                            out.write("\r\n"); 
+                            out.write("\r\n");
+                            out.write(message.readStringOfByteLength(message.getMessageLength()));
+                            out.write("\r\n"); 
+                            out.write("\r\n");
+                            if(progressBar != null){
+                                int value = (i*100)/ids.size();
+                                progressBar.setValue(value);
+                            }  
+                            i++;
+                        }
+                    }
+                    closeQueue(queue);
+                    out.flush();
+                    out.close();
+                }
+                else {
+                    closeQueue(queue);
+                    out.close();
+                    throw new Exception("Queue depth is 0");
+                }
+            }catch(IOException ex){
+                LogWriter.WriteToLog("MQUtility", "SaveMessageContentToFile",ex);
+                removeFile(filePath);
+                closeQueue(queue);
+                out.close();
+                throw new Exception("File access error");
+            }
+            catch(MQException ex){
+                LogWriter.WriteToLog("MQUtility", "SaveMessageContentToFile",ex);
+                removeFile(filePath);
+                closeQueue(queue);
+                out.close();
                 throw new Exception(getMQReturnMessage(ex.getCompCode(), ex.getReason()));                
             }
     

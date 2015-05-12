@@ -31,13 +31,15 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author jzhou
  */
 public class BackupRestoreMessageDialog extends DialogBase{
+    public static int Usage_Backup = 0;
+    public static int Usage_Restore = 1;
+    public static int Usage_SaveMsgContent = 2;
 
-    /**
-     * Creates new form BackupRestoreMessageDialog
-     */
     public boolean IsBackup;
     String selectedFilePath;
     ArrayList<MQMessageIdModel> ids;
+    int usageOption;
+    
     public BackupRestoreMessageDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, TableListObject selectedObject, ArrayList<MQMessageIdModel> ids) {
         super(parent, modal,queueManager,selectedObject);
         initComponents();
@@ -45,12 +47,27 @@ public class BackupRestoreMessageDialog extends DialogBase{
         this.ids = ids;
     }
     
-    public void SetUsage(boolean IsBackup){
-        this.IsBackup = IsBackup;
-        this.setTitle(IsBackup == true ? "Backup messages" : "Restore message");
+    public void SetUsage(int option){
+        this.usageOption = option;
+        String title = "";
+        if(option == Usage_Backup || option == Usage_SaveMsgContent ){
+            this.IsBackup = true;
+            if(option == Usage_Backup){
+                title = "Backup messages";
+            }
+            else{
+                title = "Save messages content to file";
+            }
+        }
+        else if(option == Usage_Restore){
+            this.IsBackup = false;
+            title = "Restore message";
+        }
+        
+        this.setTitle(title);
         this.setIconImage(IsBackup == true ? iconManager.BackupMessageIcon().getImage() : iconManager.RestoreMessageIcon().getImage());
         this.OkButton.setText(IsBackup ? "Backup" : "Restore");
-        this.CompressCheckBox.setVisible(IsBackup);
+        this.CompressCheckBox.setVisible(option == Usage_Backup);
     }
 
     /**
@@ -187,7 +204,7 @@ public class BackupRestoreMessageDialog extends DialogBase{
         toggleButtons(false);
         boolean isCompress = CompressCheckBox.isSelected();
         boolean isAlias = (QueueType)selectedObject.Type == QueueType.Alias;
-        BackupRestoreMessageTask task = new BackupRestoreMessageTask(queueManager, selectedObject.ObjectName, selectedFilePath, ParentJFrame, ProgressBar, ids, IsBackup, isCompress,isAlias);
+        BackupRestoreMessageTask task = new BackupRestoreMessageTask(queueManager, selectedObject.ObjectName, selectedFilePath, ParentJFrame, ProgressBar, ids, this.usageOption, isCompress,isAlias);
         task.AddTaskActionSuccessListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -241,12 +258,13 @@ public class BackupRestoreMessageDialog extends DialogBase{
     
     private void showFileChooser(){
         JFileChooser fileChooser = new JFileChooser();
-        FileFilter filter = new FileNameExtensionFilter("MQ message file (*.msg)","msg");
+        FileFilter filter = usageOption == Usage_SaveMsgContent ?  new FileNameExtensionFilter("MQ message content file (*.txt)","txt") : new FileNameExtensionFilter("MQ message file (*.msg)","msg");
         fileChooser.setFileFilter(filter);
         fileChooser.setDialogTitle("Please select a file");
         int returnVal = fileChooser.showDialog(this, "Select");
         if(returnVal == JFileChooser.APPROVE_OPTION){ 
             selectedFilePath = fileChooser.getSelectedFile().getPath();
+            selectedFilePath = checkFilePath(selectedFilePath, usageOption == Usage_SaveMsgContent ? "txt" : "msg");
             this.FilePathTextField.setText(selectedFilePath);
             this.OkButton.setEnabled(true);
         }

@@ -75,6 +75,7 @@ public class BrowseMessageDialog extends DialogBase {
     private JPopupMenu getMessagelListTablePopupMenu(){
         JPopupMenu popup = new JPopupMenu();
         JMenuItem backupMenuItem = new JMenuItem("Backup messages to file",iconManager.BackupMessageIcon());
+        JMenuItem saveContentMenuItem = new JMenuItem("Save message content to file",iconManager.BackupMessageIcon());
         JMenuItem deleteMenuItem = new JMenuItem("Delete messages",iconManager.Delete());
         deleteMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -83,9 +84,15 @@ public class BrowseMessageDialog extends DialogBase {
         });
         backupMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                backupMessages();
+                backupMessages(false);
             }
         });
+        saveContentMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                backupMessages(true);
+            }
+        });
+        popup.add(saveContentMenuItem);
         popup.add(backupMenuItem);
         popup.add(deleteMenuItem);
         
@@ -109,12 +116,12 @@ public class BrowseMessageDialog extends DialogBase {
          }
     }
     
-    private void backupMessages(){
+    private void backupMessages(boolean isSaveMessageContent){
         ArrayList<TableListObject> selectedObjects = TableHelper.GetCurrentTableSelectRowObjects(MessageListTable);
         if(selectedObjects != null && selectedObjects.size() > 0){
             ArrayList<MQMessageIdModel> idModels = turnToMessageIdModel(selectedObjects);
             BackupRestoreMessageDialog dialog = DialogFactory.CreateBackupRestoreMessageDialog(ParentJFrame, true,queueManager, selectedObject, idModels);
-            dialog.SetUsage(true);
+            dialog.SetUsage(isSaveMessageContent ? BackupRestoreMessageDialog.Usage_SaveMsgContent : BackupRestoreMessageDialog.Usage_Backup);
             dialog.AddDialogActionListener(new ActionListener() {
 
                 @Override

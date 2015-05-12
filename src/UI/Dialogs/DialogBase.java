@@ -65,6 +65,14 @@ public abstract class DialogBase extends javax.swing.JDialog {
         this.dispose();       
     }
     
+    protected String checkFilePath(String filePath, String extension){
+        int lastIndexOf = filePath.lastIndexOf(".");
+        if (lastIndexOf == -1 || !extension.equals(filePath.substring(lastIndexOf + 1).toLowerCase())) {
+            return filePath + "." + extension;
+        }
+        return filePath;      
+    }
+    
     private void formWindowClosed(java.awt.event.WindowEvent evt) {                                  
         if(ParentJFrame != null){
             ParentJFrame.repaint();

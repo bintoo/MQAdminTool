@@ -6,17 +6,13 @@
 package UI;
 
 import MQApi.Enums.ChannelType;
-import MQApi.Enums.LogType;
 import MQApi.Enums.MQObjectType;
 import MQApi.Enums.QueueType;
 import MQApi.Enums.StatusType;
 import MQApi.Logs.LogWriter;
-import MQApi.MQTest;
 import MQApi.Models.Query.ConnectionDetailModel;
 import MQApi.PCF.MQPCF;
 import MQApi.QueryModel.MQCommandResult;
-import MQApi.QueryModel.MQQueryResultBase;
-import MQApi.QueryModel.MQQueueListResult;
 import MQApi.TextWriter;
 import MQApi.Utilities.MQUtility;
 import Tasks.*;
@@ -28,95 +24,37 @@ import UI.Dialogs.StatusDialog;
 import UI.Dialogs.ClearMessagesDialog;
 import UI.Dialogs.DialogFactory;
 import UI.Dialogs.MessageEditDialog;;
+import UI.Helpers.*;
+import UI.Models.*;
 import UI.Dialogs.QueueProperitiesDialog;
 import UI.Dialogs.ResetChannelDialog;
 import UI.Dialogs.ResolveChannelDialog;
 import UI.Dialogs.StopChannelDialog;
-import UI.Helpers.*;
-import UI.Misc.CustomTableCellRender;
 import UI.Misc.CustomTreeRender;
 import UI.Misc.ExceptionHandler;
-import UI.Models.*;
 import UI.ReferenceObjects.ToolStatusReference;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueueManager;
-import com.ibm.mq.headers.MQDataException;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
-import java.io.OptionalDataException;
-import java.net.URL;
 import java.util.ArrayList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;import UI.Dialogs.QueueProperitiesDialog;
-import UI.Dialogs.ResetChannelDialog;
-import UI.Dialogs.ResolveChannelDialog;
-import UI.Dialogs.StopChannelDialog;
-import UI.Helpers.*;
-import UI.Misc.CustomTableCellRender;
-import UI.Misc.CustomTreeRender;
-import UI.Misc.ExceptionHandler;
-import UI.Models.*;
-import UI.ReferenceObjects.ToolStatusReference;
-import com.ibm.mq.MQException;
-import com.ibm.mq.MQQueueManager;
-import com.ibm.mq.headers.MQDataException;
-import java.awt.Color;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
-import java.io.OptionalDataException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Comparator;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.UIManager;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -725,6 +663,7 @@ public class MainWindow extends javax.swing.JFrame {
             JMenuItem propertistMenuItem = new JMenuItem("Properties",iconManager.PropertiesIcon());
             JMenuItem deleteMenuItem = new JMenuItem("Delete queue",iconManager.Delete());
             JMenuItem backupMessageMenuItem = new JMenuItem("Backup messages to file", iconManager.BackupMessageIcon());
+            JMenuItem saveMessageContentMenuItem = new JMenuItem("Save message content to file", iconManager.BackupMessageIcon());
             JMenuItem restoreMessageMenuItem = new JMenuItem("Restore messages from file",iconManager.RestoreMessageIcon());
             JMenuItem queueHandleStatusMenuItem = new JMenuItem("Queue handle status",iconManager.StatusIcon());
             JMenuItem queueStatusMenuItem = new JMenuItem("Queue status",iconManager.StatusIcon());
@@ -745,12 +684,17 @@ public class MainWindow extends javax.swing.JFrame {
             });
             backupMessageMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    showBackUpRestoreMessageDialog(true);
+                    showBackUpRestoreMessageDialog(BackupRestoreMessageDialog.Usage_Backup);
+                }
+            });
+            saveMessageContentMenuItem.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    showBackUpRestoreMessageDialog(BackupRestoreMessageDialog.Usage_SaveMsgContent);
                 }
             });
             restoreMessageMenuItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    showBackUpRestoreMessageDialog(false);
+                    showBackUpRestoreMessageDialog(BackupRestoreMessageDialog.Usage_Restore);
                 }
             });
             propertistMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -777,6 +721,7 @@ public class MainWindow extends javax.swing.JFrame {
                 case Local:                   
                     popup.add(putMenuItem);
                     popup.add(browseMsgMenuItem);
+                    popup.add(saveMessageContentMenuItem);
                     popup.add(backupMessageMenuItem);
                     popup.add(restoreMessageMenuItem);
                     popup.add(deleteMsgMenuItem);
@@ -1021,11 +966,11 @@ public class MainWindow extends javax.swing.JFrame {
         dialog.setVisible(true);        
     }
     
-    private void showBackUpRestoreMessageDialog(boolean isBackup){
+    private void showBackUpRestoreMessageDialog(int option){
         MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
         TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable);
         BackupRestoreMessageDialog dialog = DialogFactory.CreateBackupRestoreMessageDialog(this, true,queueManager, selectedObject, null);
-        dialog.SetUsage(isBackup);
+        dialog.SetUsage(option);
         dialog.AddDialogActionListener(new ActionListener() {
 
             @Override

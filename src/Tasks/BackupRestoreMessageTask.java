@@ -7,6 +7,7 @@ package Tasks;
 
 import MQApi.Models.MQMessageIdModel;
 import MQApi.Utilities.MQUtility;
+import UI.Dialogs.BackupRestoreMessageDialog;
 import com.ibm.mq.MQQueueManager;
 import java.awt.Frame;
 import java.util.ArrayList;
@@ -24,19 +25,19 @@ public class BackupRestoreMessageTask extends TaskBase{
     String queueName;
     JProgressBar progressBar;
     Frame parent;    
-    boolean isBackup;
     String filePath;
     boolean isCompress;
     boolean isAlias;
     ArrayList<MQMessageIdModel> ids;
+    int option;
     
-    public BackupRestoreMessageTask(MQQueueManager queueManager, String queueName,String filePath,  Frame parent,JProgressBar progressBar, ArrayList<MQMessageIdModel> ids, boolean isBackup, boolean isCompress, boolean isAlias){
+    public BackupRestoreMessageTask(MQQueueManager queueManager, String queueName,String filePath,  Frame parent,JProgressBar progressBar, ArrayList<MQMessageIdModel> ids, int option, boolean isCompress, boolean isAlias){
         this.filePath = filePath;
         this.queueManager = queueManager;
         this.progressBar = progressBar;
         this.parent = parent;
         this.queueName = queueName;
-        this.isBackup = isBackup;
+        this.option = option;
         this.isCompress = isCompress;
         this.isAlias = isAlias;
         this.ids = ids;
@@ -48,7 +49,7 @@ public class BackupRestoreMessageTask extends TaskBase{
     }
     
     private void runTask(){
-        if(isBackup == true){
+        if(option == BackupRestoreMessageDialog.Usage_Backup){
             try {
                 MQUtility.BackupMessageToFile(queueManager, queueName, filePath, progressBar,ids,isCompress,isAlias);
                 JOptionPane.showMessageDialog(parent, "Successfully backup to file " + filePath, "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -59,10 +60,21 @@ public class BackupRestoreMessageTask extends TaskBase{
                 FireActionFailEvent();
             }
         }
-        else{
+        else if(option == BackupRestoreMessageDialog.Usage_Restore){
             try {
                 MQUtility.RestoreMessageFromFile(queueManager, queueName, filePath, progressBar,isAlias,true);
                 JOptionPane.showMessageDialog(parent, "Successfully restore messages to queue " + queueName, "Success", JOptionPane.INFORMATION_MESSAGE);
+                FireActionSuccessEvent();
+            } catch (Exception ex) {
+                Logger.getLogger(BackupRestoreMessageTask.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(parent, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                FireActionFailEvent();
+            }            
+        }
+        else if(option == BackupRestoreMessageDialog.Usage_SaveMsgContent){
+            try {
+                MQUtility.SaveMessageContentToFile(queueManager, queueName, filePath, progressBar, ids);
+                JOptionPane.showMessageDialog(parent, "Successfully backup to file " + filePath, "Success", JOptionPane.INFORMATION_MESSAGE);
                 FireActionSuccessEvent();
             } catch (Exception ex) {
                 Logger.getLogger(BackupRestoreMessageTask.class.getName()).log(Level.SEVERE, null, ex);
