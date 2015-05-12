@@ -97,6 +97,7 @@ import java.io.IOException;
 import java.io.OptionalDataException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -115,6 +116,7 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -169,11 +171,17 @@ public class MainWindow extends javax.swing.JFrame {
         ContentPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         ContentTable = new javax.swing.JTable(){
+            @Override
             public Class getColumnClass(int column)
             {
-                if(getValueAt(0, column) != null)
-                return getValueAt(0, column).getClass();
-                else
+                int rowCount = getRowCount();
+                Object value = null;
+                for(int i = 0 ; i < rowCount; i++){
+                    value = getValueAt(i, column);
+                    if(value != null){
+                        return value.getClass();
+                    }
+                }
                 return Object.class;
             }
         };
@@ -582,6 +590,7 @@ public class MainWindow extends javax.swing.JFrame {
     private JPopupMenu getTreeViewChannelPopupMenu(){
         JPopupMenu popup = new JPopupMenu();
         JMenuItem exportQueuePropertiesMenuItem = new JMenuItem("Export channel properties",iconManager.CSVIcon());
+        JMenuItem exportQueueStatusMenuItem = new JMenuItem("Export channel status",iconManager.CSVIcon());
         JMenu CreateChannelMenu = new JMenu("Create");
         CreateChannelMenu.setIcon(iconManager.AddNewIcon());
         JMenuItem CreateSenderChannelMenuItem = new JMenuItem("Sender channel", iconManager.Channel());
@@ -594,6 +603,11 @@ public class MainWindow extends javax.swing.JFrame {
         exportQueuePropertiesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportProperties(MQObjectType.Channel);
+            }
+        });
+        exportQueueStatusMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportProperties(MQObjectType.ChannelStatus);
             }
         });
         CreateSenderChannelMenuItem.addActionListener(new ActionListener() {
@@ -647,6 +661,7 @@ public class MainWindow extends javax.swing.JFrame {
         CreateChannelMenu.add(CreateClusterReceiverMenuItem);
         popup.add(CreateChannelMenu);
         popup.add(exportQueuePropertiesMenuItem);
+         popup.add(exportQueueStatusMenuItem);
         return popup;
     }
     
@@ -891,12 +906,12 @@ public class MainWindow extends javax.swing.JFrame {
     
     private void initCustomProperties(){
         this.setIconImage(iconManager.Root().getImage()); 
-        this.setTitle("MQ Admin Toy");
+        this.setTitle("MQ Admin Tool");
         //this.timer = new Timer();
         this.TreeViewPanel.setMinimumSize(new Dimension(200,400));
         this.SplitPane.setDividerLocation(200);
-        this.HostTextBox.setText("127.0.0.1");
-        this.QueueManagerTextBox.setText("MQJB1");
+        this.HostTextBox.setText("");
+        this.QueueManagerTextBox.setText("");
         this.ChannelTextBox.setText("SYSTEM.ADMIN.SVRCONN");
         this.PortTextBox.setText("1414");
         TreeHelper.InitTreeView(TreeView);
@@ -1168,6 +1183,9 @@ public class MainWindow extends javax.swing.JFrame {
                     break;
                 case Channel:
                     result = (ArrayList<Object>)(Object)MQPCF.GetChannelList(queueManager, "*", null, true).GetFilterDataModels(this.activedSearchString, ShowSystemObjectToggleButton.isSelected());
+                    break;
+                case ChannelStatus:
+                    result = (ArrayList<Object>)(Object)MQPCF.GetChannelStatusList(queueManager, "*", null, false).DataModels;
                     break;
             }            
             if(result != null && result.size() > 0){                
@@ -1457,6 +1475,33 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void TestMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TestMenuItemActionPerformed
         ExcelHelper.ReadExcelFile("test.xls");
+//        ContentTable = new javax.swing.JTable(){
+//            public Class getColumnClass(int column)
+//            {
+//                int rowCount = getRowCount();
+//                Object value = null;
+//                value = getValueAt(0, column);
+//                if(value == null){
+//                    value = getValueAt(rowCount - 1, column);
+//                }
+//                if(value != null){
+//                    try{
+//                        Double intValue = Double.parseDouble(value.toString());
+//                        return Double.class;
+//                    }catch(Exception ex){
+//                        return value.getClass();
+//                    }
+//                }
+//                else{
+//                    return Object.class;
+//                }
+//            }
+//        };
+
+//                if(getValueAt(0, column) != null)
+//                return getValueAt(0, column).getClass();
+//                else
+//                return Object.class;
         
     }//GEN-LAST:event_TestMenuItemActionPerformed
 

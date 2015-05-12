@@ -30,6 +30,12 @@ public abstract class DialogBase extends javax.swing.JDialog {
         this.selectedObject = selectedObject;
         this.ParentJFrame = parent;
         this.setModal(true);
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
     }
     
     public void AddDialogActionListener(ActionListener listener){
@@ -58,5 +64,11 @@ public abstract class DialogBase extends javax.swing.JDialog {
         this.setVisible(false);
         this.dispose();       
     }
+    
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {                                  
+        if(ParentJFrame != null){
+            ParentJFrame.repaint();
+        }
+    }   
     
 }

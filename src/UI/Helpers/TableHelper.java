@@ -5,40 +5,22 @@
  */
 package UI.Helpers;
 
-import MQApi.Enums.LogType;
-import MQApi.Enums.QueueType;
 import MQApi.Enums.TableContentType;
-import MQApi.Logs.LogWriter;
 import MQApi.Models.MQMessageIdModel;
 import MQApi.Result.Annotations.MQObjectListtAnnotation;
 import MQApi.QueryModel.MQChannelListResult.ChannelDetailModel;
 import MQApi.QueryModel.MQMessageListResult.MessageDetailModel;
-import MQApi.QueryModel.MQQueueListResult;
 import MQApi.QueryModel.MQQueueListResult.QueueDetailModel;
-import Tasks.UpdateChannelListTask;
-import Tasks.UpdateQueueListTask;
-import UI.Misc.CustomTableCellRender;
 import UI.Models.TableListObject;
-import UI.Models.TreeNodeObject;
-import com.ibm.mq.MQMessage;
 import java.awt.Component;
 import java.awt.Point;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 
 /**
  *
@@ -99,7 +81,7 @@ public class TableHelper {
                             tablleDataObjects[i][j] = obj;
                         }
                         else{
-                            tablleDataObjects[i][j] = o != null ? o.toString() : null;
+                            tablleDataObjects[i][j] = o != null ? o : null;
                         }
                     }catch(Exception ex){
                         tablleDataObjects[i][j] = null;
@@ -128,6 +110,18 @@ public class TableHelper {
     
     public static void ToggleContentTable(JTable contentTable, boolean show){
         DefaultTableModel model = new DefaultTableModel(){
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                int rowCount = getRowCount();
+                Object value = null;
+                for(int i = 0 ; i < rowCount; i++){
+                    value = getValueAt(i, columnIndex);
+                    if(value != null){
+                        return value.getClass();
+                    }
+                }
+                return Object.class;
+            }
             @Override
             public boolean isCellEditable(int rowIndex, int mColIndex) {
               return false;

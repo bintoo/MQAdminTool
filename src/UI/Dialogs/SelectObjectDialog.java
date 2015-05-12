@@ -51,7 +51,7 @@ public class SelectObjectDialog<T extends Enum> extends DialogBase {
         this.OkButton.setEnabled(false);
         this.ProgressBar.setIndeterminate(true);
         this.ProgressBar.setVisible(false);
-
+        TableHelper.ToggleContentTable(SelectObjectTable, false);
         
     }
     

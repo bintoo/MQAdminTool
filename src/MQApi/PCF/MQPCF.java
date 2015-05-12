@@ -162,34 +162,7 @@ public class MQPCF {
         disconnectAgent(agent);
         return model;
     }
-    
-    public static MQChannelPropertyModel GetChannelProperties(MQQueueManager queueManager, String name) throws MQDataException, IOException{
-        MQChannelPropertyModel model = null;
-        PCFMessageAgent agent = null;
-        try {
-            agent = new PCFMessageAgent(queueManager);
-            PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_CHANNEL);        
-            pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
-            agent.setCheckResponses(false);
-            PCFMessage[] pcfResponse = agent.send(pcfCmd);
-            if(pcfResponse.length > 0 && pcfResponse[0].getCompCode() == 0){
-                model = new MQChannelPropertyModel();
-                readToPropertyModel(pcfResponse[0], model);
-            }
         
-        } catch (MQDataException ex) {
-            disconnectAgent(agent);
-            LogWriter.WriteToLog("MQPCF", "GetChannelProperties", ex);
-            throw ex;
-        } catch (IOException ex) {
-            disconnectAgent(agent);
-            LogWriter.WriteToLog("MQPCF", "GetChannelProperties", ex);
-            throw ex;
-        }
-        disconnectAgent(agent);
-        return model;
-    }
-    
     public static MQCommandResult UpdateQueueProperties(MQQueueManager queueManager, MQQueuePropertyModel model){
         return CreateOrModifyQueueProperties(queueManager, model, false);
     }
@@ -206,16 +179,7 @@ public class MQPCF {
             return false;
         }
     }
-    
-    public static boolean CheckChannelExist(MQQueueManager queueManager, String name){
-        try{
-            MQChannelPropertyModel model = GetChannelProperties(queueManager, name);
-            return model != null;
-        }catch(Exception ex){
-            return false;
-        }
-    }
-        
+          
     public static MQCommandResult ClearQueue(MQQueueManager queueManager, String queueName, boolean isAlias) {
         PCFMessageAgent agent = null;
         MQCommandResult result = new MQCommandResult();        
@@ -228,14 +192,7 @@ public class MQPCF {
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_CLEAR_Q);
             pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, queueName);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
-            if(pcfResponse[0].getCompCode() == 0){
-                result.QuerySuccess = true;
-                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
-            }
-            else{
-                result.QuerySuccess = false;
-                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
-            }
+            assignCommandReturnResult(pcfResponse[0], result);
             
         } catch (MQDataException ex) {
             LogWriter.WriteToLog("MQPCF", "ClearQueue", ex);
@@ -261,15 +218,7 @@ public class MQPCF {
                 pcfCmd.addParameter(MQConstants.MQIACF_PURGE, MQConstants.MQPO_YES);
             }
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
-            if(pcfResponse[0].getCompCode() == 0){
-                result.QuerySuccess = true;
-                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
-            }
-            else{
-                result.QuerySuccess = false;
-                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
-            }
-            
+            assignCommandReturnResult(pcfResponse[0], result);            
         } catch (MQDataException ex) {
             LogWriter.WriteToLog("MQPCF", "DeleteQueue", ex);
             result.QuerySuccess = false;
@@ -441,6 +390,42 @@ public class MQPCF {
         return result;
     }   
     
+    public static boolean CheckChannelExist(MQQueueManager queueManager, String name){
+            try{
+                MQChannelPropertyModel model = GetChannelProperties(queueManager, name);
+                return model != null;
+            }catch(Exception ex){
+                return false;
+            }
+    }
+    
+    public static MQChannelPropertyModel GetChannelProperties(MQQueueManager queueManager, String name) throws MQDataException, IOException{
+        MQChannelPropertyModel model = null;
+        PCFMessageAgent agent = null;
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_CHANNEL);        
+            pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
+            agent.setCheckResponses(false);
+            PCFMessage[] pcfResponse = agent.send(pcfCmd);
+            if(pcfResponse.length > 0 && pcfResponse[0].getCompCode() == 0){
+                model = new MQChannelPropertyModel();
+                readToPropertyModel(pcfResponse[0], model);
+            }
+        
+        } catch (MQDataException ex) {
+            disconnectAgent(agent);
+            LogWriter.WriteToLog("MQPCF", "GetChannelProperties", ex);
+            throw ex;
+        } catch (IOException ex) {
+            disconnectAgent(agent);
+            LogWriter.WriteToLog("MQPCF", "GetChannelProperties", ex);
+            throw ex;
+        }
+        disconnectAgent(agent);
+        return model;
+    }
+    
     public static MQCommandResult UpdateChannelProperties(MQQueueManager queueManager, MQChannelPropertyModel model){
         return CreateOrModifyChannelProperties(queueManager, model, false);
     }
@@ -457,14 +442,7 @@ public class MQPCF {
             PCFMessage pcfCmdQueryDetail = new PCFMessage(MQConstants.MQCMD_START_CHANNEL);
             pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
             PCFMessage[] pcfResponse = agent.send(pcfCmdQueryDetail);
-            if(pcfResponse[0].getCompCode() == 0){
-                result.QuerySuccess = true;
-                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
-            }
-            else{
-                result.QuerySuccess = false;
-                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
-            }
+            assignCommandReturnResult(pcfResponse[0], result);
         } catch (MQDataException ex) {
             LogWriter.WriteToLog("MQPCF", "StartChannel", ex);
             result.QuerySuccess = false;
@@ -512,14 +490,7 @@ public class MQPCF {
                 }
             }
             PCFMessage[] pcfResponse = agent.send(pcfCmdQueryDetail);
-            if(pcfResponse[0].getCompCode() == 0 || pcfResponse[0].getCompCode() == 1){
-                result.QuerySuccess = true;
-                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
-            }
-            else{
-                result.QuerySuccess = false;
-                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
-            }
+            assignCommandReturnResult(pcfResponse[0], result);
         } catch (MQDataException ex) {
             LogWriter.WriteToLog("MQPCF", "StopChannel", ex);
             result.QuerySuccess = false;
@@ -542,14 +513,7 @@ public class MQPCF {
             pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
             pcfCmdQueryDetail.addParameter(MQConstants.MQIACH_MSG_SEQUENCE_NUMBER, seq);
             PCFMessage[] pcfResponse = agent.send(pcfCmdQueryDetail);
-            if(pcfResponse[0].getCompCode() == 0){
-                result.QuerySuccess = true;
-                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
-            }
-            else{
-                result.QuerySuccess = false;
-                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
-            }
+            assignCommandReturnResult(pcfResponse[0], result);
         } catch (MQDataException ex) {
             LogWriter.WriteToLog("MQPCF", "ResetChannel", ex);
             result.QuerySuccess = false;
@@ -572,14 +536,7 @@ public class MQPCF {
             pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
             pcfCmdQueryDetail.addParameter(MQConstants.MQIACH_IN_DOUBT, type == ChannelResolveType.Backout ? MQConstants.MQIDO_BACKOUT : MQConstants.MQIDO_COMMIT);
             PCFMessage[] pcfResponse = agent.send(pcfCmdQueryDetail);
-            if(pcfResponse[0].getCompCode() == 0){
-                result.QuerySuccess = true;
-                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
-            }
-            else{
-                result.QuerySuccess = false;
-                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
-            }
+            assignCommandReturnResult(pcfResponse[0], result);
         } catch (MQDataException ex) {
             LogWriter.WriteToLog("MQPCF", "ResolveChannel", ex);
             result.QuerySuccess = false;
@@ -601,14 +558,7 @@ public class MQPCF {
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_DELETE_CHANNEL);
             pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, channelName);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
-            if(pcfResponse[0].getCompCode() == 0){
-                result.QuerySuccess = true;
-                result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());
-            }
-            else{
-                result.QuerySuccess = false;
-                result.ErrorMessage = getMQReturnMessage(pcfResponse[0].getCompCode(), pcfResponse[0].getReason());                
-            }
+            assignCommandReturnResult(pcfResponse[0], result);
             
         } catch (MQDataException ex) {
             LogWriter.WriteToLog("MQPCF", "DeleteChannel", ex);
@@ -687,8 +637,6 @@ public class MQPCF {
                 } catch (NoSuchFieldException ex) {
                     LogWriter.WriteToLog(ex.fillInStackTrace());
                 } catch (SecurityException ex) {
-                    LogWriter.WriteToLog(ex.fillInStackTrace());;
-                } catch (IllegalArgumentException ex) {
                     LogWriter.WriteToLog(ex.fillInStackTrace());;
                 } catch (InvocationTargetException ex) {
                     LogWriter.WriteToLog(ex.fillInStackTrace());;
@@ -878,35 +826,12 @@ public class MQPCF {
         try {           
             agent = new PCFMessageAgent(queueManager);
             PCFMessage pcfCmd = new PCFMessage(isCreate ? MQConstants.MQCMD_CREATE_Q : MQConstants.MQCMD_CHANGE_Q);
-            for(Field field : model.getClass().getFields()){
-                try {
-                    int parameter = field.getAnnotation(MQObjectPropertyAnnotation.class).MQConstant();
-                    VariableType variableType = field.getAnnotation(MQObjectPropertyAnnotation.class).VarType();
-                    boolean sendToPCF = field.getAnnotation(MQObjectPropertyAnnotation.class).SendToPCF();
-                    Object value = field.get(model);
-                    if(value != null && sendToPCF){
-                        switch(variableType){
-                            case Text :
-                                pcfCmd.addParameter(parameter, value.toString());
-                                break;
-                            case Number:    
-                                Integer paraValue = Integer.parseInt(value.toString());
-                                pcfCmd.addParameter(parameter, paraValue);
-                                break;
-                        }
-                    }
-                } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalAccessException ex) {
-                    Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            addParameters(model, pcfCmd);
             if(!isCreate){
                 pcfCmd.addParameter(MQConstants.MQIACF_FORCE, MQConstants.MQFC_YES); //always force change
             }
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
-            result.QuerySuccess = true;
-            result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(),pcfResponse[0].getReason() );
+            assignCommandReturnResult(pcfResponse[0], result);
         } catch (MQDataException ex) {
             LogWriter.WriteToLog("MQPCF", "CreateOrModifyQueueProperties", ex);
             result.QuerySuccess = false;
@@ -926,35 +851,9 @@ public class MQPCF {
         try {           
             agent = new PCFMessageAgent(queueManager);
             PCFMessage pcfCmd = new PCFMessage(isCreate ? MQConstants.MQCMD_CREATE_CHANNEL : MQConstants.MQCMD_CHANGE_CHANNEL);
-            for(Field field : model.getClass().getFields()){
-                try {
-                    int parameter = field.getAnnotation(MQObjectPropertyAnnotation.class).MQConstant();
-                    VariableType variableType = field.getAnnotation(MQObjectPropertyAnnotation.class).VarType();
-                    boolean sendToPCF = field.getAnnotation(MQObjectPropertyAnnotation.class).SendToPCF();
-                    Object value = field.get(model);
-                    if(value != null && sendToPCF){
-                        switch(variableType){
-                            case Text :
-                                pcfCmd.addParameter(parameter, value.toString());
-                                break;
-                            case TextArray :
-                                pcfCmd.addParameter(parameter, (String[])value);
-                                break;
-                            case Number:    
-                                Integer paraValue = Integer.parseInt(value.toString());
-                                pcfCmd.addParameter(parameter, paraValue);
-                                break;
-                        }
-                    }
-                } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalAccessException ex) {
-                    Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            addParameters(model, pcfCmd);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
-            result.QuerySuccess = true;
-            result.ReturnMessage = getMQReturnMessage(pcfResponse[0].getCompCode(),pcfResponse[0].getReason() );
+            assignCommandReturnResult(pcfResponse[0], result);
         } catch (MQDataException ex) {
             LogWriter.WriteToLog("MQPCF", "CreateOrModifyChannelProperties", ex);
             result.QuerySuccess = false;
@@ -966,6 +865,46 @@ public class MQPCF {
         }
         disconnectAgent(agent);
         return result;
+    }
+    
+    private static void addParameters(Object model, PCFMessage pcfCmd ){
+        for(Field field : model.getClass().getFields()){
+            try {
+                int parameter = field.getAnnotation(MQObjectPropertyAnnotation.class).MQConstant();
+                VariableType variableType = field.getAnnotation(MQObjectPropertyAnnotation.class).VarType();
+                boolean sendToPCF = field.getAnnotation(MQObjectPropertyAnnotation.class).SendToPCF();
+                Object value = field.get(model);
+                if(value != null && sendToPCF){
+                    switch(variableType){
+                        case Text :
+                            pcfCmd.addParameter(parameter, value.toString());
+                            break;
+                        case TextArray :
+                            pcfCmd.addParameter(parameter, (String[])value);
+                            break;
+                        case Number:    
+                            Integer paraValue = Integer.parseInt(value.toString());
+                            pcfCmd.addParameter(parameter, paraValue);
+                            break;
+                    }
+                }
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }        
+    }
+    
+    private static void assignCommandReturnResult(PCFMessage pcfResponse,MQCommandResult result){
+        if(pcfResponse.getCompCode() == 0){
+            result.QuerySuccess = true;
+            result.ReturnMessage = getMQReturnMessage(pcfResponse.getCompCode(), pcfResponse.getReason());
+        }
+        else{
+            result.QuerySuccess = false;
+            result.ErrorMessage = getMQReturnMessage(pcfResponse.getCompCode(), pcfResponse.getReason());                
+        }    
     }
     
     private static String getMQReturnMessage(int compCode, int reason){

@@ -12,4 +12,5 @@ package MQApi.Enums;
 public enum MQObjectType {
     Queue,
     Channel,
+    ChannelStatus,
 }

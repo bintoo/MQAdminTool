@@ -332,7 +332,7 @@
                     <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="ContentTableMouseClicked"/>
                   </Events>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable(){&#xa;        public Class getColumnClass(int column)&#xa;        {&#xa;            if(getValueAt(0, column) != null)&#xa;                return getValueAt(0, column).getClass();&#xa;            else&#xa;                return Object.class;&#xa;        }    &#xa;}"/>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTable(){&#xa;    @Override&#xa;    public Class getColumnClass(int column)&#xa;    {&#xa;        int rowCount = getRowCount();&#xa;        Object value = null;&#xa;        for(int i = 0 ; i &lt; rowCount; i++){&#xa;                value = getValueAt(i, column);&#xa;                if(value != null){&#xa;                        return value.getClass();&#xa;                    }&#xa;            }&#xa;        return Object.class;&#xa;    }&#xa;}"/>
                   </AuxValues>
                 </Component>
               </SubComponents>
