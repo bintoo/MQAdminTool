@@ -426,7 +426,20 @@ public class MQUtility {
                             MQMessage message = new MQMessage();
                             MQGetMessageOptions options = new MQGetMessageOptions();
                             options.options = CMQC.MQGMO_BROWSE_NEXT;
-                            queue.get(message, options);
+                            try{
+                                queue.get(message, options);
+                            }
+                            catch(MQException ex){
+                                if(ex.getReason() == MQConstants.MQRC_NO_MSG_AVAILABLE){
+                                    if(progressBar != null){
+                                        progressBar.setValue(100);
+                                    }
+                                    break;
+                                }
+                                else{
+                                    throw ex;
+                                }
+                            }
                             writeMessageToStream(message, objectOutputStream);
                             index--;
                             if(progressBar != null){
@@ -497,7 +510,20 @@ public class MQUtility {
                             MQMessage message = new MQMessage();
                             MQGetMessageOptions options = new MQGetMessageOptions();
                             options.options = CMQC.MQGMO_BROWSE_NEXT;
-                            queue.get(message, options);
+                            try{
+                                queue.get(message, options);
+                            }
+                            catch(MQException ex){
+                                if(ex.getReason() == MQConstants.MQRC_NO_MSG_AVAILABLE){
+                                    if(progressBar != null){
+                                        progressBar.setValue(100);
+                                    }
+                                    break;
+                                }
+                                else{
+                                    throw ex;
+                                }
+                            }
                             out.write("Message position : " + pos);
                             out.write("\r\n"); 
                             out.write("\r\n");

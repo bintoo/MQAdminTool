@@ -1420,6 +1420,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void TestMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TestMenuItemActionPerformed
         ExcelHelper.ReadExcelFile("test.xls");
+
 //        ContentTable = new javax.swing.JTable(){
 //            public Class getColumnClass(int column)
 //            {

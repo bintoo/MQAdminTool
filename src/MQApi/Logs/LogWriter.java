@@ -58,6 +58,7 @@ public class LogWriter {
         if(fileTxt != null){
             fileTxt.flush();
             fileTxt.close();
+            isLoggerReady = false;
         }
     }
     public static void WriteToLog(String className, String methodName, Exception ex){
@@ -69,7 +70,8 @@ public class LogWriter {
         }
         else{
             logger.logp(Level.SEVERE, className, methodName, ex.getMessage());
-        }      
+        }   
+        Close();
     }
     public static void WriteToLog(String message){
         if(!isLoggerReady){
@@ -81,6 +83,7 @@ public class LogWriter {
         else{
             logger.log(Level.SEVERE, message);
         }      
+        Close();
     }
     public static void WriteToLog(Throwable t){
         if(!isLoggerReady){
@@ -92,5 +95,6 @@ public class LogWriter {
         else{
             logger.log(Level.SEVERE, "Uncaught Exception", t);
         }      
+        Close();
     }
 }
