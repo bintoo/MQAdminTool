@@ -9,6 +9,7 @@ import MQApi.Logs.LogWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -19,6 +20,8 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler{
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         LogWriter.WriteToLog(e);
+        JOptionPane.showMessageDialog(null, "The program has encountered a fatal error and needs to be closed.\n\r\n\rPlease check the log and report to Jianbin for furture improvement.", "MQ Admin Tool Fatal error",JOptionPane.ERROR_MESSAGE );
+        System.exit(1);
     }
     private String getStackTrace(Throwable aThrowable) {
         final Writer result = new StringWriter();

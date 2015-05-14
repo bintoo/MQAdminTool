@@ -30,6 +30,8 @@ public class MQChannelStatusListResult extends MQQueryResultBase{
         public Integer MSGS;
         @MQObjectListtAnnotation(DisplayName = "Channel connection",MQConstant = MQConstants.MQCACH_CONNECTION_NAME, VarType = VariableType.Text, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
         public String ConnectionName;
+        @MQObjectListtAnnotation(DisplayName = "Current Sharing Conversation",MQConstant = MQConstants.MQIACH_CURRENT_SHARING_CONVS, VarType = VariableType.Number, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
+        public Integer CurrentSharingConversations;
         @MQObjectListtAnnotation(DisplayName = "Start Date",MQConstant = MQConstants.MQCACH_CHANNEL_START_DATE, VarType = VariableType.Text, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
         public String StartDate;
         @MQObjectListtAnnotation(DisplayName = "Start Time", MQConstant = MQConstants.MQCACH_CHANNEL_START_TIME, VarType = VariableType.Text, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
