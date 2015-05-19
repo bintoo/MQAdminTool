@@ -25,6 +25,7 @@ public class HelpDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         String text = "<p>This project is developed by Jianbin Zhou for study purpose.</p>" +
+                      "<p>It is writen in Java 1.6 and using IBM MQ client ver 7.5.</p>" +
                         "<p>Please report any bug or suggestion to my email address " +
                         "<a href='mailto:curtiszhou1981@gmail.com'>curtiszhou1981@gmail.com</a></p>"+
                         "<p>Icons from Icon8 <a href=\"https://icons8.com/\">https://icons8.com/</a>" +
@@ -88,7 +89,7 @@ public class HelpDialog extends javax.swing.JDialog {
         setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        jLabel1.setText("       MQ Admin Tool beta (build 8a5f4ab )");
+        jLabel1.setText("       MQ Admin Tool (BETA build 4392eda )");
         jLabel1.setPreferredSize(new java.awt.Dimension(300, 50));
 
         jScrollPane2.setViewportView(TextPane);

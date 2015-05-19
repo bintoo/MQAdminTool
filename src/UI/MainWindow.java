@@ -139,6 +139,7 @@ public class MainWindow extends javax.swing.JFrame {
         MainMenuBar = new javax.swing.JMenuBar();
         FileMenu = new javax.swing.JMenu();
         TestMenuItem = new javax.swing.JMenuItem();
+        AddQueueManagerMenuItem = new javax.swing.JMenuItem("Add Queue Manager",iconManager.DeviceManager());
         MainWindowMenu = new javax.swing.JMenu();
         ChannelStatusToolMenuItem = new javax.swing.JMenuItem();
         HelpMenu = new javax.swing.JMenu();
@@ -424,6 +425,14 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         FileMenu.add(TestMenuItem);
+
+        AddQueueManagerMenuItem.setText("Add queue manager");
+        AddQueueManagerMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AddQueueManagerMenuItemActionPerformed(evt);
+            }
+        });
+        FileMenu.add(AddQueueManagerMenuItem);
 
         MainMenuBar.add(FileMenu);
 
@@ -875,7 +884,8 @@ public class MainWindow extends javax.swing.JFrame {
         this.ShowTempObjectToggle.setVisible(false);
         
         TreeView.setCellRenderer(new CustomTreeRender());
-        //ContentTable.setDefaultRenderer(TableListObject.class, new CustomTableCellRender());      
+        //ContentTable.setDefaultRenderer(TableListObject.class, new CustomTableCellRender()); 
+        this.TestMenuItem.setVisible(false);
         
     }
     
@@ -1493,6 +1503,11 @@ public class MainWindow extends javax.swing.JFrame {
         dialog.setVisible(true);   
         
     }//GEN-LAST:event_AboutMenuItemActionPerformed
+
+    private void AddQueueManagerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddQueueManagerMenuItemActionPerformed
+        queueManagerEditPanelEditMode = false;
+        addQueueManageMenuItemActionPerformed(evt);        
+    }//GEN-LAST:event_AddQueueManagerMenuItemActionPerformed
     
     private void addQueueManageMenuItemActionPerformed(java.awt.event.ActionEvent evt){
         this.ConnectionDetailDialog.setLocationRelativeTo(this);
@@ -1542,6 +1557,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem AboutMenuItem;
+    private javax.swing.JMenuItem AddQueueManagerMenuItem;
     private javax.swing.JButton AddtButton;
     private javax.swing.JButton CancelBitton;
     private javax.swing.JMenuItem ChannelStatusToolMenuItem;
