@@ -6,6 +6,7 @@
 package UI.Helpers;
 
 import MQApi.Models.Query.ConnectionDetailModel;
+import UI.Models.MQRC.MQRCParentModel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -85,6 +86,36 @@ public class XMLHelper {
              Logger.getLogger(XMLHelper.class.getName()).log(Level.SEVERE, null, ex);
          }
         return models;
+    }
+    
+    public static void WriteMQRCModelToXml(){
+        MQRCParentModel model = new MQRCParentModel();
+        String filePath = "MQRCDefValue.xml";
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            
+            DocumentBuilder db = dbf.newDocumentBuilder();       
+            Document document = db.newDocument();
+            Element rootElement = document.createElement("MQRCModelDefValues");
+            for(Field field : model.getClass().getFields()){
+                String name = field.getName();
+                Element modelEle = document.createElement(name);
+                Object childModel = field.get(model);
+                for(Field modelField : childModel.getClass().getFields()){
+                    String propertyName = modelField.getName();
+                    String value = modelField.get(childModel) != null ? (modelField.get(childModel)).toString() : " ";
+                    Element ele = document.createElement(propertyName);
+                    ele.appendChild(document.createTextNode(value));
+                    modelEle.appendChild(ele);
+                }
+                rootElement.appendChild(modelEle);
+            }
+            document.appendChild(rootElement);
+            Transformer tr = TransformerFactory.newInstance().newTransformer();
+            tr.transform(new DOMSource(document), new StreamResult(new FileOutputStream(filePath)));
+        } catch (Exception ex) {
+            Logger.getLogger(XMLHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private static String getNodeValue(Node node, String fieldName){

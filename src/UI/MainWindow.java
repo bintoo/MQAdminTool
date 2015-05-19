@@ -1419,7 +1419,8 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_ContentTableMouseClicked
 
     private void TestMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TestMenuItemActionPerformed
-        ExcelHelper.ReadExcelFile("test.xls");
+        //ExcelHelper.ReadExcelFile("test.xls");
+        XMLHelper.WriteMQRCModelToXml();
 //        String[] a = new String[1];
 //        String b = a[3];
 

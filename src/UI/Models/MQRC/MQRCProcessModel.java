@@ -3,27 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package UI.Models;
+package UI.Models.MQRC;
 
 /**
  *
  * @author jzhou
  */
-public class MQRCChannelModel {
+public class MQRCProcessModel {
     @MQRCModelAnnotation(ExcelKeyword = "Platform to define on", loop = false)
     public String Platform;
     @MQRCModelAnnotation(ExcelKeyword = "MQ Queue Manager *", loop = false)
     public String QueueManager;
-    @MQRCModelAnnotation(ExcelKeyword = "Channel Name *", createNewModel = true)
+    @MQRCModelAnnotation(ExcelKeyword = "Process Name *", createNewModel = true)
     public String Name;
-    @MQRCModelAnnotation(ExcelKeyword = "Channel Type *")
-    public String Type;
-    @MQRCModelAnnotation(ExcelKeyword = "SHARE (defaults 10)")
-    public String Share;
     @MQRCModelAnnotation(ExcelKeyword = "Short Description *")
-    public String ShortDescription;
-
-
-    
-    
+    public String Description;    
+    @MQRCModelAnnotation(ExcelKeyword = "Application ID *")
+    public String AppId;  
+    @MQRCModelAnnotation(ExcelKeyword = "Application Type *")
+    public String AppType;  
 }

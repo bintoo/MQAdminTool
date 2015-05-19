@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package UI.Models;
+package UI.Models.MQRC;
 
 import MQApi.Result.Annotations.*;
 import MQApi.Enums.VariableType;
@@ -18,6 +18,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MQRCModelAnnotation {
     String ExcelKeyword();
     String CommandKeyWord() default "";
+    String[] ApplyForType() default {};
     boolean loop() default true;
     boolean createNewModel() default false;
 }
