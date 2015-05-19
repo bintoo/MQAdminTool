@@ -23,6 +23,7 @@ import UI.Dialogs.ChannelProperitiesDialog;
 import UI.Dialogs.StatusDialog;
 import UI.Dialogs.ClearMessagesDialog;
 import UI.Dialogs.DialogFactory;
+import UI.Dialogs.HelpDialog;
 import UI.Dialogs.MessageEditDialog;;
 import UI.Helpers.*;
 import UI.Models.*;
@@ -441,6 +442,11 @@ public class MainWindow extends javax.swing.JFrame {
         HelpMenu.setText("Help");
 
         AboutMenuItem.setText("About");
+        AboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AboutMenuItemActionPerformed(evt);
+            }
+        });
         HelpMenu.add(AboutMenuItem);
 
         MainMenuBar.add(HelpMenu);
@@ -1480,6 +1486,13 @@ public class MainWindow extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         LogWriter.Close();
     }//GEN-LAST:event_formWindowClosing
+
+    private void AboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AboutMenuItemActionPerformed
+        HelpDialog dialog = new HelpDialog(this, true);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);   
+        
+    }//GEN-LAST:event_AboutMenuItemActionPerformed
     
     private void addQueueManageMenuItemActionPerformed(java.awt.event.ActionEvent evt){
         this.ConnectionDetailDialog.setLocationRelativeTo(this);
