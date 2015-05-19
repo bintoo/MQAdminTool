@@ -1338,7 +1338,8 @@ public class MainWindow extends javax.swing.JFrame {
  //Event handlers   
     private void ChannelStatusToolMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChannelStatusToolMenuItemActionPerformed
         if(!chToolRef.IsOpen){
-            ChannelStatusTool chTool = new ChannelStatusTool(chToolRef);
+            ChannelStatusTool chTool = new ChannelStatusTool(this, true);
+            chTool.setLocationRelativeTo(this);
             chTool.start();
         }
     }//GEN-LAST:event_ChannelStatusToolMenuItemActionPerformed
@@ -1419,8 +1420,9 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_ContentTableMouseClicked
 
     private void TestMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TestMenuItemActionPerformed
+  
         //ExcelHelper.ReadExcelFile("test.xls");
-        XMLHelper.WriteMQRCModelToXml();
+        //XMLHelper.WriteMQRCModelToXml();
 //        String[] a = new String[1];
 //        String b = a[3];
 

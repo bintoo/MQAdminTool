@@ -6,44 +6,30 @@
 package UI;
 
 import Tasks.CheckChannelTask;
-import MQApi.Enums.QueueType;
-import MQApi.PCF.MQPCF;
-import MQApi.Models.ToolChannelStatusModel;
 import MQApi.Models.Query.ConnectionDetailModel;
-import MQApi.QueryModel.MQChannelStatusModel;
-import MQApi.QueryModel.MQNameListResult;
-import MQApi.TextWriter;
 import UI.ReferenceObjects.ToolStatusReference;
-import com.ibm.mq.headers.MQDataException;
-import com.ibm.mq.headers.pcf.PCFException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author jzhou
  */
-public class ChannelStatusTool extends javax.swing.JFrame {
+public class ChannelStatusTool extends javax.swing.JDialog  {
 
     /**
      * Creates new form MainJFrame
      */
-    ToolStatusReference openRef;
-    public ChannelStatusTool(ToolStatusReference ref) {
+    public ChannelStatusTool(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
-        this.HostTextField.setText("127.0.0.1");
+        this.HostTextField.setText("");
         this.ChannelTextField.setText("SYSTEM.ADMIN.SVRCONN");
-        this.QueueManagerTextField.setText("MQJB1");
+        this.QueueManagerTextField.setText("");
         this.PortTextField.setText("1414");
         this.WaitForTextField.setText("60");
         this.DebugTextArea.setText("");
-        this.openRef = ref;
     }
 
     /**
@@ -71,8 +57,7 @@ public class ChannelStatusTool extends javax.swing.JFrame {
         WaitForTextField = new javax.swing.JTextField();
         CloseButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setAlwaysOnTop(true);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
@@ -187,7 +172,7 @@ public class ChannelStatusTool extends javax.swing.JFrame {
     private void ConnectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConnectButtonActionPerformed
         if(VarifyInput()){
             ConnectionDetailModel connection = GetConnectionDetailModel();
-            CheckChannelTask task = new CheckChannelTask(connection,Integer.parseInt(this.WaitForTextField.getText()),this.DebugTextArea, this.ConnectButton, this.CloseButton);
+            CheckChannelTask task = new CheckChannelTask(connection,Integer.parseInt(this.WaitForTextField.getText()),this.DebugTextArea, this.ConnectButton, this.CloseButton, this);
             Thread t = new Thread(task);
             t.start();
         }
@@ -196,7 +181,6 @@ public class ChannelStatusTool extends javax.swing.JFrame {
     private void CloseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CloseButtonActionPerformed
         
         this.setVisible(false);
-        this.openRef.IsOpen = false;
         this.dispose();
     }//GEN-LAST:event_CloseButtonActionPerformed
 
@@ -286,7 +270,6 @@ public class ChannelStatusTool extends javax.swing.JFrame {
 //                new ChannelStatusTool(openRef).setVisible(true);
 //            }
 //        });
-        this.openRef.IsOpen = true;
         this.setVisible(true);
     }
     

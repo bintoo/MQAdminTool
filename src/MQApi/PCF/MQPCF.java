@@ -756,7 +756,7 @@ public class MQPCF {
             try {
                 ToolChannelStatusModel model = new ToolChannelStatusModel();
                 model.Value = new ChannelStatusValueModel();
-                model.Application = (String) message.getStringParameterValue(MQConstants.MQCACH_REMOTE_APPL_TAG);
+                //model.Application = (String) message.getStringParameterValue(MQConstants.MQCACH_REMOTE_APPL_TAG);
                 model.ChannelName = (String) message.getStringParameterValue(MQConstants.MQCACH_CHANNEL_NAME).trim();
                 model.IpAddress = (String) message.getStringParameterValue(MQConstants.MQCACH_CONNECTION_NAME);
                 model.Value.MSGS =  ((Integer) (message.getParameterValue(MQConstants.MQIACH_MSGS)));

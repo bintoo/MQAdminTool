@@ -11,6 +11,7 @@ import MQApi.Models.ToolChannelStatusModel;
 import MQApi.Models.Query.ConnectionDetailModel;
 import MQApi.QueryModel.MQChannelStatusModel;
 import MQApi.TextWriter;
+import MQApi.Utilities.MQUtility;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,25 +26,30 @@ import javax.swing.JTextField;
 import UI.ChannelStatusTool;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueueManager;
+import java.awt.Component;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author jzhou
  */
-public class CheckChannelTask implements Runnable{
+public class CheckChannelTask extends TaskBase{
     
     private ConnectionDetailModel connection;
     private int waitFor;
     private JTextArea waitForTextField;
     private JButton connectButton;
     private JButton closeButton;
+    Component parent;
     
-    public CheckChannelTask(ConnectionDetailModel connection, int waitFor, JTextArea waitForTextField, JButton connectButton, JButton closeButton){
+    public CheckChannelTask(ConnectionDetailModel connection, int waitFor, JTextArea waitForTextField, JButton connectButton, JButton closeButton, Component parent){
         this.connection = connection;
         this.waitFor = waitFor;
         this.waitForTextField = waitForTextField;
         this.connectButton = connectButton;
         this.closeButton = closeButton;
+        this.parent = parent;
     }
     public void CheckChannelMessageChange(){
         try {
@@ -103,11 +109,14 @@ public class CheckChannelTask implements Runnable{
                 statusText += "\r\n" + "Please check the parameters and try again later.";
                 UpdateDebugWindows(waitForTextField,statusText);
             }           
-            connectButton.setEnabled(true);
-            closeButton.setEnabled(true);
-        } catch (MQException ex) {
+        } catch (MQException ex) {            
             Logger.getLogger(CheckChannelTask.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(parent, MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason()), "Error",JOptionPane.ERROR_MESSAGE );
+            UpdateDebugWindows(waitForTextField,"");
+            FireActionFailEvent();
         }
+        connectButton.setEnabled(true);
+        closeButton.setEnabled(true);
     }   
     private void UpdateDebugWindows(JTextArea waitForTextField,String text){
         waitForTextField.setText(text);
