@@ -810,10 +810,8 @@ public class MQUtility {
             if(Modifier.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())){
                 try {
                     String name = field.getName();
-                    if(!"format".equals(name)){
-                        Object value = field.get(oldMessage);
-                        newMessage.getClass().getField(name).set(newMessage, value);
-                    }
+                    Object value = field.get(oldMessage);
+                    newMessage.getClass().getField(name).set(newMessage, value);
                 } catch (Exception ex) {
                     continue;
                 }
