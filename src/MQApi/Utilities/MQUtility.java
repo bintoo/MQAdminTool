@@ -19,6 +19,9 @@ import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.CMQC;
 import com.ibm.mq.constants.MQConstants;
+import com.ibm.mq.headers.MQDLH;
+import com.ibm.mq.headers.MQDataException;
+import com.ibm.mq.headers.MQHeaderList;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -29,6 +32,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.logging.*;
@@ -395,7 +400,7 @@ public class MQUtility {
             return msg;
     }
 
-    public static void BackupMessageToFile(MQQueueManager queueManager, String queueName, String filePath, JProgressBar progressBar, ArrayList<MQMessageIdModel>ids, boolean isCompress, boolean isAlias) throws Exception{
+    public static void BackupMessageToFile(MQQueueManager queueManager, String queueName, String filePath, JProgressBar progressBar, ArrayList<MQMessageIdModel>ids, boolean isCompress, boolean isAlias, boolean removeDLH) throws Exception{
             FileOutputStream fileOutPutStream = null;
             BufferedOutputStream bufferedOutputStream = null;
             ObjectOutputStream  objectOutputStream = null;
@@ -440,6 +445,9 @@ public class MQUtility {
                                     throw ex;
                                 }
                             }
+                            if(removeDLH){
+                                message = RemoveMQDLH(message);
+                            }
                             writeMessageToStream(message, objectOutputStream);
                             index--;
                             if(progressBar != null){
@@ -458,6 +466,9 @@ public class MQUtility {
                             options.options = CMQC.MQGMO_BROWSE_NEXT;
                             options.matchOptions = MQConstants.MQMO_MATCH_MSG_ID  | MQConstants.MQMO_MATCH_CORREL_ID;
                             queue.get(message, options);   
+                            if(removeDLH){
+                                message = RemoveMQDLH(message);
+                            }
                             writeMessageToStream(message, objectOutputStream);
                             if(progressBar != null){
                                 int value = (i*100)/ids.size();
@@ -683,6 +694,27 @@ public class MQUtility {
         return new String(hexChars);
     }
     
+    public static MQMessage RemoveMQDLH(MQMessage message){
+        try {
+            MQHeaderList list = new MQHeaderList(message, true);
+            MQDLH dlh = (MQDLH) list.get(0);
+            int reason = dlh.getReason();
+            list.remove(dlh);
+            MQMessage newMessage = new MQMessage();
+            copyMessageMQMD(newMessage, message);
+            list.write(newMessage, true);
+            newMessage.format = list.size() > 0 ? list.getFormat() : "";            
+            return newMessage;
+        } catch (MQDataException ex) {
+            Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
+        } catch(Exception ex){
+            
+        }
+        return message;
+    }
+    
 //private
     private static MessageDetailModel turnToMessageModel(MQMessageListResult result, MQMessage message, int position){
         MessageDetailModel model = result.new MessageDetailModel();
@@ -771,6 +803,22 @@ public class MQUtility {
         stream.readFully(buff);
         message.write(buff);
         return message;
+    }
+    
+    private static void copyMessageMQMD(MQMessage newMessage, MQMessage oldMessage){
+        for(Field field : oldMessage.getClass().getFields()){
+            if(Modifier.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())){
+                try {
+                    String name = field.getName();
+                    if(!"format".equals(name)){
+                        Object value = field.get(oldMessage);
+                        newMessage.getClass().getField(name).set(newMessage, value);
+                    }
+                } catch (Exception ex) {
+                    continue;
+                }
+            }
+        }
     }
     
     private static void writeMessageToStream(MQMessage message, ObjectOutputStream stream){

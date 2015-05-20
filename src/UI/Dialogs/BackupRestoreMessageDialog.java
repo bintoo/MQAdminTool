@@ -68,6 +68,7 @@ public class BackupRestoreMessageDialog extends DialogBase{
         this.setIconImage(IsBackup == true ? iconManager.BackupMessageIcon().getImage() : iconManager.RestoreMessageIcon().getImage());
         this.OkButton.setText(IsBackup ? "Backup" : "Restore");
         this.CompressCheckBox.setVisible(option == Usage_Backup);
+        this.RemoveDLHCheckBox.setVisible(option == Usage_Backup);
     }
 
     /**
@@ -89,6 +90,7 @@ public class BackupRestoreMessageDialog extends DialogBase{
         BrowseButton = new javax.swing.JButton();
         ProgressBar = new javax.swing.JProgressBar();
         CompressCheckBox = new javax.swing.JCheckBox();
+        RemoveDLHCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
@@ -136,7 +138,12 @@ public class BackupRestoreMessageDialog extends DialogBase{
         ProgressBar.setToolTipText("");
 
         CompressCheckBox.setText("Compress output file");
+        CompressCheckBox.setToolTipText("Gzip output file");
         CompressCheckBox.setPreferredSize(new java.awt.Dimension(150, 23));
+
+        RemoveDLHCheckBox.setText("Remove DLH");
+        RemoveDLHCheckBox.setToolTipText("Only use this option on dead-letter queue messages");
+        RemoveDLHCheckBox.setPreferredSize(new java.awt.Dimension(150, 23));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -164,11 +171,14 @@ public class BackupRestoreMessageDialog extends DialogBase{
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(CompressCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(OkButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(CancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(CancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(RemoveDLHCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(CompressCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -189,7 +199,9 @@ public class BackupRestoreMessageDialog extends DialogBase{
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(ProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(CompressCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(CompressCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(RemoveDLHCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(OkButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -203,8 +215,9 @@ public class BackupRestoreMessageDialog extends DialogBase{
     private void OkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OkButtonActionPerformed
         toggleButtons(false);
         boolean isCompress = CompressCheckBox.isSelected();
+        boolean removeDLH = RemoveDLHCheckBox.isSelected();
         boolean isAlias = (QueueType)selectedObject.Type == QueueType.Alias;
-        BackupRestoreMessageTask task = new BackupRestoreMessageTask(queueManager, selectedObject.ObjectName, selectedFilePath, ParentJFrame, ProgressBar, ids, this.usageOption, isCompress,isAlias);
+        BackupRestoreMessageTask task = new BackupRestoreMessageTask(queueManager, selectedObject.ObjectName, selectedFilePath, ParentJFrame, ProgressBar, ids, this.usageOption, isCompress,isAlias, removeDLH);
         task.AddTaskActionSuccessListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -254,6 +267,7 @@ public class BackupRestoreMessageDialog extends DialogBase{
         this.CancelButton.setEnabled(value);
         this.OkButton.setEnabled(value);
         this.CompressCheckBox.setEnabled(value);
+        this.RemoveDLHCheckBox.setEnabled(value);
     }
     
     private void showFileChooser(){
@@ -284,6 +298,7 @@ public class BackupRestoreMessageDialog extends DialogBase{
     private javax.swing.JProgressBar ProgressBar;
     private javax.swing.JLabel QueueManagerNameLabel;
     private javax.swing.JLabel QueueNameLabel;
+    private javax.swing.JCheckBox RemoveDLHCheckBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
