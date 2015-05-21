@@ -703,7 +703,7 @@ public class MQUtility {
             MQMessage newMessage = new MQMessage();
             copyMessageMQMD(newMessage, message);
             list.write(newMessage, true);
-            newMessage.format = list.size() > 0 ? list.getFormat() : "";            
+            newMessage.format = !list.getFormat().trim().contains( "MQDEAD") ? list.getFormat() : null;            
             return newMessage;
         } catch (MQDataException ex) {
             Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
@@ -768,42 +768,50 @@ public class MQUtility {
                 return Integer.toString(type);
         }
     }
-   
+
     private static MQMessage readMessageFromStream(ObjectInputStream stream) throws IOException, ClassNotFoundException{
         MQMessage message = new MQMessage();
-        message.report = stream.readInt();
-        message.messageType = stream.readInt();
-        message.expiry = stream.readInt();
-        message.feedback = stream.readInt();
-        message.encoding = stream.readInt();
-        message.characterSet = stream.readInt();
-        message.feedback = stream.readInt();
-        message.format = (String)stream.readObject();
-        message.priority = stream.readInt();
-        message.persistence = stream.readInt();
-        stream.readFully(message.messageId);
-        stream.readFully(message.correlationId);
-        message.backoutCount = stream.readInt();
-        message.replyToQueueName = (String)stream.readObject();
-        message.replyToQueueManagerName = (String)stream.readObject();
-        message.userId = (String)stream.readObject();
-        stream.readFully(message.accountingToken);
-        message.applicationIdData = (String)stream.readObject();
-        message.putApplicationType = stream.readInt();
-        message.putApplicationName = (String)stream.readObject();
-        message.putDateTime = (GregorianCalendar)stream.readObject();
-        message.applicationOriginData = (String)stream.readObject();
-        stream.readFully(message.groupId);
-        message.messageSequenceNumber = stream.readInt();
-        message.offset = stream.readInt();
-        message.messageFlags = stream.readInt();
-        message.originalLength = stream.readInt();
+        for(Field field : message.getClass().getFields()){
+            if(Modifier.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())){
+                try {
+                    field.set(message, stream.readObject());                    
+                } catch (Exception ex) {
+                    continue;
+                }
+            }
+        }
         int i = stream.readInt();
         byte buff[] = new byte[i];
         stream.readFully(buff);
         message.write(buff);
         return message;
     }
+    
+    private static void writeMessageToStream(MQMessage message, ObjectOutputStream stream){
+        
+        try
+        {
+            for(Field field : message.getClass().getFields()){
+                if(Modifier.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())){
+                    try {
+                        Object value = field.get(message);
+                        stream.writeObject(value);
+                    } catch (Exception ex) {
+                        continue;
+                    }
+                }
+            }
+            message.seek(0);
+            stream.writeInt(message.getMessageLength());
+            byte buff[] = new byte[message.getMessageLength()];
+            message.readFully(buff);
+            stream.write(buff);
+        }
+        catch(Exception ex)
+        {
+            Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }   
     
     private static void copyMessageMQMD(MQMessage newMessage, MQMessage oldMessage){
         for(Field field : oldMessage.getClass().getFields()){
@@ -818,49 +826,7 @@ public class MQUtility {
             }
         }
     }
-    
-    private static void writeMessageToStream(MQMessage message, ObjectOutputStream stream){
-        try
-        {
-            stream.writeInt(message.report);
-            stream.writeInt(message.messageType);
-            stream.writeInt(message.expiry);
-            stream.writeInt(message.feedback);
-            stream.writeInt(message.encoding);
-            stream.writeInt(message.characterSet);
-            stream.writeInt(message.feedback);
-            stream.writeObject(message.format);
-            stream.writeInt(message.priority);
-            stream.writeInt(message.persistence);
-            stream.write(message.messageId);
-            stream.write(message.correlationId);
-            stream.writeInt(message.backoutCount);
-            stream.writeObject(message.replyToQueueName);
-            stream.writeObject(message.replyToQueueManagerName);
-            stream.writeObject(message.userId);
-            stream.write(message.accountingToken);
-            stream.writeObject(message.applicationIdData);
-            stream.writeInt(message.putApplicationType);
-            stream.writeObject(message.putApplicationName);
-            stream.writeObject(message.putDateTime);
-            stream.writeObject(message.applicationOriginData);
-            stream.write(message.groupId);
-            stream.writeInt(message.messageSequenceNumber);
-            stream.writeInt(message.offset);
-            stream.writeInt(message.messageFlags);
-            stream.writeInt(message.originalLength);
-            message.seek(0);
-            stream.writeInt(message.getMessageLength());
-            byte buff[] = new byte[message.getMessageLength()];
-            message.readFully(buff);
-            stream.write(buff);
-        }
-        catch(Exception ex)
-        {
-            Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-   
+
     private static void disposeOutputStreamObject(FileOutputStream fileOutPutStream,BufferedOutputStream bufferedOutputStream, GZIPOutputStream gzipOutStream , ObjectOutputStream  objectOutputStream ){
         if(objectOutputStream != null){
             try {
