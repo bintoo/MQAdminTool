@@ -889,9 +889,9 @@ public class MQPCF {
                     }
                 }
             } catch (IllegalArgumentException ex) {
-                Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
+                LogWriter.WriteToLog("MQPCF", "addParameters", ex);
             } catch (IllegalAccessException ex) {
-                Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
+                LogWriter.WriteToLog("MQPCF", "addParameters", ex);
             }
         }        
     }

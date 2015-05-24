@@ -657,11 +657,11 @@ public class MQUtility {
                         progressBar.setValue(value);
                     }
                 }
-                catch(Exception ex){    
+                catch(IOException | ClassNotFoundException | MQException ex){    
                     if(progressBar != null){
                         progressBar.setValue(100);
                     }
-                    break;
+                    throw ex;
                 }
 
             }
@@ -669,18 +669,18 @@ public class MQUtility {
             disposeInputStreamObject(fileInputStream,bufferedInputStream,gzipInStream, objectInputStream);
 
         }
-        catch (IOException ex){
+        catch (IOException | ClassNotFoundException ex){
             LogWriter.WriteToLog("MQUtility", "RestoreMessageFromFile",ex);
             disposeInputStreamObject(fileInputStream,bufferedInputStream,gzipInStream, objectInputStream);
             closeQueue(queue);
-            throw new Exception("File access error");
+            throw new Exception("File access or format error");
         }
         catch(MQException ex){
             LogWriter.WriteToLog("MQUtility", "RestoreMessageFromFile",ex);
             disposeInputStreamObject(fileInputStream,bufferedInputStream,gzipInStream, objectInputStream);
             closeQueue(queue);
             throw new Exception(getMQReturnMessage(ex.getCompCode(), ex.getReason())); 
-        } 
+        }
     }
   
     public static String BytesToHex(byte[] bytes) {
@@ -772,10 +772,10 @@ public class MQUtility {
     private static MQMessage readMessageFromStream(ObjectInputStream stream) throws IOException, ClassNotFoundException{
         MQMessage message = new MQMessage();
         for(Field field : message.getClass().getFields()){
-            if(Modifier.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())){
+            if(Modifier.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers()) && field.getName() != "unmappableAction"){
                 try {
                     field.set(message, stream.readObject());                    
-                } catch (Exception ex) {
+                } catch (IOException | ClassNotFoundException | IllegalArgumentException | IllegalAccessException ex) {
                     continue;
                 }
             }
@@ -792,11 +792,11 @@ public class MQUtility {
         try
         {
             for(Field field : message.getClass().getFields()){
-                if(Modifier.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())){
+                if(Modifier.isPublic(field.getModifiers()) && !Modifier.isStatic(field.getModifiers()) && field.getName() != "unmappableAction"){
                     try {
                         Object value = field.get(message);
                         stream.writeObject(value);
-                    } catch (Exception ex) {
+                    } catch (IllegalArgumentException | IllegalAccessException | IOException ex) {
                         continue;
                     }
                 }

@@ -89,7 +89,7 @@ public class HelpDialog extends javax.swing.JDialog {
         setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        jLabel1.setText("       MQ Admin Tool (BETA build 8996a82 )");
+        jLabel1.setText("       MQ Admin Tool (BETA build a137b1e )");
         jLabel1.setPreferredSize(new java.awt.Dimension(300, 50));
 
         jScrollPane2.setViewportView(TextPane);

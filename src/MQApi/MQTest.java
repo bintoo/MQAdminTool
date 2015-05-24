@@ -11,23 +11,11 @@ import com.ibm.mq.MQGetMessageOptions;
 import com.ibm.mq.MQMessage;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
-import com.ibm.mq.MQQueueManagerFactory;
+//import com.ibm.mq.MQQueueManagerFactory;
 import com.ibm.mq.constants.CMQC;
-import com.ibm.mq.constants.MQConstants;
-import com.ibm.msg.client.jms.JmsConnectionFactory;
-import com.ibm.msg.client.jms.JmsFactoryFactory;
-import com.ibm.msg.client.wmq.WMQConstants;
-import com.ibm.msg.client.wmq.v6.base.internal.MQSESSION;
 import java.io.IOException;
-import java.io.OptionalDataException;
-import java.io.StreamCorruptedException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.jms.Connection;
-import javax.jms.JMSException;
-import com.ibm.msg.client.commonservices.trace.Trace;
 
 /**
  *
@@ -35,7 +23,7 @@ import com.ibm.msg.client.commonservices.trace.Trace;
  */
 public class MQTest {
     
-    private static MQQueueManagerFactory factory;
+    //private static MQQueueManagerFactory factory;
     
     public static void test(MQQueueManager queueManager, String queueName){
         try {
