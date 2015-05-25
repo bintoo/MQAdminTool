@@ -27,6 +27,7 @@ import com.ibm.mq.headers.MQRFH2;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -729,6 +730,9 @@ public class MQUtility {
             if (indexOf >= 0) {
                 header = (MQRFH2) list.get(indexOf);
                 msglen = msglen - header.size();
+            }
+            else{
+                message.seek(0);
             }
             
         } catch (MQDataException | IOException ex) {

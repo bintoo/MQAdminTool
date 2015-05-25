@@ -150,9 +150,9 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     
     private void loadMessage(MQMessage message){
         try {
-            loadMessageMQMD(message);            
-
-            content = message.readStringOfByteLength(MQUtility.GetMessageContentLength(message));             
+            loadMessageMQMD(message);        
+            
+            content = message.readStringOfByteLength(MQUtility.GetMessageContentLength(message));  
             this.ContentEditorPane.setText(content);      
             
         } catch (IOException ex) {

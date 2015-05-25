@@ -25,7 +25,7 @@ public class HelpDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         String text = "<p>This project is developed by Jianbin Zhou for study purpose.</p>" +
-                      "<p>It is writen in Java 1.6 and using IBM MQ client ver 7.5.</p>" +
+                      "<p>It is writen in Java 1.8 and using IBM MQ client ver 8.0.</p>" +
                         "<p>Please report any bug or suggestion to my email address " +
                         "<a href='mailto:curtiszhou1981@gmail.com'>curtiszhou1981@gmail.com</a></p>"+
                         "<p>Icons from Icon8 <a href=\"https://icons8.com/\">https://icons8.com/</a>" +
