@@ -10,6 +10,7 @@ import MQApi.Models.MQMessageIdModel;
 import MQApi.PCF.MQPCF;
 import MQApi.QueryModel.MQMessageListResult;
 import MQApi.QueryModel.MQMessageListResult.MessageDetailModel;
+import UI.Dialogs.MessageEditDialog;
 import UI.Helpers.DateTimeHelper;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQGetMessageOptions;
@@ -22,6 +23,7 @@ import com.ibm.mq.constants.MQConstants;
 import com.ibm.mq.headers.MQDLH;
 import com.ibm.mq.headers.MQDataException;
 import com.ibm.mq.headers.MQHeaderList;
+import com.ibm.mq.headers.MQRFH2;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -715,6 +717,26 @@ public class MQUtility {
         return message;
     }
     
+    //Msc
+    
+    public static int GetMessageContentLength(MQMessage message){
+        int msglen = 0;
+        try {
+            MQRFH2 header = null;
+            msglen = message.getMessageLength();
+            MQHeaderList list = new MQHeaderList(message);
+            int indexOf = list.indexOf("MQRFH2");
+            if (indexOf >= 0) {
+                header = (MQRFH2) list.get(indexOf);
+                msglen = msglen - header.size();
+            }
+            
+        } catch (MQDataException | IOException ex) {
+            Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return msglen;
+    }
+    
 //private
     private static MessageDetailModel turnToMessageModel(MQMessageListResult result, MQMessage message, int position){
         MessageDetailModel model = result.new MessageDetailModel();
@@ -746,7 +768,8 @@ public class MQUtility {
         model.MessageIdString = BytesToHex(message.messageId);
         model.Offset = message.offset;
         try {
-            model.MessageData = message.readStringOfByteLength(message.getDataLength() <= messageListDataLength ? message.getDataLength() : messageListDataLength ).trim();
+            int msgLength = GetMessageContentLength(message);
+            model.MessageData = message.readStringOfByteLength(msgLength <= messageListDataLength ? msgLength : messageListDataLength ).trim();
         } catch (IOException ex) {
             model.MessageData = "";
             Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);

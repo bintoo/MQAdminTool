@@ -14,6 +14,9 @@ import com.ibm.mq.MQException;
 import com.ibm.mq.MQMessage;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
+import com.ibm.mq.headers.MQDataException;
+import com.ibm.mq.headers.MQHeaderList;
+import com.ibm.mq.headers.MQRFH2;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -147,17 +150,17 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     
     private void loadMessage(MQMessage message){
         try {
-            content = message.readStringOfByteLength(message.getMessageLength());
-            loadMessageMQMD(message);
-//            message.seek(0);
-//            byteContent = new byte[message.getDataLength()];
-//            message.readFully(byteContent);
+            loadMessageMQMD(message);            
+
+            content = message.readStringOfByteLength(MQUtility.GetMessageContentLength(message));             
             this.ContentEditorPane.setText(content);      
             
         } catch (IOException ex) {
             Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        } 
     }
+    
+
     
     private void loadMessageMQMD(MQMessage message){
         this.MessageIdTextField.setText(MQUtility.BytesToHex(message.messageId));

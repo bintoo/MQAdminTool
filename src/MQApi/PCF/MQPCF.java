@@ -33,13 +33,17 @@ import MQApi.QueryModel.MQQueueStatusHandleListResult.QueueStatusHandleDetailMod
 import MQApi.QueryModel.MQQueueStatusListResult;
 import MQApi.QueryModel.MQQueueStatusListResult.QueueStatusDetailModel;
 import MQApi.Utilities.MQUtility;
+import UI.Dialogs.MessageEditDialog;
 import com.ibm.mq.MQException;
+import com.ibm.mq.MQMessage;
 
 import com.ibm.mq.MQQueueManager;
 import java.io.IOException;
 
 import com.ibm.mq.constants.MQConstants;
 import com.ibm.mq.headers.MQDataException;
+import com.ibm.mq.headers.MQHeaderList;
+import com.ibm.mq.headers.MQRFH2;
 import com.ibm.mq.headers.pcf.PCFException;
 import com.ibm.mq.headers.pcf.PCFMessage;
 import com.ibm.mq.headers.pcf.PCFMessageAgent;
@@ -615,7 +619,7 @@ public class MQPCF {
         disconnectAgent(agent);        
         return result;
     }
-    
+        
     //private
     private static <T, Y> void WriteToDetailModel(PCFMessage[] pcfResponse , T model, Class<Y> modelClass,  Object[] type){
         for(PCFMessage response : pcfResponse){     
@@ -877,20 +881,28 @@ public class MQPCF {
                 if(value != null && sendToPCF){
                     switch(variableType){
                         case Text :
-                            pcfCmd.addParameter(parameter, value.toString());
+                            String stringValue = value.toString().trim();
+                            if(!stringValue.isEmpty()){
+                                pcfCmd.addParameter(parameter, stringValue);
+                            }
                             break;
                         case TextArray :
-                            pcfCmd.addParameter(parameter, (String[])value);
+                            String[] stringValues = (String[])value;
+                            if(stringValues.length > 0){
+                                pcfCmd.addParameter(parameter, stringValues);
+                            }
                             break;
-                        case Number:    
-                            Integer paraValue = Integer.parseInt(value.toString());
-                            pcfCmd.addParameter(parameter, paraValue);
+                        case Number: 
+                            try{
+                                Integer paraValue = Integer.parseInt(value.toString());
+                                pcfCmd.addParameter(parameter, paraValue);
+                            }catch (Exception ex){
+                                
+                            }
                             break;
                     }
                 }
-            } catch (IllegalArgumentException ex) {
-                LogWriter.WriteToLog("MQPCF", "addParameters", ex);
-            } catch (IllegalAccessException ex) {
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
                 LogWriter.WriteToLog("MQPCF", "addParameters", ex);
             }
         }        

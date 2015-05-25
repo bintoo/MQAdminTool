@@ -54,7 +54,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="16" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="       MQ Admin Tool (BETA build a137b1e )"/>
+        <Property name="text" type="java.lang.String" value="       MQ Admin Tool (BETA build 82e4657 )"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[300, 50]"/>
         </Property>
