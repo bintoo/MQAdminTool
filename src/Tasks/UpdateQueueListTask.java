@@ -14,6 +14,7 @@ import UI.Models.TreeNodeObject;
 import com.ibm.mq.MQException;
 import java.awt.Component;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
@@ -24,8 +25,8 @@ import javax.swing.tree.TreePath;
 public class UpdateQueueListTask extends UpdateContentTableTaskBase{
     
     private boolean showTemp;
-    public UpdateQueueListTask(Component window,JTable table, DefaultMutableTreeNode node, String searchString, boolean showTemp, boolean showSystem, boolean loadNewData) {
-        super(window, null, table, node,searchString, showSystem, loadNewData);
+    public UpdateQueueListTask(Component window,JTree tree, JTable table, DefaultMutableTreeNode node, String searchString, boolean showTemp, boolean showSystem, boolean loadNewData) {
+        super(window, tree, table, node,searchString, showSystem, loadNewData);
         this.showTemp = showTemp;
     }
     
@@ -40,12 +41,13 @@ public class UpdateQueueListTask extends UpdateContentTableTaskBase{
                 FireActionSuccessEvent();
             }
             else{
+                showErrorMessage(result.ErrorMessage);
+                TableHelper.ToggleContentTable(ContentTable, false);
                 TreeView.setSelectionPath(new TreePath(queueManagerNode.getPath())); 
                 try {
                     TreeHelper.DisconnectQueueManager(TreeView);
                 } catch (MQException ex) {
                 }
-                showErrorMessage(result.ErrorMessage);
                 FireActionFailEvent();
             }   
         }

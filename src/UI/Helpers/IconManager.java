@@ -5,7 +5,9 @@
  */
 package UI.Helpers;
 
+import MQApi.Logs.LogWriter;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import javax.swing.ImageIcon;
 
@@ -162,7 +164,17 @@ public class IconManager {
     }
             
     private ImageIcon getImageIcon(String path){
-        URL iconPath = getClass().getClassLoader().getResource(path);;
-        return new ImageIcon(new ImageIcon(iconPath).getImage().getScaledInstance(15, 15, Image.SCALE_DEFAULT));
+        try{
+            URL iconPath = getClass().getClassLoader().getResource(path);
+            return new ImageIcon(new ImageIcon(iconPath).getImage().getScaledInstance(15, 15, Image.SCALE_DEFAULT));
+        }catch (Exception ex){
+            LogWriter.WriteToLog(ex.fillInStackTrace());
+            return new ImageIcon(createTransparentImage(1,1));
+        }
     }    
+    
+    private  BufferedImage createTransparentImage (final int width, final int height)
+    {
+      return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    }
 }

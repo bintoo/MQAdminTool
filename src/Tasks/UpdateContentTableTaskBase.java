@@ -33,7 +33,7 @@ public abstract class UpdateContentTableTaskBase extends TaskBase{
     }
     
     protected  void showErrorMessage(String message){
-        JOptionPane.showMessageDialog(window, message);
+        JOptionPane.showMessageDialog(window, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
     
     @Override

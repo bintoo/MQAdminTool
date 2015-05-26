@@ -541,7 +541,7 @@ public class MQUtility {
                             out.write("Message position : " + pos);
                             out.write("\r\n"); 
                             out.write("\r\n");
-                            out.write(message.readStringOfByteLength(message.getMessageLength()));
+                            out.write(message.readStringOfByteLength(GetMessageContentLength(message)));
                             out.write("\r\n"); 
                             out.write("\r\n"); 
                             index--;
@@ -723,15 +723,20 @@ public class MQUtility {
     public static int GetMessageContentLength(MQMessage message){
         int msglen = 0;
         try {
-            MQRFH2 header = null;
             msglen = message.getMessageLength();
             MQHeaderList list = new MQHeaderList(message);
-            int indexOf = list.indexOf("MQRFH2");
-            if (indexOf >= 0) {
-                header = (MQRFH2) list.get(indexOf);
+            boolean seek = true;
+            if (list.indexOf("MQRFH2") >= 0) {
+                MQRFH2 header = (MQRFH2) list.get(list.indexOf("MQRFH2"));
                 msglen = msglen - header.size();
+                seek = false;
             }
-            else{
+            if (list.indexOf("MQDLH") >= 0) {
+                MQDLH header = (MQDLH) list.get(list.indexOf("MQDLH"));
+                msglen = msglen - header.size();
+                seek = false;
+            }
+            if(seek){
                 message.seek(0);
             }
             

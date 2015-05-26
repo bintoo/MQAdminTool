@@ -30,6 +30,7 @@ public class UpdateChannelAuthListTask extends UpdateContentTableTaskBase{
     }
     
     private void updateContent(){
+        DefaultMutableTreeNode queueManagerNode = (DefaultMutableTreeNode)node.getParent();
         MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
         MQChannelAuthListResult result = MQPCF.GetChannelAuthList(queueManager, "*",  null, loadNewData);
         if(stopTask == false){
@@ -39,11 +40,12 @@ public class UpdateChannelAuthListTask extends UpdateContentTableTaskBase{
             }
             else{
                 showErrorMessage(result.ErrorMessage);
-                //TreeView.setSelectionPath(new TreePath(queueManagerNode.getPath())); 
-//                try {
-//                    TreeHelper.DisconnectQueueManager(TreeView);
-//                } catch (MQException ex) {
-//                }
+                TableHelper.ToggleContentTable(ContentTable, false);
+                TreeView.setSelectionPath(new TreePath(queueManagerNode.getPath())); 
+                try {
+                    TreeHelper.DisconnectQueueManager(TreeView);
+                } catch (MQException ex) {
+                }
                 
                 FireActionFailEvent();
             }         

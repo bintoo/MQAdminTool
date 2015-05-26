@@ -15,6 +15,7 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 /**
@@ -24,7 +25,7 @@ import javax.swing.tree.TreePath;
 public class UpdateChannelListTask extends UpdateContentTableTaskBase{
 
     public UpdateChannelListTask(Component window, JTree tree, JTable table, DefaultMutableTreeNode node, String searchString, boolean showSystem, boolean loadNewData) {
-        super(window, null, table, node,searchString, showSystem, loadNewData);
+        super(window, tree, table, node,searchString, showSystem, loadNewData);
     }
     
     private void updateContent(){
@@ -38,6 +39,7 @@ public class UpdateChannelListTask extends UpdateContentTableTaskBase{
             }
             else{
                 showErrorMessage(result.ErrorMessage);
+                TableHelper.ToggleContentTable(ContentTable, false);
                 TreeView.setSelectionPath(new TreePath(queueManagerNode.getPath())); 
                 try {
                     TreeHelper.DisconnectQueueManager(TreeView);

@@ -1029,7 +1029,7 @@ public class MainWindow extends javax.swing.JFrame {
     private StopableTask displayQueueList(DefaultMutableTreeNode node, boolean loadNewData){
         final boolean isNewData = loadNewData;
         resetTimmer();
-        UpdateQueueListTask task = new UpdateQueueListTask(this,ContentTable, node, this.activedSearchString, ShowTempObjectToggle.isSelected(), ShowSystemObjectToggleButton.isSelected(),loadNewData);
+        UpdateQueueListTask task = new UpdateQueueListTask(this,TreeView, ContentTable, node, this.activedSearchString, ShowTempObjectToggle.isSelected(), ShowSystemObjectToggleButton.isSelected(),loadNewData);
         showContentTableLoading(true);
         this.ShowTempObjectToggle.setVisible(true);
         task.AddTaskActionSuccessListener(new ActionListener() {
