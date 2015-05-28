@@ -37,6 +37,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.logging.*;
@@ -538,10 +540,10 @@ public class MQUtility {
                                     throw ex;
                                 }
                             }
-                            out.write("Message position : " + pos);
+                            out.write("Message : " + pos);
                             out.write("\r\n"); 
                             out.write("\r\n");
-                            out.write(message.readStringOfByteLength(GetMessageContentLength(message)));
+                            out.write(GetMessageStringContent(message, null));
                             out.write("\r\n"); 
                             out.write("\r\n"); 
                             index--;
@@ -746,6 +748,45 @@ public class MQUtility {
         return msglen;
     }
     
+    public static String GetMessageStringContent(MQMessage message, Integer length){
+        String content = "";
+        int messageLength = GetMessageContentLength(message);
+        int requiredLen = length != null ? length > messageLength? messageLength : length : messageLength;
+        try{
+            try{
+                content = message.readStringOfByteLength(requiredLen);  
+            }catch(Exception ex){
+                //tmp solution for wrong charset.       
+                byte[] buff = new byte[requiredLen];
+                message.readFully(buff);
+                String strContent = new String(buff);
+                content = strContent;
+            }     
+        }catch(IOException ex){
+            
+        }
+        
+        return content;
+    }
+    
+    // test method
+    public static Charset GetMessageCharset(MQMessage message){
+        int a = CMQC.MQCCSI_Q_MGR;
+        switch (message.characterSet){
+            case 850 :
+                return StandardCharsets.US_ASCII;
+            case 819 :
+                return StandardCharsets.ISO_8859_1;
+            case 37 :
+                return StandardCharsets.UTF_16BE;
+            case 1200 :
+                return StandardCharsets.UTF_16;
+            case 1208 :
+                return StandardCharsets.UTF_8;
+        }
+        return StandardCharsets.US_ASCII;
+    }
+    
 //private
     private static MessageDetailModel turnToMessageModel(MQMessageListResult result, MQMessage message, int position){
         MessageDetailModel model = result.new MessageDetailModel();
@@ -776,13 +817,7 @@ public class MQUtility {
         model.AccountToken = BytesToHex(message.accountingToken);
         model.MessageIdString = BytesToHex(message.messageId);
         model.Offset = message.offset;
-        try {
-            int msgLength = GetMessageContentLength(message);
-            model.MessageData = message.readStringOfByteLength(msgLength <= messageListDataLength ? msgLength : messageListDataLength ).trim();
-        } catch (IOException ex) {
-            model.MessageData = "";
-            Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        model.MessageData = GetMessageStringContent(message, messageListDataLength);
         return model;
     }
     

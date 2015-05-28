@@ -23,6 +23,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
@@ -148,16 +149,10 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
 
     }
     
-    private void loadMessage(MQMessage message){
-        try {
-            loadMessageMQMD(message);        
-            
-            content = message.readStringOfByteLength(MQUtility.GetMessageContentLength(message));  
-            this.ContentEditorPane.setText(content);      
-            
-        } catch (IOException ex) {
-            Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+    private void loadMessage(MQMessage message){       
+        loadMessageMQMD(message);    
+        content = MQUtility.GetMessageStringContent(message, null);      
+        this.ContentEditorPane.setText(content); 
     }
     
 

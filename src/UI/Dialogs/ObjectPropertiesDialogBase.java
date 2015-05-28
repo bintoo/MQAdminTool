@@ -49,7 +49,7 @@ public abstract class ObjectPropertiesDialogBase extends DialogBase{
         DefaultComboBoxModel model = (DefaultComboBoxModel)box.getModel();
         for(int i = 0 ; i < model.getSize(); i++){
             ComboBoxItemModel itemModel = (ComboBoxItemModel)model.getElementAt(i);
-            if(itemModel.Value == value){
+            if(itemModel.Value != null && Integer.parseInt(itemModel.Value.toString()) == value){
                 box.setSelectedItem(itemModel);
                 return;
             }
