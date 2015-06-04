@@ -33,6 +33,7 @@ public class HelpDialog extends javax.swing.JDialog {
                         "   <li>Create/update MQ objects not working correctly on mainframe.</li>" +
                         "  <li>Update message feature not working correctly when the queue has more then 1 message with same id.</li>" +
                         " <li>Currently not support local connection to queue manager</li>" +
+                        " <li>Message with header will fail to update</li>" +
                             "</ul> </p>";
         
                         

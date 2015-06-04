@@ -142,6 +142,7 @@ public class MainWindow extends javax.swing.JFrame {
         AddQueueManagerMenuItem = new javax.swing.JMenuItem("Add Queue Manager",iconManager.DeviceManager());
         MainWindowMenu = new javax.swing.JMenu();
         ChannelStatusToolMenuItem = new javax.swing.JMenuItem();
+        SaveQmgrToCsvConverterMenuItem = new javax.swing.JMenuItem();
         HelpMenu = new javax.swing.JMenu();
         AboutMenuItem = new javax.swing.JMenuItem();
 
@@ -445,6 +446,14 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         MainWindowMenu.add(ChannelStatusToolMenuItem);
+
+        SaveQmgrToCsvConverterMenuItem.setText("SaveQmgr to CSV Converter");
+        SaveQmgrToCsvConverterMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SaveQmgrToCsvConverterMenuItemActionPerformed(evt);
+            }
+        });
+        MainWindowMenu.add(SaveQmgrToCsvConverterMenuItem);
 
         MainMenuBar.add(MainWindowMenu);
 
@@ -885,7 +894,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         TreeView.setCellRenderer(new CustomTreeRender());
         //ContentTable.setDefaultRenderer(TableListObject.class, new CustomTableCellRender()); 
-        this.TestMenuItem.setVisible(false);
+        this.TestMenuItem.setVisible(true);
         
     }
     
@@ -1437,38 +1446,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void TestMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TestMenuItemActionPerformed
   
-        //ExcelHelper.ReadExcelFile("test.xls");
-        //XMLHelper.WriteMQRCModelToXml();
-//        String[] a = new String[1];
-//        String b = a[3];
-
-//        ContentTable = new javax.swing.JTable(){
-//            public Class getColumnClass(int column)
-//            {
-//                int rowCount = getRowCount();
-//                Object value = null;
-//                value = getValueAt(0, column);
-//                if(value == null){
-//                    value = getValueAt(rowCount - 1, column);
-//                }
-//                if(value != null){
-//                    try{
-//                        Double intValue = Double.parseDouble(value.toString());
-//                        return Double.class;
-//                    }catch(Exception ex){
-//                        return value.getClass();
-//                    }
-//                }
-//                else{
-//                    return Object.class;
-//                }
-//            }
-//        };
-
-//                if(getValueAt(0, column) != null)
-//                return getValueAt(0, column).getClass();
-//                else
-//                return Object.class;
+        //MQCommandParser.ProcessFiles(new String[]{"mqcommand.txt", "mqcommand2.txt"});
         
     }//GEN-LAST:event_TestMenuItemActionPerformed
 
@@ -1508,6 +1486,12 @@ public class MainWindow extends javax.swing.JFrame {
         queueManagerEditPanelEditMode = false;
         addQueueManageMenuItemActionPerformed(evt);        
     }//GEN-LAST:event_AddQueueManagerMenuItemActionPerformed
+
+    private void SaveQmgrToCsvConverterMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveQmgrToCsvConverterMenuItemActionPerformed
+            SaveQMGRToCSVConverter tool = new SaveQMGRToCSVConverter(this, true);
+            tool.setLocationRelativeTo(this);
+            tool.setVisible(true);
+    }//GEN-LAST:event_SaveQmgrToCsvConverterMenuItemActionPerformed
     
     private void addQueueManageMenuItemActionPerformed(java.awt.event.ActionEvent evt){
         this.ConnectionDetailDialog.setLocationRelativeTo(this);
@@ -1576,6 +1560,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextField PortTextBox;
     private javax.swing.JTextField QueueManagerTextBox;
     private javax.swing.JButton RefreshButton;
+    private javax.swing.JMenuItem SaveQmgrToCsvConverterMenuItem;
     private javax.swing.JButton SearchButton;
     private javax.swing.JTextField SearchTextField;
     private javax.swing.JToggleButton ShowSystemObjectToggleButton;

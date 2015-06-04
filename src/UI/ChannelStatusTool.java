@@ -7,6 +7,7 @@ package UI;
 
 import Tasks.CheckChannelTask;
 import MQApi.Models.Query.ConnectionDetailModel;
+import UI.Dialogs.DialogBase;
 import UI.ReferenceObjects.ToolStatusReference;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,13 +17,13 @@ import javax.swing.JOptionPane;
  *
  * @author jzhou
  */
-public class ChannelStatusTool extends javax.swing.JDialog  {
+public class ChannelStatusTool extends DialogBase  {
 
     /**
      * Creates new form MainJFrame
      */
     public ChannelStatusTool(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+        super(parent, modal, null, null);
         initComponents();
         this.HostTextField.setText("");
         this.ChannelTextField.setText("SYSTEM.ADMIN.SVRCONN");
