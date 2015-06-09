@@ -7,6 +7,7 @@ package UI.Helpers;
 
 import MQApi.Enums.TableContentType;
 import MQApi.Models.MQMessageIdModel;
+import MQApi.QueryModel.MQChannelAuthListResult.ChannelAuthDetailModel;
 import MQApi.Result.Annotations.MQObjectListtAnnotation;
 import MQApi.QueryModel.MQChannelListResult.ChannelDetailModel;
 import MQApi.QueryModel.MQMessageListResult.MessageDetailModel;
@@ -59,6 +60,9 @@ public class TableHelper {
                 }
                 else if(data instanceof MessageDetailModel){
                     tableType = TableContentType.MessageList;
+                }
+                else if(data instanceof ChannelAuthDetailModel){
+                    tableType = TableContentType.ChannelAuthList;
                 }
                 else{
                     tableType = null;

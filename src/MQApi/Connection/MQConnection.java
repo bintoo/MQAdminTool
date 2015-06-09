@@ -15,6 +15,7 @@ import com.ibm.mq.constants.CMQC;
 import com.ibm.mq.constants.MQConstants;
 import java.util.Hashtable;
 import java.util.Properties;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -24,13 +25,19 @@ public class MQConnection {
      public static MQQueueManager GetMQQueueManager(ConnectionDetailModel connectionDetail) throws MQException{
         MQQueueManager queueManager = null; 
         try{
+            String userId = System.getProperty("user.name");
             Properties properties = new Properties();
             properties.put(MQConstants.HOST_NAME_PROPERTY, connectionDetail.Host);
             properties.put(MQConstants.PORT_PROPERTY, Integer.parseInt(connectionDetail.Port));
             properties.put(MQConstants.CHANNEL_PROPERTY, connectionDetail.Channel);
             properties.put("transport", "MQSeries");
-            properties.put("securityExit", new SecurityExit(null, null)); //for MQ ver < 7
-            queueManager = new MQQueueManager(connectionDetail.QueueManager, properties);
+            properties.put(MQConstants.USER_ID_PROPERTY, userId);
+            try{
+                queueManager = new MQQueueManager(connectionDetail.QueueManager, properties);
+            }catch(MQException ex){
+                properties.put("securityExit", new SecurityExit(null, null)); //for MQ ver < 7
+                queueManager = new MQQueueManager(connectionDetail.QueueManager, properties);
+            }
             MQQueue commandQueue = queueManager.accessQueue(queueManager.getCommandInputQueueName(), CMQC.MQOO_INQUIRE);
             if(commandQueue.getOpenInputCount() == 0){
                 throw new MQException(2, 1, "Command server is not running on this queue manager");

@@ -6,7 +6,6 @@
 package UI.Helpers;
 
 import MQApi.Logs.LogWriter;
-import MQApi.Result.Annotations.MQObjectListtAnnotation;
 import MQApi.TextWriter;
 import UI.Models.MQOuput.MQOutputTopicModel;
 import UI.Models.MQOuput.MQOutputProcessModel;
@@ -15,9 +14,7 @@ import UI.Models.MQOuput.MQOutputListenerModel;
 import UI.Models.MQOuput.MQOutputSubModel;
 import UI.Models.MQOuput.MQOutputChannelModel;
 import UI.Models.MQOuput.MQOuputServiceModel;
-import UI.Models.*;
 import UI.Models.MQOuput.MQOuputModel;
-import com.sun.istack.internal.FinalArrayList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -125,7 +122,6 @@ public class MQCommandParser {
                 }
             }
             writeFile(output,model);
-            String a = line;
         } catch (FileNotFoundException ex) {
             LogWriter.WriteToLog(ex.fillInStackTrace());
             Logger.getLogger(MQCommandParser.class.getName()).log(Level.SEVERE, null, ex);
