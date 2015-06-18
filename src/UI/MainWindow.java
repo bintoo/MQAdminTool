@@ -10,6 +10,7 @@ import MQApi.Enums.MQObjectType;
 import MQApi.Enums.QueueType;
 import MQApi.Enums.StatusType;
 import MQApi.Logs.LogWriter;
+import MQApi.MQTest;
 import MQApi.Models.Query.ConnectionDetailModel;
 import MQApi.PCF.MQPCF;
 import MQApi.QueryModel.MQCommandResult;
@@ -35,6 +36,7 @@ import UI.Misc.CustomTreeRender;
 import UI.Misc.ExceptionHandler;
 import UI.ReferenceObjects.ToolStatusReference;
 import com.ibm.mq.MQException;
+import com.ibm.mq.MQMessage;
 import com.ibm.mq.MQQueueManager;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
@@ -45,6 +47,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -510,6 +514,7 @@ public class MainWindow extends javax.swing.JFrame {
         JMenuItem CreateRemoteQueueMenuItem = new JMenuItem("Remote queue", iconManager.Queue());
         JMenuItem CreateAliasQueueMenuItem = new JMenuItem("Alias queue", iconManager.Queue());
         JMenuItem CreateModelQueueMenuItem = new JMenuItem("Model queue", iconManager.Queue());
+        JMenuItem DeleteCSQOEXXMenuItem = new JMenuItem("Delete CSQOREXX",iconManager.Delete());
         CreateLocalQueueMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -540,11 +545,19 @@ public class MainWindow extends javax.swing.JFrame {
                 exportProperties(MQObjectType.Queue);
             }
         });
+        
+        DeleteCSQOEXXMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteCRQOREXX();
+            }
+        });
         CreateQueueMenu.add(CreateLocalQueueMenuItem);
         CreateQueueMenu.add(CreateRemoteQueueMenuItem);
         CreateQueueMenu.add(CreateAliasQueueMenuItem);
         CreateQueueMenu.add(CreateModelQueueMenuItem);
         popup.add(CreateQueueMenu);
+        popup.add(DeleteCSQOEXXMenuItem);
         popup.add(exportQueuePropertiesMenuItem);
         return popup;
     }
@@ -1174,6 +1187,16 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
     
+    private void deleteCRQOREXX(){
+        int dialogResult = JOptionPane.showConfirmDialog (this, "Are you sure that you want to delete all CSQOREXX queue?","Warning",JOptionPane.YES_NO_OPTION);
+        if(dialogResult == JOptionPane.YES_OPTION){
+            MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
+            MQPCF.DeleteCRQOREXX(queueManager);
+            showTableData(true);
+            JOptionPane.showMessageDialog(this, "Delete command accepted.", "Success", JOptionPane.INFORMATION_MESSAGE);       
+        }
+    }
+    
     private void showSetupQueuePropertiesDialog(){
         MQQueueManager queueManager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
         TableListObject selectedObject = TableHelper.GetCurrentTableSelectRowObject(ContentTable); 
@@ -1445,8 +1468,13 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_ContentTableMouseClicked
 
     private void TestMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TestMenuItemActionPerformed
-  
-        //MQCommandParser.ProcessFiles(new String[]{"mqcommand.txt", "mqcommand2.txt"});
+//        MQQueueManager manager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
+//        try {
+//            MQTest.GetMessage(manager, "SYSTEM.ADMIN.ACCOUNTING.QUEUE");
+//            //MQCommandParser.ProcessFiles(new String[]{"mqcommand.txt", "mqcommand2.txt"});
+//        } catch (MQException ex) {
+//            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         
     }//GEN-LAST:event_TestMenuItemActionPerformed
 
@@ -1531,7 +1559,7 @@ public class MainWindow extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        ExceptionHandler.registerExceptionHandler();
+        ExceptionHandler.registerExceptionHandler(Thread.currentThread().getId());
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new MainWindow().setVisible(true);

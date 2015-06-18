@@ -26,30 +26,23 @@ import MQApi.Result.Annotations.MQObjectPropertyAnnotation;
 import MQApi.QueryModel.MQChannelListResult.ChannelDetailModel;
 import MQApi.QueryModel.MQChannelPropertyModel;
 import MQApi.QueryModel.MQChannelStatusListResult.ChannelStatusModel;
-import MQApi.QueryModel.MQObjectPropertyModel;
 import MQApi.QueryModel.MQQueueListResult.QueueDetailModel;
 import MQApi.QueryModel.MQQueueStatusHandleListResult;
 import MQApi.QueryModel.MQQueueStatusHandleListResult.QueueStatusHandleDetailModel;
 import MQApi.QueryModel.MQQueueStatusListResult;
 import MQApi.QueryModel.MQQueueStatusListResult.QueueStatusDetailModel;
 import MQApi.Utilities.MQUtility;
-import UI.Dialogs.MessageEditDialog;
-import com.ibm.mq.MQException;
-import com.ibm.mq.MQMessage;
 
 import com.ibm.mq.MQQueueManager;
 import java.io.IOException;
 
 import com.ibm.mq.constants.MQConstants;
 import com.ibm.mq.headers.MQDataException;
-import com.ibm.mq.headers.MQHeaderList;
-import com.ibm.mq.headers.MQRFH2;
 import com.ibm.mq.headers.pcf.PCFException;
 import com.ibm.mq.headers.pcf.PCFMessage;
 import com.ibm.mq.headers.pcf.PCFMessageAgent;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -103,6 +96,15 @@ public class MQPCF {
         } catch (IOException ex) {
             LogWriter.WriteToLog("MQPCF", "ResolveAliasBaseQueueName", ex);
             return null;
+        }
+    }
+    
+    public static void DeleteCRQOREXX(MQQueueManager queueManager){
+        MQQueueListResult result = GetQueueList(queueManager, "SYSTEM.CSQOREXX*", null, true );
+        if(result.QuerySuccess){
+            result.DataModels.stream().forEach((model) -> {
+                DeleteQueue(queueManager, model.Name, model.Type);
+            });
         }
     }
           
@@ -298,8 +300,7 @@ public class MQPCF {
         disconnectAgent(agent);
         return result;
     }
-    
-    
+        
     //Channel
     public static MQChannelListResult GetChannelList(MQQueueManager queueManager, String channelNameFilter, ChannelType[] type, boolean loadNewData){
         if(loadNewData == true || (MQChannelListResultCache == null || MQChannelListResultCache.QuerySuccess == false)){
@@ -634,17 +635,9 @@ public class MQPCF {
                             ((ArrayList<Y>)modelArray).add(detailModel);
                         }
                     }
-                } catch (InstantiationException ex) {
+                } catch (InstantiationException | NoSuchFieldException | NoSuchMethodException ex) {
                     LogWriter.WriteToLog(ex.fillInStackTrace());
-                } catch (IllegalAccessException ex) {
-                    LogWriter.WriteToLog(ex.fillInStackTrace());;
-                } catch (NoSuchFieldException ex) {
-                    LogWriter.WriteToLog(ex.fillInStackTrace());
-                } catch (SecurityException ex) {
-                    LogWriter.WriteToLog(ex.fillInStackTrace());;
-                } catch (InvocationTargetException ex) {
-                    LogWriter.WriteToLog(ex.fillInStackTrace());;
-                } catch (NoSuchMethodException ex) {
+                } catch (IllegalAccessException | SecurityException | InvocationTargetException ex) {
                     LogWriter.WriteToLog(ex.fillInStackTrace());
                 }
             }

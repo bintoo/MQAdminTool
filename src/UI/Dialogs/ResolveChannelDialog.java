@@ -53,7 +53,7 @@ public class ResolveChannelDialog extends DialogBase {
         this.QueueManagerNameLabel.setText(queueManagerName);
         this.ChannelNameLabel.setText(selectedObject.ObjectName);      
         this.MessageStatusComboBox.setModel(new DefaultComboBoxModel(new ComboBoxItemModel[]{
-            new ComboBoxItemModel("Commit", ChannelResolveType.Commit), new ComboBoxItemModel("Backup",ChannelResolveType.Backout), 
+            new ComboBoxItemModel("Commit", ChannelResolveType.Commit), new ComboBoxItemModel("Backout",ChannelResolveType.Backout), 
         }));
     }
     

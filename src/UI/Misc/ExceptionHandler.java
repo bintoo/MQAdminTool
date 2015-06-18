@@ -16,12 +16,19 @@ import javax.swing.JOptionPane;
  * @author jzhou
  */
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler{
+    private long mainThreadId;
+    public ExceptionHandler(long mainThreadId){
+        this.mainThreadId = mainThreadId;
+    }
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
+        
         LogWriter.WriteToLog(e);
-        JOptionPane.showMessageDialog(null, "The program has encountered a fatal error and needs to be closed.\n\r\n\rPlease check the log and report to Jianbin for furture improvement.", "MQ Admin Tool Fatal error",JOptionPane.ERROR_MESSAGE );
-        System.exit(1);
+        if(t.getId() == mainThreadId){
+            JOptionPane.showMessageDialog(null, "The program has encountered a fatal error and needs to be closed.\n\r\n\rPlease check the log and report to Jianbin for furture improvement.", "MQ Admin Tool Fatal error",JOptionPane.ERROR_MESSAGE );
+            System.exit(1);
+        }
     }
     private String getStackTrace(Throwable aThrowable) {
         final Writer result = new StringWriter();
@@ -30,8 +37,8 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler{
         return result.toString();
     }
     
-    public static void registerExceptionHandler() {
-      Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
+    public static void registerExceptionHandler(long mainThreadId) {
+      Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(mainThreadId));
       System.setProperty("sun.awt.exception.handler", ExceptionHandler.class.getName());
     }
 }
