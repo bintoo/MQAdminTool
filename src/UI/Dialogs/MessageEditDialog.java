@@ -14,6 +14,7 @@ import com.ibm.mq.MQException;
 import com.ibm.mq.MQMessage;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.constants.MQConstants;
+import com.ibm.mq.headers.MQDLH;
 import com.ibm.mq.headers.MQDataException;
 import com.ibm.mq.headers.MQHeaderList;
 import com.ibm.mq.headers.MQRFH2;
@@ -100,12 +101,13 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         if(isNew){
             this.UpdateButton.setText("Put");
             this.KeepPositionCheckBox.setVisible(false);
-            this.TabbedPanel.setEnabledAt(1, false);;
+            this.MessagePanel.setEnabledAt(1, false);
         }
         else{
             this.UpdateButton.setText("Update");
             this.KeepPositionCheckBox.setVisible(true);
         }
+        this.MessagePanel.setEnabledAt(2, false);
         
     }
     
@@ -150,12 +152,28 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     }
     
     private void loadMessage(MQMessage message){       
-        loadMessageMQMD(message);    
+        loadMessageMQMD(message);
+        MQDLH dlh = MQUtility.getDLH(message);
+        if(dlh != null){
+            this.MessagePanel.setEnabledAt(2, true);
+            loadMessageDLH(dlh);
+        }
         content = MQUtility.GetMessageStringContent(message, null);      
         this.ContentEditorPane.setText(content); 
     }
     
 
+    
+    private void loadMessageDLH(MQDLH dlh){
+        this.DLHDestintionTextField.setText(dlh.getDestQName());
+        this.DLHPutDateTextField.setText(dlh.getPutDate());
+        this.DLHPutNameTextField.setText(dlh.getPutApplName());
+        this.DLHPutTimeTextField.setText(dlh.getPutTime());
+        this.DLHPutTypeTextField.setText(Integer.toString(dlh.getPutApplType()));
+        this.DLHQmgrTextField.setText(dlh.getDestQMgrName());
+        this.DLHReasonTextField.setText(Integer.toString(dlh.getReason()));
+        this.DLHFormatTextField.setText(dlh.getFormat());
+    }
     
     private void loadMessageMQMD(MQMessage message){
         this.MessageIdTextField.setText(MQUtility.BytesToHex(message.messageId));
@@ -260,7 +278,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         this.ProgressBar.setVisible(true);        
         this.StatusLabel.setVisible(true);
         this.KeepPositionCheckBox.setEnabled(false);
-        this.TabbedPanel.setEnabled(false);
+        this.MessagePanel.setEnabled(false);
         this.ContentEditorPane.setEnabled(false);
         this.ContentTypeSelectComboBox.setEnabled(false);
     }
@@ -270,7 +288,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         this.ProgressBar.setVisible(false);
         this.StatusLabel.setVisible(false);
         this.KeepPositionCheckBox.setEnabled(true);
-        this.TabbedPanel.setEnabled(true);
+        this.MessagePanel.setEnabled(true);
         this.ContentEditorPane.setEnabled(true);
         this.ContentTypeSelectComboBox.setEnabled(true);
         if(isNew){
@@ -323,7 +341,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         QueueNameLabel = new javax.swing.JLabel();
         UpdateButton = new javax.swing.JButton();
         Closebutton = new javax.swing.JButton();
-        TabbedPanel = new javax.swing.JTabbedPane();
+        MessagePanel = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         ContentEditorToolbar = new javax.swing.JToolBar();
         ContentTypeSelectComboBox = new javax.swing.JComboBox();
@@ -375,6 +393,23 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         ReplyToQueueNameTextField = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
         UserIdTextField = new javax.swing.JTextField();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel33 = new javax.swing.JLabel();
+        DLHReasonTextField = new javax.swing.JTextField();
+        DLHDestintionTextField = new javax.swing.JTextField();
+        DLHQmgrTextField = new javax.swing.JTextField();
+        jLabel34 = new javax.swing.JLabel();
+        jLabel35 = new javax.swing.JLabel();
+        jLabel36 = new javax.swing.JLabel();
+        DLHFormatTextField = new javax.swing.JTextField();
+        jLabel37 = new javax.swing.JLabel();
+        jLabel38 = new javax.swing.JLabel();
+        jLabel39 = new javax.swing.JLabel();
+        jLabel40 = new javax.swing.JLabel();
+        DLHPutTimeTextField = new javax.swing.JTextField();
+        DLHPutDateTextField = new javax.swing.JTextField();
+        DLHPutTypeTextField = new javax.swing.JTextField();
+        DLHPutNameTextField = new javax.swing.JTextField();
         ProgressBar = new javax.swing.JProgressBar();
         StatusLabel = new javax.swing.JLabel();
         KeepPositionCheckBox = new javax.swing.JCheckBox();
@@ -473,7 +508,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
         );
 
-        TabbedPanel.addTab("Data", jPanel1);
+        MessagePanel.addTab("Data", jPanel1);
 
         jPanel2.setPreferredSize(new java.awt.Dimension(610, 705));
 
@@ -813,7 +848,149 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
 
         MQMDScrollPanel.setViewportView(jPanel2);
 
-        TabbedPanel.addTab("MQMD", MQMDScrollPanel);
+        MessagePanel.addTab("MQMD", MQMDScrollPanel);
+
+        jLabel33.setText("Reason:");
+        jLabel33.setPreferredSize(new java.awt.Dimension(150, 25));
+
+        DLHReasonTextField.setEditable(false);
+        DLHReasonTextField.setFocusable(false);
+        DLHReasonTextField.setPreferredSize(new java.awt.Dimension(380, 25));
+
+        DLHDestintionTextField.setEditable(false);
+        DLHDestintionTextField.setFocusable(false);
+        DLHDestintionTextField.setPreferredSize(new java.awt.Dimension(380, 25));
+
+        DLHQmgrTextField.setEditable(false);
+        DLHQmgrTextField.setFocusable(false);
+        DLHQmgrTextField.setPreferredSize(new java.awt.Dimension(380, 25));
+
+        jLabel34.setText("Destination queue name:");
+        jLabel34.setPreferredSize(new java.awt.Dimension(150, 25));
+
+        jLabel35.setText("Destination qmgr name:");
+        jLabel35.setPreferredSize(new java.awt.Dimension(150, 25));
+
+        jLabel36.setText("Format:");
+        jLabel36.setPreferredSize(new java.awt.Dimension(150, 25));
+
+        DLHFormatTextField.setEditable(false);
+        DLHFormatTextField.setFocusable(false);
+        DLHFormatTextField.setPreferredSize(new java.awt.Dimension(380, 25));
+
+        jLabel37.setText("Put application name:");
+        jLabel37.setPreferredSize(new java.awt.Dimension(150, 25));
+
+        jLabel38.setText("Put application type:");
+        jLabel38.setPreferredSize(new java.awt.Dimension(150, 25));
+
+        jLabel39.setText("Put date:");
+        jLabel39.setPreferredSize(new java.awt.Dimension(150, 25));
+
+        jLabel40.setText("Put time:");
+        jLabel40.setPreferredSize(new java.awt.Dimension(150, 25));
+
+        DLHPutTimeTextField.setEditable(false);
+        DLHPutTimeTextField.setFocusable(false);
+        DLHPutTimeTextField.setPreferredSize(new java.awt.Dimension(380, 25));
+
+        DLHPutDateTextField.setEditable(false);
+        DLHPutDateTextField.setFocusable(false);
+        DLHPutDateTextField.setPreferredSize(new java.awt.Dimension(380, 25));
+
+        DLHPutTypeTextField.setEditable(false);
+        DLHPutTypeTextField.setFocusable(false);
+        DLHPutTypeTextField.setPreferredSize(new java.awt.Dimension(380, 25));
+
+        DLHPutNameTextField.setEditable(false);
+        DLHPutNameTextField.setFocusable(false);
+        DLHPutNameTextField.setPreferredSize(new java.awt.Dimension(380, 25));
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(DLHReasonTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(DLHDestintionTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel35, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(DLHQmgrTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel36, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(DLHFormatTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)))
+                        .addContainerGap())
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel37, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(DLHPutNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel38, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(DLHPutTypeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel39, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(DLHPutDateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(jLabel40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(DLHPutTimeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)))
+                        .addContainerGap())))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(DLHReasonTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(DLHDestintionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel35, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(DLHQmgrTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel36, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(DLHFormatTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel37, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(DLHPutNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel38, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(DLHPutTypeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel39, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(DLHPutDateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(DLHPutTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(454, Short.MAX_VALUE))
+        );
+
+        MessagePanel.addTab("DLH", jPanel3);
 
         ProgressBar.setIndeterminate(true);
         ProgressBar.setPreferredSize(new java.awt.Dimension(150, 25));
@@ -832,7 +1009,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(TabbedPanel)
+                    .addComponent(MessagePanel)
                     .addComponent(TitlePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(ProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -852,7 +1029,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
                 .addContainerGap()
                 .addComponent(TitlePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(TabbedPanel)
+                .addComponent(MessagePanel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -912,6 +1089,14 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JToolBar ContentEditorToolbar;
     private javax.swing.JComboBox ContentTypeSelectComboBox;
     private javax.swing.JTextField CorrectionIdTextField;
+    private javax.swing.JTextField DLHDestintionTextField;
+    private javax.swing.JTextField DLHFormatTextField;
+    private javax.swing.JTextField DLHPutDateTextField;
+    private javax.swing.JTextField DLHPutNameTextField;
+    private javax.swing.JTextField DLHPutTimeTextField;
+    private javax.swing.JTextField DLHPutTypeTextField;
+    private javax.swing.JTextField DLHQmgrTextField;
+    private javax.swing.JTextField DLHReasonTextField;
     private javax.swing.JSpinner ExpirySpinner;
     private javax.swing.JComboBox FeedbackCombobox;
     private javax.swing.JTextField FormatTextField;
@@ -920,6 +1105,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JScrollPane MQMDScrollPanel;
     private javax.swing.JComboBox MessageFlagCombobox;
     private javax.swing.JTextField MessageIdTextField;
+    private javax.swing.JTabbedPane MessagePanel;
     private javax.swing.JSpinner MessageSequenceNumberSpinner;
     private javax.swing.JSpinner OffsetSpinner;
     private javax.swing.JSpinner OriginalLengthSpinner;
@@ -933,7 +1119,6 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JTextField ReplyToQueueManagerNameTextField;
     private javax.swing.JTextField ReplyToQueueNameTextField;
     private javax.swing.JLabel StatusLabel;
-    private javax.swing.JTabbedPane TabbedPanel;
     private javax.swing.JPanel TitlePanel;
     private javax.swing.JButton UpdateButton;
     private javax.swing.JTextField UserIdTextField;
@@ -955,7 +1140,15 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel34;
+    private javax.swing.JLabel jLabel35;
+    private javax.swing.JLabel jLabel36;
+    private javax.swing.JLabel jLabel37;
+    private javax.swing.JLabel jLabel38;
+    private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -963,6 +1156,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane3;
     // End of variables declaration//GEN-END:variables
 }

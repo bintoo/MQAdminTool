@@ -636,7 +636,7 @@ public class MQUtility {
             }
             String originalQueueName = (String)objectInputStream.readObject();
             int totalNumOfMessages = objectInputStream.readInt();                  
-            queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_OUTPUT | CMQC.MQOO_SET_ALL_CONTEXT | CMQC.MQOO_INPUT_EXCLUSIVE);
+            queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_OUTPUT | CMQC.MQOO_SET_ALL_CONTEXT | CMQC.MQOO_INPUT_SHARED);
             if(checkQueueDepth){
                 try{
                     int curDepth = queue.getCurrentDepth();
@@ -656,6 +656,11 @@ public class MQUtility {
             for(int i = 0; i < totalNumOfMessages; i++){
                 try{
                     MQMessage message = readMessageFromStream(objectInputStream);
+                    if(message.format.contains("MQXMIT")){
+                        Field versionField = message.getClass().getSuperclass().getDeclaredField("version");
+                        versionField.setAccessible(true);
+                        versionField.set(message, 1);
+                    }
                     queue.put(message, option);
                     if(progressBar != null){
                         int value = ((i + 1) * 100)/totalNumOfMessages;
@@ -699,17 +704,32 @@ public class MQUtility {
         return new String(hexChars);
     }
     
+    public static MQDLH getDLH(MQMessage message){
+         try {
+            MQHeaderList list = new MQHeaderList(message, false);
+            if(list.size() > 0 && list.indexOf("MQDLH") >= 0){
+                MQDLH dlh = (MQDLH) list.get(list.indexOf("MQDLH"));
+                message.seek(0);
+                return dlh;
+            }
+        } catch(Exception ex){
+
+        }
+        return null;       
+    }
+    
     public static MQMessage RemoveMQDLH(MQMessage message){
         try {
             MQHeaderList list = new MQHeaderList(message, true);
-            MQDLH dlh = (MQDLH) list.get(0);
-            int reason = dlh.getReason();
-            list.remove(dlh);
-            MQMessage newMessage = new MQMessage();
-            copyMessageMQMD(newMessage, message);
-            list.write(newMessage, true);
-            newMessage.format = !list.getFormat().trim().contains( "MQDEAD") ? list.getFormat() : null;            
-            return newMessage;
+            if(list.size() > 0 && list.indexOf("MQDLH") >= 0){
+                MQDLH dlh = (MQDLH) list.get(list.indexOf("MQDLH"));
+                list.remove(dlh);
+                MQMessage newMessage = new MQMessage();
+                copyMessageMQMD(newMessage, message);
+                list.write(newMessage, true);
+                newMessage.format = !list.getFormat().trim().contains( "MQDEAD") ? list.getFormat() : null;            
+                return newMessage;
+            }
         } catch (MQDataException ex) {
             Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -722,27 +742,32 @@ public class MQUtility {
     
     //Msc
     
-    public static int GetMessageContentLength(MQMessage message){
+    public static int GetMessageContentLength(MQMessage message){     
         int msglen = 0;
         try {
+            message.seek(0);
             msglen = message.getMessageLength();
             MQHeaderList list = new MQHeaderList(message);
-            boolean seek = true;
-            if (list.indexOf("MQRFH2") >= 0) {
-                MQRFH2 header = (MQRFH2) list.get(list.indexOf("MQRFH2"));
-                msglen = msglen - header.size();
-                seek = false;
-            }
-            if (list.indexOf("MQDLH") >= 0) {
-                MQDLH header = (MQDLH) list.get(list.indexOf("MQDLH"));
-                msglen = msglen - header.size();
-                seek = false;
-            }
-            if(seek){
-                message.seek(0);
+            if(list.size() > 0){
+                boolean seek = true;
+                if (list.indexOf("MQRFH2") >= 0) {
+                    MQRFH2 header = (MQRFH2) list.get(list.indexOf("MQRFH2"));
+                    msglen = msglen - header.size();
+                    seek = false;
+                }
+                if (list.indexOf("MQDLH") >= 0) {
+                    MQDLH header = (MQDLH) list.get(list.indexOf("MQDLH"));
+                    msglen = msglen - header.size();
+                    seek = false;
+                }
+                if(seek){
+                    message.seek(0);
+                }
             }
             
         } catch (MQDataException | IOException ex) {
+            Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }catch(Exception ex){
             Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
         return msglen;
@@ -753,6 +778,7 @@ public class MQUtility {
         int messageLength = GetMessageContentLength(message);
         int requiredLen = length != null ? length > messageLength? messageLength : length : messageLength;
         try{
+            //message.seek(0);
             try{
                 content = message.readStringOfByteLength(requiredLen);  
             }catch(Exception ex){

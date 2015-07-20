@@ -130,6 +130,7 @@ public class DestoryMessagesDialog extends DialogBase {
         toggleButtons(false);
         boolean isAlias = (QueueType)selectedObject.Type == QueueType.Alias;
         DestoryMessageTask task;
+        final String successMessage = isDeleteAllMessages? "The queue has been cleared of messages" : "The selected messages have been deleted";
         if(isDeleteAllMessages){
             task  = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, forceOpenGet,isAlias, stringFilter);
         }
@@ -140,7 +141,7 @@ public class DestoryMessagesDialog extends DialogBase {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(component, "The queue has been cleared of messages", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(component, successMessage, "Success", JOptionPane.INFORMATION_MESSAGE);
                 toggleButtons(true);
                 FireActionEvent();
                 Close();
