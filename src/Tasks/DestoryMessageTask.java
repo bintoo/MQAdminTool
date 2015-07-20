@@ -33,8 +33,9 @@ public class DestoryMessageTask extends TaskBase {
     boolean isRemoveAllMessages;
     ArrayList<MQMessageIdModel> ids;
     String stringFilter;
+    boolean isMultiThread;
     
-    public DestoryMessageTask(MQQueueManager queueManager, String queueName, JProgressBar progressBar, Component parent, boolean openGet, boolean isAlias, String stringFilter){
+    public DestoryMessageTask(MQQueueManager queueManager, String queueName, JProgressBar progressBar, Component parent, boolean openGet, boolean isAlias, String stringFilter, boolean isMultiThread){
         this.queueManager = queueManager;
         this.queueName = queueName;
         this.progressBar = progressBar;
@@ -43,7 +44,7 @@ public class DestoryMessageTask extends TaskBase {
         this.isAlias = isAlias;
         this.isRemoveAllMessages = true;
         this.stringFilter = stringFilter;
-        
+        this.isMultiThread = isMultiThread;
     }
     
     public DestoryMessageTask(MQQueueManager queueManager, String queueName, JProgressBar progressBar, Component parent, ArrayList<MQMessageIdModel> ids, boolean openGet, boolean isAlias,String stringFilter){
@@ -70,7 +71,12 @@ public class DestoryMessageTask extends TaskBase {
                     MQUtility.ComsumeAllMessagesWithFilter(queueManager, queueName, progressBar, openGet,isAlias,stringFilter);
                 }
                 else{
-                    MQUtility.ComsumeAllMessages(queueManager, queueName, progressBar, openGet,isAlias);
+                    if(this.isMultiThread){
+                        MQUtility.ComsumeAllMessagesMultiThread(queueManager, queueName, progressBar, openGet,isAlias);
+                    }
+                    else{
+                        MQUtility.ComsumeAllMessages(queueManager, queueName, progressBar, openGet,isAlias);
+                    }
                 }
             }
             else{

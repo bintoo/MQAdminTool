@@ -5,6 +5,7 @@
  */
 package MQApi.Utilities;
 
+import MQApi.Connection.MQConnection;
 import MQApi.Logs.LogWriter;
 import MQApi.Models.MQMessageIdModel;
 import MQApi.PCF.MQPCF;
@@ -12,6 +13,7 @@ import MQApi.QueryModel.MQMessageListResult;
 import MQApi.QueryModel.MQMessageListResult.MessageDetailModel;
 import UI.Dialogs.MessageEditDialog;
 import UI.Helpers.DateTimeHelper;
+import UI.Helpers.TreeHelper;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQGetMessageOptions;
 import com.ibm.mq.MQMessage;
@@ -232,6 +234,110 @@ public class MQUtility {
         return result;
     }
 
+    public static void ComsumeMessagesThread(MQQueueManager queueManager, String queueName, boolean forceOpenGet, boolean isAlias, Observer observer){
+        MQQueue queue = null;
+        try {
+            int openQueueOptions;
+            
+            if(isAlias){
+                queueName = MQPCF.ResolveAliasBaseQueueName(queueManager, queueName);
+            }
+            openQueueOptions = forceOpenGet == true? CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE | CMQC.MQOO_INPUT_SHARED | CMQC.MQOO_SET : CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE | CMQC.MQOO_INPUT_SHARED;
+            queue = queueManager.accessQueue(queueName, openQueueOptions);
+            boolean isGetOpen = queue.getInhibitGet() == MQConstants.MQQA_GET_ALLOWED;
+            if(forceOpenGet == true && isGetOpen == false){
+                queue.setInhibitGet(MQConstants.MQQA_GET_ALLOWED);
+            }
+            MQGetMessageOptions options = new MQGetMessageOptions();
+            MQMessage message = new MQMessage();
+            options.matchOptions = MQConstants.MQMO_NONE;
+            options.options = CMQC.MQGMO_ACCEPT_TRUNCATED_MSG;
+            while(true){               
+                try{
+                    queue.get(message, options, 1);
+                }
+                catch(MQException ex){
+                    if(ex.getReason() == MQConstants.MQRC_TRUNCATED_MSG_ACCEPTED){  
+                        observer.Action();
+                        continue;
+                    }  
+                    else if(ex.getReason() == MQConstants.MQRC_NO_MSG_AVAILABLE){
+                        break;
+                    }
+                    else{
+                        LogWriter.WriteToLog("MQUtility", "ComsumeAllMessages",ex);
+                        throw ex;
+                    }
+                }               
+            }
+            if(forceOpenGet == true && isGetOpen == false){
+                queue.setInhibitGet(MQConstants.MQQA_GET_INHIBITED);
+            }
+            closeQueue(queue);
+        } catch (MQException ex) {
+            LogWriter.WriteToLog("MQUtility", "ComsumeAllMessages",ex);
+            closeQueue(queue);
+        }        
+    }
+    public static void ComsumeAllMessagesMultiThread(MQQueueManager queueManager, String queueName, JProgressBar progressBar, boolean forceOpenGet, boolean isAlias) throws MQException{
+        MQQueue queue = null;
+        try{
+            int openQueueOptions;
+            if(isAlias){
+                queueName = MQPCF.ResolveAliasBaseQueueName(queueManager, queueName);
+            }
+            openQueueOptions = forceOpenGet == true? CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE | CMQC.MQOO_INPUT_SHARED | CMQC.MQOO_SET : CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE | CMQC.MQOO_INPUT_SHARED;
+            queue = queueManager.accessQueue(queueName, openQueueOptions);
+            final int queueDepth = queue.getCurrentDepth();
+            Processed processed = new Processed();
+            processed.MessageDeleted = 0;
+            ThreadFinish thread1Finish = new ThreadFinish();
+            thread1Finish.IsFinish = false;
+            ThreadFinish thread2Finish = new ThreadFinish();
+            thread2Finish.IsFinish = false;
+            ThreadFinish thread3Finish = new ThreadFinish();
+            thread3Finish.IsFinish = false;
+            ThreadFinish thread4Finish = new ThreadFinish();
+            thread4Finish.IsFinish = false;
+            
+            MQQueueManager queueManager1 = MQConnection.GetMQQueueManager(TreeHelper.GetCurrentConnectionDetail(null));
+            MQQueueManager queueManager2 = MQConnection.GetMQQueueManager(TreeHelper.GetCurrentConnectionDetail(null));
+            MQQueueManager queueManager3 = MQConnection.GetMQQueueManager(TreeHelper.GetCurrentConnectionDetail(null));
+            MQQueueManager queueManager4 = MQConnection.GetMQQueueManager(TreeHelper.GetCurrentConnectionDetail(null));
+            
+            ObserverTask observerTask1 = new ObserverTask(progressBar,queueDepth, processed);
+            ConsumeTask task1 = new ConsumeTask(queueManager1, queueName, forceOpenGet, isAlias, observerTask1, thread1Finish);
+            Thread thread1 = new Thread(task1);
+            
+            ObserverTask observerTask2 = new ObserverTask(progressBar,queueDepth, processed);
+            ConsumeTask task2 = new ConsumeTask(queueManager2, queueName, forceOpenGet, isAlias, observerTask2, thread2Finish);
+            Thread thread2 = new Thread(task2);
+  
+            ObserverTask observerTask3 = new ObserverTask(progressBar,queueDepth, processed);
+            ConsumeTask task3 = new ConsumeTask(queueManager3, queueName, forceOpenGet, isAlias, observerTask3, thread3Finish);
+            Thread thread3 = new Thread(task3);
+            
+            ObserverTask observerTask4 = new ObserverTask(progressBar,queueDepth, processed);
+            ConsumeTask task4 = new ConsumeTask(queueManager4, queueName, forceOpenGet, isAlias, observerTask4, thread4Finish);
+            Thread thread4 = new Thread(task4);
+            
+            thread1.start();
+            thread2.start();
+            thread3.start();
+            thread4.start();
+            
+            while(true){
+                Thread.sleep(1000);
+                if(thread1Finish.IsFinish && thread2Finish.IsFinish && thread3Finish.IsFinish && thread4Finish.IsFinish){
+                    progressBar.setValue(100);
+                    break;
+                }
+            }
+        }
+        catch (Exception ex){
+            
+        }
+    }
     public static void ComsumeAllMessages(MQQueueManager queueManager, String queueName, JProgressBar progressBar, boolean forceOpenGet, boolean isAlias) throws MQException{
         MQQueue queue = null;
         try {

@@ -40,20 +40,20 @@ public class DestoryMessagesDialog extends DialogBase {
     String stringFilter;
     public DestoryMessagesDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, TableListObject selectedObject, boolean forceOpenGet, String stringFilter) {       
         super(parent, modal,queueManager,selectedObject);
-        initComponents();
-        initCustomProperties();
+        initComponents();      
         this.forceOpenGet = forceOpenGet;
         this.isDeleteAllMessages = true;
         this.stringFilter = stringFilter;
+        initCustomProperties();
     }
     
     public DestoryMessagesDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, TableListObject selectedObject, ArrayList<MQMessageIdModel> ids, boolean forceOpenGet) {       
         super(parent, modal,queueManager,selectedObject);
         initComponents();
-        initCustomProperties();
         this.forceOpenGet = forceOpenGet;
         this.isDeleteAllMessages = false;
         this.ids = ids;
+        initCustomProperties();
     }
 
     @SuppressWarnings("unchecked")
@@ -64,6 +64,7 @@ public class DestoryMessagesDialog extends DialogBase {
         StateLabel = new javax.swing.JLabel();
         ClearButton = new javax.swing.JButton();
         CancelButton = new javax.swing.JButton();
+        MultiThreadCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(500, 150));
@@ -87,6 +88,8 @@ public class DestoryMessagesDialog extends DialogBase {
             }
         });
 
+        MultiThreadCheckBox.setText("Use mutil-thread");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -100,6 +103,8 @@ public class DestoryMessagesDialog extends DialogBase {
                         .addGap(0, 181, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(MultiThreadCheckBox)
+                        .addGap(18, 18, 18)
                         .addComponent(ClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(CancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -115,7 +120,8 @@ public class DestoryMessagesDialog extends DialogBase {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ClearButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(CancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MultiThreadCheckBox))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -132,7 +138,7 @@ public class DestoryMessagesDialog extends DialogBase {
         DestoryMessageTask task;
         final String successMessage = isDeleteAllMessages? "The queue has been cleared of messages" : "The selected messages have been deleted";
         if(isDeleteAllMessages){
-            task  = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, forceOpenGet,isAlias, stringFilter);
+            task  = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, forceOpenGet,isAlias, stringFilter, this.MultiThreadCheckBox.isVisible() && this.MultiThreadCheckBox.isSelected());
         }
         else{
             task  = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, ids, forceOpenGet,isAlias, stringFilter);
@@ -172,6 +178,15 @@ public class DestoryMessagesDialog extends DialogBase {
         this.ClearMessageProgressBar.setValue(0);
         this.ClearMessageProgressBar.setStringPainted(true);
         this.StateLabel.setText("Are you sure you want to clear this messages?");
+        if(stringFilter != null){
+            stringFilter = stringFilter.trim();
+        }
+        if(isDeleteAllMessages && !forceOpenGet && (stringFilter == null || stringFilter.isEmpty())){
+            this.MultiThreadCheckBox.setVisible(true);
+        }
+        else{
+            this.MultiThreadCheckBox.setVisible(false);
+        }
     }
     
     private void toggleButtons(boolean value){
@@ -183,6 +198,7 @@ public class DestoryMessagesDialog extends DialogBase {
     private javax.swing.JButton CancelButton;
     private javax.swing.JButton ClearButton;
     private javax.swing.JProgressBar ClearMessageProgressBar;
+    private javax.swing.JCheckBox MultiThreadCheckBox;
     private javax.swing.JLabel StateLabel;
     // End of variables declaration//GEN-END:variables
 }

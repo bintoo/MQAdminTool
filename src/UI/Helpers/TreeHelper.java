@@ -27,6 +27,8 @@ import javax.swing.tree.TreeSelectionModel;
  */
 public class TreeHelper {
     
+    private static JTree treeBuff; 
+    
     public static void InitTreeView(JTree TreeView){
         TreeView.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         DefaultTreeModel model = (DefaultTreeModel)TreeView.getModel();
@@ -37,7 +39,8 @@ public class TreeHelper {
         root.setUserObject(rootObject);
         DefaultMutableTreeNode queueManagerParentNode  = new DefaultMutableTreeNode(queueManagerFolderObject);
         root.add(queueManagerParentNode);
-        model.reload(root);          
+        model.reload(root);
+        treeBuff = TreeView;
     }
         
     public static void AddQueueManagerNodeToTreeView(JTree TreeView, ConnectionDetailModel connectionDetail){
@@ -127,6 +130,21 @@ public class TreeHelper {
             if(queueManagerNode != null){
                 TreeNodeObject nodeObject = (TreeNodeObject) queueManagerNode.getUserObject();  
                 return nodeObject.QueueManager;
+            }
+        }
+        return null;        
+    }
+    
+    public static ConnectionDetailModel GetCurrentConnectionDetail(JTree TreeView){
+        if(TreeView == null){
+            TreeView = treeBuff;
+        }
+        if(TreeView != null && TreeView.getLastSelectedPathComponent() != null){
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) TreeView.getLastSelectedPathComponent();
+            DefaultMutableTreeNode queueManagerNode = getQueueManagerNode(node);
+            if(queueManagerNode != null){
+                TreeNodeObject nodeObject = (TreeNodeObject) queueManagerNode.getUserObject();  
+                return nodeObject.ConnectionDetail;
             }
         }
         return null;        
