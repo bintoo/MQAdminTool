@@ -192,6 +192,7 @@ public class DestoryMessagesDialog extends DialogBase {
     private void toggleButtons(boolean value){
         this.CancelButton.setEnabled(value);
         this.ClearButton.setEnabled(value);
+        this.MultiThreadCheckBox.setEnabled(value);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

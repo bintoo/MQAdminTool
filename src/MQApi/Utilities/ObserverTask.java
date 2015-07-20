@@ -19,7 +19,7 @@ public class ObserverTask implements Observer{
     public void Action() {
         processed.MessageDeleted++;    
         int value = ( processed.MessageDeleted * 100)/total;
-        progressBar.setValue(value);        
+        progressBar.setValue(value <= 100? value : 100);        
     }
     
     public ObserverTask(JProgressBar progressBar, int total, Processed processed){
