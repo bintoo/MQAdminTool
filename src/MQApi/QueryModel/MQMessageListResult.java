@@ -29,6 +29,8 @@ public class MQMessageListResult extends MQQueryResultBase{
         public String MessageData;
         @MQObjectListtAnnotation(DisplayName = "Put date/time", MQConstant = 0, VarType = VariableType.Text, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""})
         public String PutDateTime;
+        @MQObjectListtAnnotation(DisplayName = "Backout count", MQConstant = 0, VarType = VariableType.Number, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""})
+        public int BackoutCount;
         @MQObjectListtAnnotation(DisplayName = "Sequence number", MQConstant = 0, VarType = VariableType.Number, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""})
         public Integer SequenceNumber;
         @MQObjectListtAnnotation(DisplayName = "User identifier", MQConstant = 0, VarType = VariableType.Text, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""})

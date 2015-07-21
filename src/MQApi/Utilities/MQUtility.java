@@ -950,6 +950,7 @@ public class MQUtility {
         model.MessageIdString = BytesToHex(message.messageId);
         model.Offset = message.offset;
         model.MessageData = GetMessageStringContent(message, messageListDataLength);
+        model.BackoutCount = message.backoutCount;
         return model;
     }
     
