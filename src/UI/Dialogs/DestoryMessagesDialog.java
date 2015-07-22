@@ -88,7 +88,7 @@ public class DestoryMessagesDialog extends DialogBase {
             }
         });
 
-        MultiThreadCheckBox.setText("Use mutil-thread");
+        MultiThreadCheckBox.setText("Use multi-thread");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

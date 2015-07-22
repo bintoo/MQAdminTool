@@ -100,7 +100,7 @@
     </Component>
     <Component class="javax.swing.JCheckBox" name="MultiThreadCheckBox">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Use mutil-thread"/>
+        <Property name="text" type="java.lang.String" value="Use multi-thread"/>
       </Properties>
     </Component>
   </SubComponents>

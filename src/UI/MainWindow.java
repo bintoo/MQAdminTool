@@ -47,6 +47,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
@@ -137,6 +139,9 @@ public class MainWindow extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JToolBar.Separator();
         SearchButton = new javax.swing.JButton();
         SearchTextField = new javax.swing.JTextField();
+        jSeparator3 = new javax.swing.JToolBar.Separator();
+        MemoryProgressBar = new javax.swing.JProgressBar();
+        jLabel5 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         ContentTableProgressBar = new javax.swing.JProgressBar();
         UpdateTimeStampLabel = new javax.swing.JLabel();
@@ -360,6 +365,14 @@ public class MainWindow extends javax.swing.JFrame {
         SearchTextField.setMinimumSize(new java.awt.Dimension(250, 40));
         SearchTextField.setPreferredSize(new java.awt.Dimension(250, 40));
         FilterToolbar.add(SearchTextField);
+        FilterToolbar.add(jSeparator3);
+
+        MemoryProgressBar.setPreferredSize(new java.awt.Dimension(100, 25));
+        FilterToolbar.add(MemoryProgressBar);
+
+        jLabel5.setText("Memory usage :");
+        jLabel5.setPreferredSize(new java.awt.Dimension(90, 25));
+        FilterToolbar.add(jLabel5);
 
         javax.swing.GroupLayout FilterPanelLayout = new javax.swing.GroupLayout(FilterPanel);
         FilterPanel.setLayout(FilterPanelLayout);
@@ -397,15 +410,15 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(ContentTableProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(UpdateTimeStampLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(5, 5, 5))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout ContentPanelLayout = new javax.swing.GroupLayout(ContentPanel);
         ContentPanel.setLayout(ContentPanelLayout);
         ContentPanelLayout.setHorizontalGroup(
             ContentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
-            .addComponent(FilterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
+            .addComponent(FilterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         ContentPanelLayout.setVerticalGroup(
@@ -413,7 +426,7 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ContentPanelLayout.createSequentialGroup()
                 .addComponent(FilterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 517, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
@@ -908,6 +921,14 @@ public class MainWindow extends javax.swing.JFrame {
         TreeView.setCellRenderer(new CustomTreeRender());
         //ContentTable.setDefaultRenderer(TableListObject.class, new CustomTableCellRender()); 
         this.TestMenuItem.setVisible(true);
+        Timer timer = new Timer(true);
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                memoryUsage();
+            }
+        }, 0, 5000);
         
     }
     
@@ -1382,6 +1403,19 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
     
+    private void memoryUsage(){
+        //System.gc();
+        Runtime rt = Runtime.getRuntime();
+        com.sun.management.OperatingSystemMXBean dd;
+        double total = (double)(rt.totalMemory() /1024 /1024);
+        double free = (double)(rt.freeMemory() /1024 /1024);
+        double used = total - free;
+        double value = (used / total) * 100;
+        this.MemoryProgressBar.setValue((int)value);
+        this.MemoryProgressBar.setStringPainted(true);
+        this.MemoryProgressBar.setString(used + " / " + total + "MB");
+    }
+    
     
  //Event handlers   
     private void ChannelStatusToolMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChannelStatusToolMenuItemActionPerformed
@@ -1585,6 +1619,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextField HostTextBox;
     private javax.swing.JMenuBar MainMenuBar;
     private javax.swing.JMenu MainWindowMenu;
+    private javax.swing.JProgressBar MemoryProgressBar;
     private javax.swing.JTextField PortTextBox;
     private javax.swing.JTextField QueueManagerTextBox;
     private javax.swing.JButton RefreshButton;
@@ -1602,10 +1637,12 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JToolBar.Separator jSeparator3;
     // End of variables declaration//GEN-END:variables
 }
