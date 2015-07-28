@@ -1415,6 +1415,9 @@ public class MainWindow extends javax.swing.JFrame {
         this.MemoryProgressBar.setValue((int)value);
         this.MemoryProgressBar.setStringPainted(true);
         this.MemoryProgressBar.setString(used + " / " + total + "MB");
+        if(value > 70.0){
+            System.gc();
+        }
     }
     
     

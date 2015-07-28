@@ -12,6 +12,7 @@ import MQApi.Result.Annotations.MQObjectListtAnnotation;
 import MQApi.QueryModel.MQChannelListResult.ChannelDetailModel;
 import MQApi.QueryModel.MQMessageListResult.MessageDetailModel;
 import MQApi.QueryModel.MQQueueListResult.QueueDetailModel;
+import UI.Misc.ProgressCellRender;
 import UI.Models.TableListObject;
 import java.awt.Component;
 import java.awt.Point;
@@ -38,9 +39,9 @@ public class TableHelper {
     public static<T> void UpdateContentTable(JTable contentTable, ArrayList<T> dataModel){
         contentTable.getParent().getParent().setVisible(false);
         DefaultTableModel model = (DefaultTableModel)contentTable.getModel();
+        ArrayList<String> headerNames = new ArrayList<String>();
+        ArrayList<String> fieldNames = new ArrayList<String>();
         if(dataModel != null && dataModel.size() > 0){
-            ArrayList<String> headerNames = new ArrayList<String>();
-            ArrayList<String> fieldNames = new ArrayList<String>();
             for(Field field : dataModel.get(0).getClass().getFields()){
                 if(field.getAnnotation(MQObjectListtAnnotation.class) != null && field.getAnnotation(MQObjectListtAnnotation.class).ShowOnTable()){
                     headerNames.add(field.getAnnotation(MQObjectListtAnnotation.class).DisplayName());
@@ -99,6 +100,10 @@ public class TableHelper {
             ToggleContentTable(contentTable, false);
         }
         resizeColumnWidth(contentTable);
+        
+        if(headerNames.contains("Queue depth status")){
+            contentTable.getColumn("Queue depth status").setCellRenderer(new ProgressCellRender());
+        }
         contentTable.getParent().getParent().setVisible(true);
     }
 
@@ -201,7 +206,7 @@ public class TableHelper {
     private static void resizeColumnWidth(JTable table) {
         final TableColumnModel columnModel = table.getColumnModel();
         for (int column = 0; column < table.getColumnCount(); column++) {
-            int width = 120; // Min width
+            int width = 150; // Min width
             int maxWidth = 300;
             for (int row = 0; row < table.getRowCount(); row++) {
                 TableCellRenderer renderer = table.getCellRenderer(row, column);

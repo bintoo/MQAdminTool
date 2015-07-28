@@ -85,13 +85,15 @@ public class MQQueueListResult extends MQQueryResultBase{
     }
     
     public class QueueDetailModel extends DetailModelCore{
-        @MQObjectListtAnnotation(DisplayName = "Queue Name", MQConstant = MQConstants.MQCA_Q_NAME, VarType = VariableType.Text, QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
+        @MQObjectListtAnnotation(DisplayName = "Queue name", MQConstant = MQConstants.MQCA_Q_NAME, VarType = VariableType.Text, QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
         public String Name;
-        @MQObjectListtAnnotation(DisplayName = "Queue Type", MQConstant = MQConstants.MQIA_Q_TYPE, VarType = VariableType.QueueType,  QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
+        @MQObjectListtAnnotation(DisplayName = "Queue type", MQConstant = MQConstants.MQIA_Q_TYPE, VarType = VariableType.QueueType,  QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
         public QueueType Type;
-        @MQObjectListtAnnotation(DisplayName = "Current Depth", MQConstant = MQConstants.MQIA_CURRENT_Q_DEPTH, VarType = VariableType.Number,  QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
+        @MQObjectListtAnnotation(DisplayName = "Queue depth status", MQConstant = MQConstants.MQIA_CURRENT_Q_DEPTH, VarType = VariableType.Number,  QueryType = QueryType.QueueDetial, GetValue = false)
+        public QueueDepthStatusModel CurrentQueueDepthStatus;
+        @MQObjectListtAnnotation(DisplayName = "Current depth", MQConstant = MQConstants.MQIA_CURRENT_Q_DEPTH, VarType = VariableType.Number,  QueryType = QueryType.QueueDetial, ShowOnTable = false)
         public Integer CurrentQueueDepth;
-        @MQObjectListtAnnotation(DisplayName = "Max Depth", MQConstant = MQConstants.MQIA_MAX_Q_DEPTH,VarType = VariableType.Number,  QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
+        @MQObjectListtAnnotation(DisplayName = "Max Depth", MQConstant = MQConstants.MQIA_MAX_Q_DEPTH,VarType = VariableType.Number,  QueryType = QueryType.QueueDetial, ShowOnTable = false)
         public Integer MaxQueueDepth;
         @MQObjectListtAnnotation(DisplayName = "Open input count", MQConstant = MQConstants.MQIA_OPEN_INPUT_COUNT, VarType = VariableType.Number, QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
         public Integer OpenInputCount;
@@ -128,7 +130,14 @@ public class MQQueueListResult extends MQQueryResultBase{
 
         @Override
         public void setDisplayValues() {
-            
+            if(CurrentQueueDepth != null && MaxQueueDepth != null){
+                CurrentQueueDepthStatus = new QueueDepthStatusModel();
+                CurrentQueueDepthStatus.CurrentDepth = CurrentQueueDepth;
+                CurrentQueueDepthStatus.MaxDepth = MaxQueueDepth;
+            }
+            else{
+                CurrentQueueDepthStatus = null;
+            }
         }
     }
 }
