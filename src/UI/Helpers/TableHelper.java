@@ -201,7 +201,7 @@ public class TableHelper {
     private static void resizeColumnWidth(JTable table) {
         final TableColumnModel columnModel = table.getColumnModel();
         for (int column = 0; column < table.getColumnCount(); column++) {
-            int width = 150; // Min width
+            int width = 120; // Min width
             int maxWidth = 300;
             for (int row = 0; row < table.getRowCount(); row++) {
                 TableCellRenderer renderer = table.getCellRenderer(row, column);

@@ -327,15 +327,19 @@ public class MQUtility {
             thread4.start();
             
             while(true){
-                Thread.sleep(1000);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    
+                }
                 if(thread1Finish.IsFinish && thread2Finish.IsFinish && thread3Finish.IsFinish && thread4Finish.IsFinish){
                     progressBar.setValue(100);
                     break;
                 }
             }
         }
-        catch (Exception ex){
-            
+        catch (MQException ex){
+            ComsumeAllMessages(queueManager,queueName, progressBar, forceOpenGet, isAlias );
         }
     }
     public static void ComsumeAllMessages(MQQueueManager queueManager, String queueName, JProgressBar progressBar, boolean forceOpenGet, boolean isAlias) throws MQException{
@@ -478,7 +482,7 @@ public class MQUtility {
                     queue.get(message, options, 1);
                 }
                 catch(MQException ex){
-                    if(ex.getReason() == MQConstants.MQRC_TRUNCATED_MSG_ACCEPTED){
+                    if(ex.getReason() == MQConstants.MQRC_TRUNCATED_MSG_ACCEPTED || ex.getReason() == MQConstants.MQRC_NO_MSG_AVAILABLE){
                         continue;
                     }   
                     else{

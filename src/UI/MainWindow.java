@@ -32,6 +32,7 @@ import UI.Dialogs.QueueProperitiesDialog;
 import UI.Dialogs.ResetChannelDialog;
 import UI.Dialogs.ResolveChannelDialog;
 import UI.Dialogs.StopChannelDialog;
+import UI.Misc.CustomTableCellRender;
 import UI.Misc.CustomTreeRender;
 import UI.Misc.ExceptionHandler;
 import UI.ReferenceObjects.ToolStatusReference;
