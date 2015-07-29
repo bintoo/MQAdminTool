@@ -26,11 +26,15 @@ import MQApi.Result.Annotations.MQObjectPropertyAnnotation;
 import MQApi.QueryModel.MQChannelListResult.ChannelDetailModel;
 import MQApi.QueryModel.MQChannelPropertyModel;
 import MQApi.QueryModel.MQChannelStatusListResult.ChannelStatusModel;
+import MQApi.QueryModel.MQPubListResult;
+import MQApi.QueryModel.MQPubListResult.PubDetailModel;
 import MQApi.QueryModel.MQQueueListResult.QueueDetailModel;
 import MQApi.QueryModel.MQQueueStatusHandleListResult;
 import MQApi.QueryModel.MQQueueStatusHandleListResult.QueueStatusHandleDetailModel;
 import MQApi.QueryModel.MQQueueStatusListResult;
 import MQApi.QueryModel.MQQueueStatusListResult.QueueStatusDetailModel;
+import MQApi.QueryModel.MQSubListResult;
+import MQApi.QueryModel.MQSubListResult.SubDetailModel;
 import MQApi.Utilities.MQUtility;
 
 import com.ibm.mq.MQQueueManager;
@@ -56,6 +60,8 @@ public class MQPCF {
     private static MQQueueListResult MQQueueListResultCache = null;
     private static MQChannelListResult MQChannelListResultCache = null;
     private static MQChannelAuthListResult MQChannelAuthListResultCache = null;
+    private static MQPubListResult MQPubListResultCache = null;
+    private static MQSubListResult MQSubListResultCache = null;
 
     //Queue   
     public static MQNameListResult GetQueueNameList(ConnectionDetailModel connectionDetail, QueueType type, String querySring){
@@ -620,7 +626,88 @@ public class MQPCF {
         disconnectAgent(agent);        
         return result;
     }
-        
+    
+    //pub/sub
+    
+    public static MQPubListResult GetPubList(MQQueueManager queueManager, String NameFilter, QueueType[] type, boolean loadNewData){
+        if(loadNewData == true || (MQQueueListResultCache == null || MQQueueListResultCache.QuerySuccess == false)){
+            return MQPCF.GetPubList(queueManager,NameFilter, type);
+        }
+        else{
+            return MQPubListResultCache;
+        }
+    }
+    
+    public static MQPubListResult GetPubList(MQQueueManager queueManager, String nameFilter, QueueType[] type ){
+        MQPubListResult result = new MQPubListResult();
+        PCFMessageAgent agent = null;
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_TOPIC);        
+            pcfCmd.addParameter(MQConstants.MQCA_TOPIC_NAME, nameFilter);
+            PCFMessage[] pcfResponse = agent.send(pcfCmd);        
+            WriteToDetailModel(pcfResponse, result, PubDetailModel.class, null); 
+            result.QuerySuccess = true;
+        } catch (MQDataException ex) {
+            if(ex.getReason() == MQConstants.MQRCCF_CFH_COMMAND_ERROR ||ex.getReason() == MQConstants.MQRCCF_MQOPEN_FAILED ){
+                result.QuerySuccess = true;
+                disconnectAgent(agent);
+                return result;
+            }
+            else{
+                result.QuerySuccess = false;
+                result.ErrorMessage = MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason());
+                LogWriter.WriteToLog("MQPCF", "GetPubList", ex);
+            }
+        } catch (IOException ex) {
+            result.QuerySuccess = false;
+            result.ErrorMessage = ex.getMessage();
+            LogWriter.WriteToLog("MQPCF", "GetPubList", ex);
+        } 
+        MQPubListResultCache = result;
+        disconnectAgent(agent);        
+        return result;
+    }
+ 
+    public static MQSubListResult GetSubList(MQQueueManager queueManager, String NameFilter, QueueType[] type, boolean loadNewData){
+        if(loadNewData == true || (MQQueueListResultCache == null || MQQueueListResultCache.QuerySuccess == false)){
+            return MQPCF.GetSubList(queueManager,NameFilter, type);
+        }
+        else{
+            return MQSubListResultCache;
+        }
+    }
+    
+    public static MQSubListResult GetSubList(MQQueueManager queueManager, String nameFilter, QueueType[] type ){
+        MQSubListResult result = new MQSubListResult();
+        PCFMessageAgent agent = null;
+        try {
+            agent = new PCFMessageAgent(queueManager);
+            PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_SUBSCRIPTION);        
+            pcfCmd.addParameter(MQConstants.MQCACF_SUB_NAME, nameFilter);
+            PCFMessage[] pcfResponse = agent.send(pcfCmd);        
+            WriteToDetailModel(pcfResponse, result, SubDetailModel.class, null); 
+            result.QuerySuccess = true;
+        } catch (MQDataException ex) {
+            if(ex.getReason() == MQConstants.MQRCCF_CFH_COMMAND_ERROR ||ex.getReason() == MQConstants.MQRCCF_MQOPEN_FAILED ){
+                result.QuerySuccess = true;
+                disconnectAgent(agent);
+                return result;
+            }
+            else{
+                result.QuerySuccess = false;
+                result.ErrorMessage = MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason());
+                LogWriter.WriteToLog("MQPCF", "GetSubList", ex);
+            }
+        } catch (IOException ex) {
+            result.QuerySuccess = false;
+            result.ErrorMessage = ex.getMessage();
+            LogWriter.WriteToLog("MQPCF", "GetSubList", ex);
+        } 
+        MQSubListResultCache = result;
+        disconnectAgent(agent);        
+        return result;
+    }
     //private
     private static <T, Y> void WriteToDetailModel(PCFMessage[] pcfResponse , T model, Class<Y> modelClass,  Object[] type){
         for(PCFMessage response : pcfResponse){     

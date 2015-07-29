@@ -81,13 +81,19 @@ public class TreeHelper {
             nodeObject.QueueManager = queueManager;
             TreeNodeObject queuesObject = new TreeNodeObject("Queues",TreeNodeObject.TreeNodeObjectType.Queues);
             TreeNodeObject channelObject = new TreeNodeObject("Channels",TreeNodeObject.TreeNodeObjectType.Channel);
+            TreeNodeObject pubObject = new TreeNodeObject("Topics",TreeNodeObject.TreeNodeObjectType.Pub);
+            TreeNodeObject subObject = new TreeNodeObject("Subscriptions",TreeNodeObject.TreeNodeObjectType.Sub);
             TreeNodeObject channelAuthObject = new TreeNodeObject("Channel auths",TreeNodeObject.TreeNodeObjectType.ChannelAuth);
             DefaultMutableTreeNode queueNodes = new DefaultMutableTreeNode(queuesObject);
             DefaultMutableTreeNode channelNodes = new DefaultMutableTreeNode(channelObject);
+            DefaultMutableTreeNode pubNodes = new DefaultMutableTreeNode(pubObject);
+            DefaultMutableTreeNode subNodes = new DefaultMutableTreeNode(subObject);
             DefaultMutableTreeNode channelAuthNodes = new DefaultMutableTreeNode(channelAuthObject);
             channelNodes.add(channelAuthNodes);
             selectedNode.add(queueNodes);
-            selectedNode.add(channelNodes);           
+            selectedNode.add(channelNodes);     
+            selectedNode.add(pubNodes); 
+            selectedNode.add(subNodes); ; 
             RepoadTree(TreeView);
             TreeView.setSelectionPath(new TreePath(selectedNode.getPath()));
         }

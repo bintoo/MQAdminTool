@@ -14,4 +14,6 @@ public enum TableContentType {
     ChannelList,
     MessageList,
     ChannelAuthList,
+    PubList,
+    SubList
 }

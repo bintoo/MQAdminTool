@@ -16,4 +16,6 @@ public enum QueryType {
     ChannelAuthDetail,
     ChannelStatus,
     MessageDetail,
+    PubDetail,
+    SubDetail,
 }

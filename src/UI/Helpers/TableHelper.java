@@ -11,7 +11,9 @@ import MQApi.QueryModel.MQChannelAuthListResult.ChannelAuthDetailModel;
 import MQApi.Result.Annotations.MQObjectListtAnnotation;
 import MQApi.QueryModel.MQChannelListResult.ChannelDetailModel;
 import MQApi.QueryModel.MQMessageListResult.MessageDetailModel;
+import MQApi.QueryModel.MQPubListResult.PubDetailModel;
 import MQApi.QueryModel.MQQueueListResult.QueueDetailModel;
+import MQApi.QueryModel.MQSubListResult.SubDetailModel;
 import UI.Misc.ProgressCellRender;
 import UI.Models.TableListObject;
 import java.awt.Component;
@@ -64,6 +66,12 @@ public class TableHelper {
                 }
                 else if(data instanceof ChannelAuthDetailModel){
                     tableType = TableContentType.ChannelAuthList;
+                }
+                else if(data instanceof PubDetailModel){
+                    tableType = TableContentType.PubList;
+                }
+                else if(data instanceof SubDetailModel){
+                    tableType = TableContentType.SubList;
                 }
                 else{
                     tableType = null;

@@ -89,7 +89,7 @@ public class MQQueueListResult extends MQQueryResultBase{
         public String Name;
         @MQObjectListtAnnotation(DisplayName = "Queue type", MQConstant = MQConstants.MQIA_Q_TYPE, VarType = VariableType.QueueType,  QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
         public QueueType Type;
-        @MQObjectListtAnnotation(DisplayName = "Queue depth status", MQConstant = MQConstants.MQIA_CURRENT_Q_DEPTH, VarType = VariableType.Number,  QueryType = QueryType.QueueDetial, GetValue = false)
+        @MQObjectListtAnnotation(DisplayName = "Queue depth status", MQConstant = MQConstants.MQIA_CURRENT_Q_DEPTH, VarType = VariableType.Number,  QueryType = QueryType.QueueDetial, GetValue = false, ShowOnCSV = false)
         public QueueDepthStatusModel CurrentQueueDepthStatus;
         @MQObjectListtAnnotation(DisplayName = "Current depth", MQConstant = MQConstants.MQIA_CURRENT_Q_DEPTH, VarType = VariableType.Number,  QueryType = QueryType.QueueDetial, ShowOnTable = false)
         public Integer CurrentQueueDepth;

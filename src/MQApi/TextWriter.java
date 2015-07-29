@@ -88,11 +88,16 @@ public class TextWriter {
             Field[] fields = m.getClass().getFields();
             for(int i = 0; i < fields.length; i++){
                 Field field = fields[i];
-                if(i != fields.length - 1){
-                    out.write(field.getAnnotation(MQObjectListtAnnotation.class).DisplayName() + ",");
+                MQObjectListtAnnotation annotation = field.getAnnotation(MQObjectListtAnnotation.class);
+                if(i != fields.length - 1){                  
+                    if(annotation.ShowOnCSV()){
+                        out.write(annotation.DisplayName() + ",");
+                    }
                 }
                 else{
-                    out.write(field.getAnnotation(MQObjectListtAnnotation.class).DisplayName());
+                    if(annotation.ShowOnCSV()){
+                        out.write(annotation.DisplayName());
+                    }
                     out.write("\r\n");
                 }
             }
@@ -101,24 +106,27 @@ public class TextWriter {
                 Field[] dataFields = model.getClass().getFields();
                 for(int i = 0; i < dataFields.length; i++){
                     Field dataField = dataFields[i];
-                    if(i != fields.length - 1){
-                        try {
-                            out.write(dataField.get(model) != null ? dataField.get(model).toString().trim() + "," : " " +",");
-                        } catch (Exception ex) {
-                            out.write(" " + ",");
-                            Logger.getLogger(TextWriter.class.getName()).log(Level.SEVERE, null, ex);
-                        } 
-                    }
-                    else{
-                        try {
-                            out.write(dataField.get(model) != null ? dataField.get(model).toString().trim() + "," : " ");
-                        } catch (Exception ex) {
-                            out.write(" " );
-                            Logger.getLogger(TextWriter.class.getName()).log(Level.SEVERE, null, ex);
+                    MQObjectListtAnnotation annotation = dataField.getAnnotation(MQObjectListtAnnotation.class);
+                    if(annotation.ShowOnCSV()){
+                        if(i != fields.length - 1){
+                            try {
+                                out.write(dataField.get(model) != null ? dataField.get(model).toString().trim() + "," : " " +",");
+                            } catch (Exception ex) {
+                                out.write(" " + ",");
+                                Logger.getLogger(TextWriter.class.getName()).log(Level.SEVERE, null, ex);
+                            } 
                         }
+                        else{
+                            try {
+                                out.write(dataField.get(model) != null ? dataField.get(model).toString().trim() + "," : " ");
+                            } catch (Exception ex) {
+                                out.write(" " );
+                                Logger.getLogger(TextWriter.class.getName()).log(Level.SEVERE, null, ex);
+                            }
 
-                        out.write("\r\n");
-                    }                
+                            out.write("\r\n");
+                        }    
+                    }
                 }
             }
             out.close();

@@ -1060,6 +1060,14 @@ public class MainWindow extends javax.swing.JFrame {
                     CurrentUpdateTask = displayChannelAuthList(node, loadNewData);
                     break;
                 }
+                case Pub:{
+                    CurrentUpdateTask = displayPubList(node, loadNewData);
+                    break;
+                }
+                case Sub:{
+                    CurrentUpdateTask = displaySubList(node, loadNewData);
+                    break;
+                }
                 default:{
                     resetTimmer();
                     TableHelper.ToggleContentTable(ContentTable, false);                   
@@ -1171,6 +1179,61 @@ public class MainWindow extends javax.swing.JFrame {
 //                    }, 0, 10*1000);   
         return task;
     }
+  
+    private StopableTask displayPubList(DefaultMutableTreeNode node,boolean loadNewData){
+        final boolean isNewData = loadNewData;
+        resetTimmer();
+        UpdatePubListTask task = new UpdatePubListTask(this, TreeView, ContentTable, node, this.activedSearchString, ShowSystemObjectToggleButton.isSelected(),loadNewData);        
+        showContentTableLoading(true);
+        this.ShowTempObjectToggle.setVisible(false);
+        task.AddTaskActionSuccessListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(isNewData){
+                     UpdateTimeStampLabel.setText("Last updated : " + DateTimeHelper.GetCurrentTimeStamp());
+                }
+                showContentTableLoading(false);
+            }
+        });
+        task.AddTaskActionFailListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showContentTableLoading(false);
+            }
+        });
+        Thread thread = new Thread(task);
+        thread.start();      
+        return task;
+    }
+    
+    private StopableTask displaySubList(DefaultMutableTreeNode node,boolean loadNewData){
+        final boolean isNewData = loadNewData;
+        resetTimmer();
+        UpdateSubListTask task = new UpdateSubListTask(this, TreeView, ContentTable, node, this.activedSearchString, ShowSystemObjectToggleButton.isSelected(),loadNewData);        
+        showContentTableLoading(true);
+        this.ShowTempObjectToggle.setVisible(false);
+        task.AddTaskActionSuccessListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(isNewData){
+                     UpdateTimeStampLabel.setText("Last updated : " + DateTimeHelper.GetCurrentTimeStamp());
+                }
+                showContentTableLoading(false);
+            }
+        });
+        task.AddTaskActionFailListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showContentTableLoading(false);
+            }
+        });
+        Thread thread = new Thread(task);
+        thread.start();      
+        return task;
+    }
+
     
     private void exportProperties(MQObjectType type){
         JFileChooser fileChooser = new JFileChooser();

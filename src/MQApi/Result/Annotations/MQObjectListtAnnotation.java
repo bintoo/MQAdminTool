@@ -22,5 +22,6 @@ public @interface MQObjectListtAnnotation {
      QueryType QueryType();
      String[] TrueFalseDisplayValue() default {""};
      boolean ShowOnTable() default true;
+     boolean ShowOnCSV() default true;
      boolean GetValue() default true;
 }

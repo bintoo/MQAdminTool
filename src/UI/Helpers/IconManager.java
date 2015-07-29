@@ -46,7 +46,17 @@ public class IconManager {
     private String Resolve = "Resources/Images/Questions.png";
     private String Status = "Resources/Images/Status.png";
     private String Auth = "Resources/Images/Auth.png";
- 
+    private String Pub = "Resources/Images/pub.png";
+    private String Sub = "Resources/Images/sub.png";
+  
+    public ImageIcon PubIcon(){
+        return getImageIcon(Pub);
+    }
+    
+    public ImageIcon SubIcon(){
+        return getImageIcon(Sub);
+    }
+    
     public ImageIcon AuthIcon(){
         return getImageIcon(Auth);
     }
