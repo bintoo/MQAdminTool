@@ -42,6 +42,7 @@ public class QueueMonitorDialog extends DialogBase {
     String savePath;
     public QueueMonitorDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager) {
         super(parent, modal, queueManager, null);
+        this.setAlwaysOnTop(false);
         this.queueManager = queueManager;
         initComponents();
         initCustomProperties();
@@ -62,6 +63,7 @@ public class QueueMonitorDialog extends DialogBase {
         this.StopButton.setEnabled(false);
         this.ProgressBar.setIndeterminate(true);
          this.StartButton.setEnabled(false);
+        
         TableHelper.InitTable(ContentTable);
 
     }
@@ -108,8 +110,8 @@ public class QueueMonitorDialog extends DialogBase {
         };
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setModalityType(java.awt.Dialog.ModalityType.TOOLKIT_MODAL);
-        setPreferredSize(new java.awt.Dimension(700, 435));
+        setModal(false);
+        setPreferredSize(new java.awt.Dimension(550, 435));
         setResizable(false);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -165,7 +167,7 @@ public class QueueMonitorDialog extends DialogBase {
 
         IntervalSpinner.setMinimumSize(new java.awt.Dimension(60, 30));
         IntervalSpinner.setPreferredSize(new java.awt.Dimension(50, 30));
-        IntervalSpinner.setModel(new SpinnerNumberModel(1, 1, 10, 1));
+        IntervalSpinner.setModel(new SpinnerNumberModel(6, 1, 10, 1));
         ((NumberFormatter)((JSpinner.NumberEditor)this.IntervalSpinner.getEditor()).getTextField().getFormatter()).setAllowsInvalid(false);
         ((JSpinner.NumberEditor)this.IntervalSpinner.getEditor()).getTextField().setHorizontalAlignment(JTextField.LEFT);
         jToolBar1.add(IntervalSpinner);

@@ -29,7 +29,7 @@ public abstract class DialogBase extends javax.swing.JDialog {
         this.queueManager = queueManager;
         this.selectedObject = selectedObject;
         this.ParentJFrame = parent;
-        this.setModal(true);
+        this.setModal(modal);
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosed(java.awt.event.WindowEvent evt) {

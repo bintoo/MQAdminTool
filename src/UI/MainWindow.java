@@ -54,6 +54,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -1296,7 +1297,7 @@ public class MainWindow extends javax.swing.JFrame {
         try {
             ConnectionDetailModel connectionDetail = TreeHelper.GetCurrentConnectionDetail(TreeView);
             MQQueueManager queueManager = MQConnection.GetMQQueueManager(connectionDetail);
-            QueueMonitorDialog dialog = new QueueMonitorDialog(this, true, queueManager);
+            QueueMonitorDialog dialog = new QueueMonitorDialog(this, false, queueManager);
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);  
         } catch (MQException ex) {           
