@@ -108,9 +108,9 @@ public class MQPCF {
     public static void DeleteCRQOREXX(MQQueueManager queueManager){
         MQQueueListResult result = GetQueueList(queueManager, "SYSTEM.CSQOREXX*", null, true );
         if(result.QuerySuccess){
-            result.DataModels.stream().forEach((model) -> {
+            for(QueueDetailModel model : result.DataModels ){
                 DeleteQueue(queueManager, model.Name, model.Type);
-            });
+            }
         }
     }
           

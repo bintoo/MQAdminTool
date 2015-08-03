@@ -48,6 +48,11 @@ public class IconManager {
     private String Auth = "Resources/Images/Auth.png";
     private String Pub = "Resources/Images/pub.png";
     private String Sub = "Resources/Images/sub.png";
+    private String Monitor = "Resources/Images/Monitor.png";
+    
+    public ImageIcon MonitorIcon(){
+        return getImageIcon(Monitor);
+    }
   
     public ImageIcon PubIcon(){
         return getImageIcon(Pub);

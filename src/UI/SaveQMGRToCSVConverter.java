@@ -211,7 +211,7 @@ public class SaveQMGRToCSVConverter extends DialogBase {
     }
     
     private void convert(){
-        String outputPath = outputTextField.getText();
+        final String outputPath = outputTextField.getText();
         final Component comp = this;
         if(inputfiles == null || inputfiles.length < 1){
             JOptionPane.showMessageDialog(this, "Please select SaveQmgr files", "Error",JOptionPane.ERROR_MESSAGE );

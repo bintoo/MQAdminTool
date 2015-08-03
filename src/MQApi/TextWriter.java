@@ -7,6 +7,7 @@ package MQApi;
 
 import MQApi.Models.ToolChannelStatusModel;
 import MQApi.Result.Annotations.MQObjectListtAnnotation;
+import UI.Helpers.DateTimeHelper;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -80,12 +81,16 @@ public class TextWriter {
         out.close();
     }
     
-    public static void WriteModelToCSV(ArrayList<Object> models, String filePath) throws IOException{
+    public static void WriteModelToCSV(ArrayList<Object> models, String filePath, boolean append) throws IOException{
         if(models != null && models.size() > 0){
             filePath = checkFilePath(filePath, "csv");
-            BufferedWriter out = new BufferedWriter(new FileWriter(new File(filePath)));
+            BufferedWriter out = new BufferedWriter(new FileWriter(new File(filePath),append));
             Object m = models.get(0);
             Field[] fields = m.getClass().getFields();
+            if(append){
+                out.write(DateTimeHelper.GetCurrentTimeStamp());
+                out.write("\r\n");
+            }
             for(int i = 0; i < fields.length; i++){
                 Field field = fields[i];
                 MQObjectListtAnnotation annotation = field.getAnnotation(MQObjectListtAnnotation.class);
@@ -129,6 +134,8 @@ public class TextWriter {
                     }
                 }
             }
+            out.write("\r\n");
+            out.flush();
             out.close();
         }
     }

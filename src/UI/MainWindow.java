@@ -5,6 +5,7 @@
  */
 package UI;
 
+import MQApi.Connection.MQConnection;
 import MQApi.Enums.ChannelType;
 import MQApi.Enums.MQObjectType;
 import MQApi.Enums.QueueType;
@@ -25,7 +26,8 @@ import UI.Dialogs.StatusDialog;
 import UI.Dialogs.ClearMessagesDialog;
 import UI.Dialogs.DialogFactory;
 import UI.Dialogs.HelpDialog;
-import UI.Dialogs.MessageEditDialog;;
+import UI.Dialogs.MessageEditDialog;import UI.Dialogs.QueueMonitorDialog;
+;
 import UI.Helpers.*;
 import UI.Models.*;
 import UI.Dialogs.QueueProperitiesDialog;
@@ -529,6 +531,7 @@ public class MainWindow extends javax.swing.JFrame {
         JMenuItem CreateAliasQueueMenuItem = new JMenuItem("Alias queue", iconManager.Queue());
         JMenuItem CreateModelQueueMenuItem = new JMenuItem("Model queue", iconManager.Queue());
         JMenuItem DeleteCSQOEXXMenuItem = new JMenuItem("Delete CSQOREXX",iconManager.Delete());
+        JMenuItem QueueMonitorMenuItem = new JMenuItem("Queue monitor",iconManager.MonitorIcon());
         CreateLocalQueueMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -566,12 +569,19 @@ public class MainWindow extends javax.swing.JFrame {
                 deleteCRQOREXX();
             }
         });
+        QueueMonitorMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startQueueMonitor();
+            }
+        });
         CreateQueueMenu.add(CreateLocalQueueMenuItem);
         CreateQueueMenu.add(CreateRemoteQueueMenuItem);
         CreateQueueMenu.add(CreateAliasQueueMenuItem);
         CreateQueueMenu.add(CreateModelQueueMenuItem);
         popup.add(CreateQueueMenu);
         popup.add(DeleteCSQOEXXMenuItem);
+        popup.add(QueueMonitorMenuItem);
         popup.add(exportQueuePropertiesMenuItem);
         return popup;
     }
@@ -1258,7 +1268,7 @@ public class MainWindow extends javax.swing.JFrame {
             }            
             if(result != null && result.size() > 0){                
                 try{
-                    TextWriter.WriteModelToCSV(result, fileName);
+                    TextWriter.WriteModelToCSV(result, fileName, false);
                     JOptionPane.showMessageDialog(this, "File saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 }catch(Exception ex){
                     LogWriter.WriteToLog("MainWindow", "exportProperties", ex);
@@ -1279,6 +1289,19 @@ public class MainWindow extends javax.swing.JFrame {
             MQPCF.DeleteCRQOREXX(queueManager);
             showTableData(true);
             JOptionPane.showMessageDialog(this, "Delete command accepted.", "Success", JOptionPane.INFORMATION_MESSAGE);       
+        }
+    }
+    
+    private void startQueueMonitor(){
+        try {
+            ConnectionDetailModel connectionDetail = TreeHelper.GetCurrentConnectionDetail(TreeView);
+            MQQueueManager queueManager = MQConnection.GetMQQueueManager(connectionDetail);
+            QueueMonitorDialog dialog = new QueueMonitorDialog(this, true, queueManager);
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);  
+        } catch (MQException ex) {           
+            LogWriter.WriteToLog(ex.fillInStackTrace());
+            JOptionPane.showMessageDialog(this, MQUtility.getMQReturnMessage(ex.completionCode, ex.getReason()),"Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
