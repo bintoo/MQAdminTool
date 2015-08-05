@@ -74,7 +74,11 @@ public class MQSubListResult extends MQQueryResultBase  {
         @MQObjectListtAnnotation(DisplayName = "Topic object", MQConstant = MQConstants.MQCA_TOPIC_NAME, VarType = VariableType.Text, QueryType = QueryType.SubDetail)
         public String TopicObject;
         @MQObjectListtAnnotation(DisplayName = "Topic string", MQConstant = MQConstants.MQCA_TOPIC_STRING, VarType = VariableType.Text, QueryType = QueryType.SubDetail)
-        public String TopicString;       
+        public String TopicString;    
+        @MQObjectListtAnnotation(DisplayName = "Destination", MQConstant = MQConstants.MQCACF_DESTINATION, VarType = VariableType.Text, QueryType = QueryType.SubDetail)
+        public String Destination;  
+        @MQObjectListtAnnotation(DisplayName = "Destination QMGR", MQConstant = MQConstants.MQCACF_DESTINATION_Q_MGR, VarType = VariableType.Text, QueryType = QueryType.SubDetail)
+        public String DestinationQueueManager;  
         @MQObjectListtAnnotation(DisplayName = "Subscription user", MQConstant = MQConstants.MQCACF_SUB_USER_ID, VarType = VariableType.Text, QueryType = QueryType.SubDetail)
         public String SubscriptionUser;      
         @MQObjectListtAnnotation(DisplayName = "Subscription level", MQConstant = MQConstants.MQIACF_SUB_LEVEL, VarType = VariableType.Number, QueryType = QueryType.SubDetail)
@@ -89,8 +93,6 @@ public class MQSubListResult extends MQQueryResultBase  {
         public Integer ExpiryValue;  
         @MQObjectListtAnnotation(DisplayName = "Expiry", MQConstant = MQConstants.MQIACF_EXPIRY, VarType = VariableType.Text, QueryType = QueryType.SubDetail, GetValue = false)
         public String Expiry; 
-        @MQObjectListtAnnotation(DisplayName = "Destination qmgr", MQConstant = MQConstants.MQCACF_DESTINATION_Q_MGR, VarType = VariableType.Text, QueryType = QueryType.SubDetail)
-        public String DestinationQueueManager;   
         @MQObjectListtAnnotation(DisplayName = "Creation date", MQConstant = MQConstants.MQCA_CREATION_DATE, VarType = VariableType.Text, QueryType = QueryType.SubDetail)
         public String CreationDate;   
         @MQObjectListtAnnotation(DisplayName = "Creation time", MQConstant = MQConstants.MQCA_CREATION_TIME, VarType = VariableType.Text, QueryType = QueryType.SubDetail)

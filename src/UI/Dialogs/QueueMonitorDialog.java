@@ -110,9 +110,13 @@ public class QueueMonitorDialog extends DialogBase {
         };
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setModal(false);
         setPreferredSize(new java.awt.Dimension(550, 435));
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.setPreferredSize(new java.awt.Dimension(580, 40));
@@ -338,6 +342,10 @@ public class QueueMonitorDialog extends DialogBase {
     private void QueueNameTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_QueueNameTextFieldKeyPressed
         this.StartButton.setEnabled(false);
     }//GEN-LAST:event_QueueNameTextFieldKeyPressed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        timer.cancel();
+    }//GEN-LAST:event_formWindowClosing
     
     private void toggleButton(boolean start){
         this.StartButton.setEnabled(!start);
@@ -354,7 +362,7 @@ public class QueueMonitorDialog extends DialogBase {
             TableHelper.UpdateContentTable(ContentTable, result.DataModels);
             if(monitorStart){
                 try {
-                    TextWriter.WriteModelToCSV((ArrayList<Object>)(Object)result.DataModels, savePath, true);
+                    TextWriter.WriteModelToCSV(result.DataModels, savePath, true);
                 } catch (IOException ex) {
                     timer.cancel();
                     LogWriter.WriteToLog(ex.fillInStackTrace());

@@ -81,11 +81,11 @@ public class TextWriter {
         out.close();
     }
     
-    public static void WriteModelToCSV(ArrayList<Object> models, String filePath, boolean append) throws IOException{
+    public static <T> void WriteModelToCSV(ArrayList<T> models, String filePath, boolean append) throws IOException{
         if(models != null && models.size() > 0){
             filePath = checkFilePath(filePath, "csv");
             BufferedWriter out = new BufferedWriter(new FileWriter(new File(filePath),append));
-            Object m = models.get(0);
+            T m = models.get(0);
             Field[] fields = m.getClass().getFields();
             if(append){
                 out.write(DateTimeHelper.GetCurrentTimeStamp());
@@ -107,7 +107,7 @@ public class TextWriter {
                 }
             }
             
-            for(Object model : models){
+            for(T model : models){
                 Field[] dataFields = model.getClass().getFields();
                 for(int i = 0; i < dataFields.length; i++){
                     Field dataField = dataFields[i];
@@ -115,7 +115,7 @@ public class TextWriter {
                     if(annotation.ShowOnCSV()){
                         if(i != fields.length - 1){
                             try {
-                                out.write(dataField.get(model) != null ? dataField.get(model).toString().trim() + "," : " " +",");
+                                out.write(dataField.get(model) != null ? dataField.get(model).toString().trim().replace(",", " ") + "," : " " +",");
                             } catch (Exception ex) {
                                 out.write(" " + ",");
                                 Logger.getLogger(TextWriter.class.getName()).log(Level.SEVERE, null, ex);
