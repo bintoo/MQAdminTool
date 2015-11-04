@@ -108,7 +108,10 @@ public class CheckChannelTask extends TaskBase{
                 statusText += "\r\n" + "Error :" + channelStatus1.ErrorMessage;
                 statusText += "\r\n" + "Please check the parameters and try again later.";
                 UpdateDebugWindows(waitForTextField,statusText);
-            }           
+            }
+            if(queueManager != null && queueManager.isConnected()){
+                queueManager.disconnect();
+            }
         } catch (MQException ex) {            
             Logger.getLogger(CheckChannelTask.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(parent, MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason()), "Error",JOptionPane.ERROR_MESSAGE );

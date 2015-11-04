@@ -26,6 +26,7 @@ import com.ibm.mq.headers.MQDLH;
 import com.ibm.mq.headers.MQDataException;
 import com.ibm.mq.headers.MQHeaderList;
 import com.ibm.mq.headers.MQRFH2;
+import com.ibm.mq.headers.internal.Header;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -781,7 +782,12 @@ public class MQUtility {
                     if(progressBar != null){
                         progressBar.setValue(100);
                     }
-                    throw ex;
+                    if(ex instanceof EOFException){
+                        break;
+                    }
+                    else{
+                        throw ex;
+                    }
                 }
 
             }
@@ -860,16 +866,21 @@ public class MQUtility {
             MQHeaderList list = new MQHeaderList(message);
             if(list.size() > 0){
                 boolean seek = true;
-                if (list.indexOf("MQRFH2") >= 0) {
-                    MQRFH2 header = (MQRFH2) list.get(list.indexOf("MQRFH2"));
+                for (Object list1 : list) {
+                    Header header = (Header) list1;
                     msglen = msglen - header.size();
                     seek = false;
                 }
-                if (list.indexOf("MQDLH") >= 0) {
-                    MQDLH header = (MQDLH) list.get(list.indexOf("MQDLH"));
-                    msglen = msglen - header.size();
-                    seek = false;
-                }
+//                if (list.indexOf("MQRFH2") >= 0) {
+//                    MQRFH2 header = (MQRFH2) list.get(list.indexOf("MQRFH2"));
+//                    msglen = msglen - header.size();
+//                    seek = false;
+//                }
+//                if (list.indexOf("MQDLH") >= 0) {
+//                    MQDLH header = (MQDLH) list.get(list.indexOf("MQDLH"));
+//                    msglen = msglen - header.size();
+//                    seek = false;
+//                }
                 if(seek){
                     message.seek(0);
                 }
