@@ -37,6 +37,8 @@ public class MQMessageListResult extends MQQueryResultBase{
         public int BackoutCount;
         @MQObjectListtAnnotation(DisplayName = "Sequence number", MQConstant = 0, VarType = VariableType.Number, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""})
         public Integer SequenceNumber;
+        @MQObjectListtAnnotation(DisplayName = "Group id", MQConstant = 0, VarType = VariableType.Text, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""})
+        public String GroupIDString;
         @MQObjectListtAnnotation(DisplayName = "User identifier", MQConstant = 0, VarType = VariableType.Text, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""})
         public String UserIdentifier;
         @MQObjectListtAnnotation(DisplayName = "Put application name", MQConstant = 0, VarType = VariableType.Text, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""})
@@ -71,7 +73,7 @@ public class MQMessageListResult extends MQQueryResultBase{
         public String MessageIdString;
         @MQObjectListtAnnotation(DisplayName = "Offset", MQConstant = 0, VarType = VariableType.Text, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""})
         public Integer Offset;
-        @MQObjectListtAnnotation(DisplayName = "Message full data", MQConstant = 0, VarType = VariableType.Text, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""}, ShowOnTable = false)
-        public String MessageFullData;        
+//        @MQObjectListtAnnotation(DisplayName = "Message full data", MQConstant = 0, VarType = VariableType.Text, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""}, ShowOnTable = false)
+//        public String MessageFullData;        
     }
 }

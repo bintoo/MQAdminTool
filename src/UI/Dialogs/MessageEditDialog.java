@@ -321,8 +321,8 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         this.MessageFlagCombobox.setModel(new DefaultComboBoxModel(new ComboBoxItemModel[]{
             new ComboBoxItemModel("None", MQConstants.MQMF_NONE), new ComboBoxItemModel("Segmentation inhibited", MQConstants.MQMF_SEGMENTATION_INHIBITED),
             new ComboBoxItemModel("Segmentation allowed", MQConstants.MQMF_SEGMENTATION_ALLOWED), new ComboBoxItemModel("Segment", MQConstants.MQMF_SEGMENT),
-            new ComboBoxItemModel("Last segment", MQConstants.MQMF_LAST_SEGMENT), new ComboBoxItemModel("Message in group", MQConstants.MQMF_MSG_IN_GROUP ),
-            new ComboBoxItemModel("Last message in group", MQConstants.MQMF_LAST_MSG_IN_GROUP)
+            new ComboBoxItemModel("Last segment", MQConstants.MQMF_LAST_SEGMENT | MQConstants.MQMF_SEGMENT), new ComboBoxItemModel("Message in group", MQConstants.MQMF_MSG_IN_GROUP ),
+            new ComboBoxItemModel("Last message in group", MQConstants.MQMF_LAST_MSG_IN_GROUP | MQConstants.MQMF_MSG_IN_GROUP )
         }));
         this.PersistenceCombobox.setModel(new DefaultComboBoxModel(new ComboBoxItemModel[]{
             new ComboBoxItemModel("Persistent", MQConstants.MQPER_PERSISTENT), new ComboBoxItemModel("Not persistent", MQConstants.MQPER_NOT_PERSISTENT),

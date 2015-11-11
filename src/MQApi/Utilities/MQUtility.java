@@ -976,7 +976,8 @@ public class MQUtility {
         model.MessageIdString = BytesToHex(message.messageId);
         model.Offset = message.offset;
         model.MessageData = GetMessageStringContent(message, messageListDataLength);
-        model.MessageFullData = GetMessageStringContent(message, null);
+        //model.MessageFullData = GetMessageStringContent(message, null);
+        model.GroupIDString = BytesToHex(message.groupId);
         model.BackoutCount = message.backoutCount;
         return model;
     }
