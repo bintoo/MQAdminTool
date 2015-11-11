@@ -54,18 +54,18 @@
                   <Component id="ProgressBar" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="OkButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="CancelButton" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="RemoveDLHCheckBox" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="CompressCheckBox" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
+                      <Component id="OkButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="CancelButton" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="FilterLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="FilterTextField" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="RemoveDLHCheckBox" min="-2" pref="100" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="CompressCheckBox" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -96,6 +96,8 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="CompressCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="RemoveDLHCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="FilterLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="FilterTextField" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -202,6 +204,13 @@
           <Dimension value="[150, 23]"/>
         </Property>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="FilterLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Filter:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="FilterTextField">
     </Component>
   </SubComponents>
 </Form>

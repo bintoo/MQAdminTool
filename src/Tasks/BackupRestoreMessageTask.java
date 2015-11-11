@@ -31,8 +31,9 @@ public class BackupRestoreMessageTask extends TaskBase{
     ArrayList<MQMessageIdModel> ids;
     int option;
     boolean removeDLH;
+    String filterString;
     
-    public BackupRestoreMessageTask(MQQueueManager queueManager, String queueName,String filePath,  Frame parent,JProgressBar progressBar, ArrayList<MQMessageIdModel> ids, int option, boolean isCompress, boolean isAlias, boolean removeDLH){
+    public BackupRestoreMessageTask(MQQueueManager queueManager, String queueName,String filePath,  Frame parent,JProgressBar progressBar, ArrayList<MQMessageIdModel> ids, int option, boolean isCompress, boolean isAlias, boolean removeDLH, String filterString){
         this.filePath = filePath;
         this.queueManager = queueManager;
         this.progressBar = progressBar;
@@ -43,6 +44,7 @@ public class BackupRestoreMessageTask extends TaskBase{
         this.isAlias = isAlias;
         this.ids = ids;
         this.removeDLH = removeDLH;
+        this.filterString = filterString;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class BackupRestoreMessageTask extends TaskBase{
     private void runTask(){
         if(option == BackupRestoreMessageDialog.Usage_Backup){
             try {
-                MQUtility.BackupMessageToFile(queueManager, queueName, filePath, progressBar,ids,isCompress,isAlias, removeDLH);
+                MQUtility.BackupMessageToFile(queueManager, queueName, filePath, progressBar,ids,isCompress,isAlias, removeDLH,filterString);
                 JOptionPane.showMessageDialog(parent, "Successfully backup to file " + filePath, "Success", JOptionPane.INFORMATION_MESSAGE);
                 FireActionSuccessEvent();
             } catch (Exception ex) {

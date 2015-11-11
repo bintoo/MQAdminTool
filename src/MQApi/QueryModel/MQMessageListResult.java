@@ -11,6 +11,7 @@ import MQApi.Enums.VariableType;
 import MQApi.Result.Annotations.MQObjectListtAnnotation;
 import com.ibm.mq.constants.MQConstants;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
@@ -20,6 +21,9 @@ public class MQMessageListResult extends MQQueryResultBase{
     
     public ArrayList<MessageDetailModel> DataModels = new ArrayList<MessageDetailModel>(); 
     
+//    public ArrayList<MessageDetailModel> Filter(String filterString){
+//        //return DataModels.stream().filter(m -> m.MessageFullData.contains(filterString));
+//    }
     public class MessageDetailModel{
         public byte[] MessageId;
         public byte[] CorrelationId;
@@ -67,6 +71,7 @@ public class MQMessageListResult extends MQQueryResultBase{
         public String MessageIdString;
         @MQObjectListtAnnotation(DisplayName = "Offset", MQConstant = 0, VarType = VariableType.Text, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""})
         public Integer Offset;
-        
+        @MQObjectListtAnnotation(DisplayName = "Message full data", MQConstant = 0, VarType = VariableType.Text, QueryType = QueryType.MessageDetail, TrueFalseDisplayValue = {""}, ShowOnTable = false)
+        public String MessageFullData;        
     }
 }

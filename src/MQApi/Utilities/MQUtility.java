@@ -417,6 +417,9 @@ public class MQUtility {
             options.matchOptions = MQConstants.MQMO_NONE;
             options.options = CMQC.MQGMO_BROWSE_NEXT;
             ArrayList<MQMessageIdModel>ids = new ArrayList<MQMessageIdModel>();
+            if(progressBar != null){
+                progressBar.setValue(0);
+            }
             while(index > 0){               
                 try{
                     index--;
@@ -424,10 +427,9 @@ public class MQUtility {
                     queue.get(message, options);
                     String content = message.readStringOfByteLength(message.getDataLength());
                     if(content.contains(stringfilter)){
-                        MQMessageIdModel id = new MQMessageIdModel();
-                        id.MessageId = message.messageId;
-                        id.CorrelationdId = message.correlationId;
-                        ids.add(id);
+                        resetMessage(message);
+                        options.options = CMQC.MQGMO_MSG_UNDER_CURSOR;
+                        queue.get(message, options);
                     }
                     resetMessage(message);
                 }
@@ -442,9 +444,10 @@ public class MQUtility {
             closeQueue(queue);
             throw ex;
         }
-
-    }
-    
+        if(progressBar != null){
+            progressBar.setValue(100);
+        }
+    }    
     public static void ComsumeSelectedMessages(MQQueueManager queueManager, String queueName, MQMessageIdModel id) throws MQException{
         ArrayList<MQMessageIdModel> ids = new ArrayList<MQMessageIdModel>();
         ids.add(id);
@@ -516,7 +519,7 @@ public class MQUtility {
             return msg;
     }
 
-    public static void BackupMessageToFile(MQQueueManager queueManager, String queueName, String filePath, JProgressBar progressBar, ArrayList<MQMessageIdModel>ids, boolean isCompress, boolean isAlias, boolean removeDLH) throws Exception{
+    public static void BackupMessageToFile(MQQueueManager queueManager, String queueName, String filePath, JProgressBar progressBar, ArrayList<MQMessageIdModel>ids, boolean isCompress, boolean isAlias, boolean removeDLH, String filterString) throws Exception{
             FileOutputStream fileOutPutStream = null;
             BufferedOutputStream bufferedOutputStream = null;
             ObjectOutputStream  objectOutputStream = null;
@@ -564,7 +567,15 @@ public class MQUtility {
                             if(removeDLH){
                                 message = RemoveMQDLH(message);
                             }
-                            writeMessageToStream(message, objectOutputStream);
+                            if(filterString != null && !filterString.isEmpty()){
+                                String content = message.readStringOfByteLength(message.getDataLength());
+                                if(content.contains(filterString)){
+                                    writeMessageToStream(message, objectOutputStream);
+                                }                                
+                            }
+                            else{                           
+                                writeMessageToStream(message, objectOutputStream);
+                            }
                             index--;
                             if(progressBar != null){
                                 int value = ((queueDepth - index)*100)/queueDepth;
@@ -965,6 +976,7 @@ public class MQUtility {
         model.MessageIdString = BytesToHex(message.messageId);
         model.Offset = message.offset;
         model.MessageData = GetMessageStringContent(message, messageListDataLength);
+        model.MessageFullData = GetMessageStringContent(message, null);
         model.BackoutCount = message.backoutCount;
         return model;
     }
