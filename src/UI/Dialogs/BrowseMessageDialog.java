@@ -69,6 +69,7 @@ public class BrowseMessageDialog extends DialogBase {
         this.QueueManagerNameLabel.setText(queueManagerName);
         this.QueueNameLabel.setText(selectedObject.ObjectName);
         this.Refreshbutton.setEnabled(false);
+        MessageListTable.setAutoCreateRowSorter(true);
         TableHelper.ToggleContentTable(MessageListTable, true);   
     }
     

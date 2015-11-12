@@ -105,7 +105,7 @@ public class MQQueuePropertyModel extends MQObjectPropertyModel{
     public Integer BackoutThreshold;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_HARDEN_GET_BACKOUT, VarType = VariableType.Number)
     public Integer HardenGetBackout;
-    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_NPM_CLASS, VarType = VariableType.Number)
+    @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_NPM_CLASS, VarType = VariableType.Number, SendToPCF = false)
     public Integer NonPersistentMessageClass;
     @MQObjectPropertyAnnotation(MQConstant = MQConstants.MQIA_MONITORING_Q, VarType = VariableType.Number)
     public Integer QueueMonitoring;

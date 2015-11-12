@@ -30,7 +30,6 @@ public class HelpDialog extends javax.swing.JDialog {
                         "<a href='mailto:curtiszhou1981@gmail.com'>curtiszhou1981@gmail.com</a></p>"+
                         "<p>Icons from Icon8 <a href=\"https://icons8.com/\">https://icons8.com/</a>" +
                         "<p>Known issues :<ul>\n" +
-                        "   <li>Create/update MQ objects not working correctly on mainframe.</li>" +
                         "  <li>Update message feature not working correctly when the queue has more then 1 message with same id.</li>" +
                         " <li>Currently not support local connection to queue manager</li>" +
                         " <li>Message with header will fail to update</li>" +
@@ -90,7 +89,7 @@ public class HelpDialog extends javax.swing.JDialog {
         setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        jLabel1.setText("       MQ Admin Tool (BETA build 6a2b3c2)");
+        jLabel1.setText("       MQ Admin Tool (BETA build 5ce72d1)");
         jLabel1.setPreferredSize(new java.awt.Dimension(300, 50));
 
         jScrollPane2.setViewportView(TextPane);

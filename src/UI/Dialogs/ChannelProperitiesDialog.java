@@ -2390,7 +2390,7 @@ public class ChannelProperitiesDialog extends ObjectPropertiesDialogBase {
     private void createOrChangeChannel(MQQueueManager queueManager, MQChannelPropertyModel model, boolean isCreate){
         MQCommandResult result = isCreate == true ? MQPCF.CreateChannel(queueManager, model) : MQPCF.UpdateChannelProperties(queueManager, model) ;
         if(result.QuerySuccess){
-            JOptionPane.showMessageDialog(this, isCreate == true ? "New channel has been created" :  "channel properties have been updated", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, isCreate == true ? "New channel has been created" :  "Channel properties have been updated", "Success", JOptionPane.INFORMATION_MESSAGE);
             FireActionEvent();
             Close();                    
         }
