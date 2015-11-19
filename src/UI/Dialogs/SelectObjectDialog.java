@@ -48,6 +48,7 @@ public class SelectObjectDialog<T extends Enum> extends DialogBase {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         };
         this.QueueManagerLabel.setText(queueManagerName);
+        this.SelectObjectTable.setShowGrid(false);
         this.OkButton.setEnabled(false);
         this.ProgressBar.setIndeterminate(true);
         this.ProgressBar.setVisible(false);
@@ -56,6 +57,7 @@ public class SelectObjectDialog<T extends Enum> extends DialogBase {
     }
     
     private void initTable(){
+        this.ProgressBar.setIndeterminate(true);
         this.ProgressBar.setVisible(true);
         GetSelectObjectTask<T> task = new GetSelectObjectTask<T>(queueManager, SelectObjectTable, selectObjectType);
         task.AddTaskActionSuccessListener(new ActionListener() {
@@ -195,11 +197,13 @@ public class SelectObjectDialog<T extends Enum> extends DialogBase {
 
     private void loadTableSuccess(){
         this.OkButton.setEnabled(true);
+        this.ProgressBar.setIndeterminate(false);
         this.ProgressBar.setVisible(false);
     }
    
     private void loadTableFail(){
         this.OkButton.setEnabled(false);
+        this.ProgressBar.setIndeterminate(false);
          this.ProgressBar.setVisible(false);
     }
     

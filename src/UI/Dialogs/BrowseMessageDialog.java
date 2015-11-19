@@ -70,6 +70,7 @@ public class BrowseMessageDialog extends DialogBase {
         this.QueueNameLabel.setText(selectedObject.ObjectName);
         this.Refreshbutton.setEnabled(false);
         MessageListTable.setAutoCreateRowSorter(true);
+        MessageListTable.setShowGrid(false);
         TableHelper.ToggleContentTable(MessageListTable, true);   
     }
     
@@ -170,12 +171,11 @@ public class BrowseMessageDialog extends DialogBase {
             }
         };
         ProgressBarPanel = new javax.swing.JPanel();
-        jProgressBar1 = new javax.swing.JProgressBar();
+        ProgressBar = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(700, 500));
         setModal(true);
-        setPreferredSize(new java.awt.Dimension(700, 500));
 
         jLabel1.setText("Queue manager name:");
         jLabel1.setPreferredSize(new java.awt.Dimension(150, 25));
@@ -246,8 +246,8 @@ public class BrowseMessageDialog extends DialogBase {
 
         jPanel1.add(TablePannel, "card2");
 
-        jProgressBar1.setIndeterminate(true);
-        jProgressBar1.setPreferredSize(new java.awt.Dimension(150, 25));
+        ProgressBar.setIndeterminate(true);
+        ProgressBar.setPreferredSize(new java.awt.Dimension(150, 25));
 
         javax.swing.GroupLayout ProgressBarPanelLayout = new javax.swing.GroupLayout(ProgressBarPanel);
         ProgressBarPanel.setLayout(ProgressBarPanelLayout);
@@ -255,14 +255,14 @@ public class BrowseMessageDialog extends DialogBase {
             ProgressBarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ProgressBarPanelLayout.createSequentialGroup()
                 .addContainerGap(215, Short.MAX_VALUE)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(ProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(215, Short.MAX_VALUE))
         );
         ProgressBarPanelLayout.setVerticalGroup(
             ProgressBarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ProgressBarPanelLayout.createSequentialGroup()
                 .addContainerGap(155, Short.MAX_VALUE)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(ProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(155, Short.MAX_VALUE))
         );
 
@@ -396,6 +396,7 @@ public class BrowseMessageDialog extends DialogBase {
         this.Refreshbutton.setEnabled(false);
         this.TablePannel.setVisible(false);
         this.MessageListTable.setEnabled(false);
+        ProgressBar.setIndeterminate(true);
         this.ProgressBarPanel.setVisible(true);
     }
     
@@ -407,6 +408,7 @@ public class BrowseMessageDialog extends DialogBase {
         this.UpdateTimeLabel.setText("Last updated: " + timeStamp + "");
         this.Refreshbutton.setEnabled(true);     
         this.PageInfoLabel.setText(this.currentPage + "/" + this.totalPage);
+        ProgressBar.setIndeterminate(false);
         if(totalPage > 1){            
             if(this.currentPage > 1){
                 this.PreviousButton.setEnabled(true);
@@ -458,6 +460,7 @@ public class BrowseMessageDialog extends DialogBase {
     private javax.swing.JLabel PageInfoLabel;
     private javax.swing.JToolBar PagingToolBar;
     private javax.swing.JButton PreviousButton;
+    private javax.swing.JProgressBar ProgressBar;
     private javax.swing.JPanel ProgressBarPanel;
     private javax.swing.JLabel QueueManagerNameLabel;
     private javax.swing.JLabel QueueNameLabel;
@@ -467,6 +470,5 @@ public class BrowseMessageDialog extends DialogBase {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JProgressBar jProgressBar1;
     // End of variables declaration//GEN-END:variables
 }

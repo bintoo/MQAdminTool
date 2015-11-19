@@ -7,9 +7,11 @@ package UI.Helpers;
 
 import MQApi.Models.Query.ConnectionDetailModel;
 import UI.Models.MQRC.MQRCParentModel;
+import UI.Models.SettingsModel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -25,6 +27,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
+import org.xml.sax.InputSource;
 
 /**
  *
@@ -33,6 +39,7 @@ import org.w3c.dom.NodeList;
 public class XMLHelper {
     private static String elementName = "ConnectionDetail";
     private static String rootName = "ConnectionSetting";
+    private static String settingPath = "Settings.xml";
     public static void WriteConnectionModelToXml(ArrayList<ConnectionDetailModel> models, String filePath){
         
         try {
@@ -87,6 +94,44 @@ public class XMLHelper {
          }
         return models;
     }
+
+    public static SettingsModel ReadSettingsModelFromXml(){
+        SettingsModel model = new SettingsModel();
+        model.SkinName = "Acryl";
+         try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            File file = new File(settingPath);
+            if(file.exists() && !file.isDirectory()) {
+               FileInputStream fileStream = new FileInputStream(file);
+               Document document = db.parse(fileStream);
+               NodeList nodes = document.getElementsByTagName("Skin");
+               model.SkinName = nodes.item(0).getTextContent();              
+            }
+
+         }catch(Exception ex){
+             Logger.getLogger(XMLHelper.class.getName()).log(Level.SEVERE, null, ex);
+         }
+        return model;
+    }
+    public static void WriteSettingModelToXml(SettingsModel model){
+        
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            
+            DocumentBuilder db = dbf.newDocumentBuilder();       
+            Document document = db.newDocument();
+            Element rootElement = document.createElement("Settings");
+            Element skinEle = document.createElement("Skin");
+            skinEle.appendChild(document.createTextNode(model.SkinName));
+            rootElement.appendChild(skinEle);
+            document.appendChild(rootElement);
+            Transformer tr = TransformerFactory.newInstance().newTransformer();
+            tr.transform(new DOMSource(document), new StreamResult(new FileOutputStream(settingPath)));
+        } catch (Exception ex) {
+            Logger.getLogger(XMLHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     public static void WriteMQRCModelToXml(){
         MQRCParentModel model = new MQRCParentModel();
@@ -118,6 +163,36 @@ public class XMLHelper {
         }
     }
     
+    public static String XMLStringFormat(String xml) {
+
+        try {
+            final InputSource src = new InputSource(new StringReader(xml));
+            final Node document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src).getDocumentElement();
+            final Boolean keepDeclaration = Boolean.valueOf(xml.startsWith("<?xml"));
+
+            //System.setProperty(DOMImplementationRegistry.PROPERTY,"com.sun.org.apache.xerces.internal.dom.DOMImplementationSourceImpl");
+            final DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+            final DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
+            final LSSerializer writer = impl.createLSSerializer();
+
+            writer.getDomConfig().setParameter("format-pretty-print", Boolean.TRUE); // Set this to true if the output needs to be beautified.
+            writer.getDomConfig().setParameter("xml-declaration", keepDeclaration); // Set this to true if the declaration is needed to be outputted.
+            return writer.writeToString(document);
+        } catch (Exception e) {
+            return xml;
+            //throw new RuntimeException(e);
+        }
+    }
+    
+    public static boolean IsXML(String xml) {
+         try {
+            final InputSource src = new InputSource(new StringReader(xml));
+            final Node document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src).getDocumentElement();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
     private static String getNodeValue(Node node, String fieldName){
         Node targetNode = findNode(node, fieldName);
         

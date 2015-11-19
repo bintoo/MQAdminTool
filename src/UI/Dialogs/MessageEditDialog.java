@@ -9,6 +9,7 @@ import MQApi.Enums.LogType;
 import MQApi.Logs.LogWriter;
 import MQApi.Models.MQMessageIdModel;
 import MQApi.Utilities.MQUtility;
+import UI.Helpers.XMLHelper;
 import UI.Models.ComboBoxItemModel;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQMessage;
@@ -158,7 +159,12 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
             this.MessagePanel.setEnabledAt(2, true);
             loadMessageDLH(dlh);
         }
-        content = MQUtility.GetMessageStringContent(message, null);      
+        content = MQUtility.GetMessageStringContent(message, null); 
+        if(XMLHelper.IsXML(content)){
+            content = XMLHelper.XMLStringFormat(content);
+            ContentTypeSelectComboBox.setSelectedIndex(1);
+            this.ContentEditorPane.setContentType("XML");
+        }
         this.ContentEditorPane.setText(content); 
     }
     
@@ -346,7 +352,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         jPanel1 = new javax.swing.JPanel();
         ContentEditorToolbar = new javax.swing.JToolBar();
         ContentTypeSelectComboBox = new javax.swing.JComboBox();
-        jScrollPane3 = new javax.swing.JScrollPane();
+        ContentEditorScrollPane = new javax.swing.JScrollPane();
         ContentEditorPane = new javax.swing.JEditorPane();
         MQMDScrollPanel = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
@@ -483,6 +489,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         ContentEditorToolbar.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
         ContentTypeSelectComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Text", "XML" }));
+        ContentTypeSelectComboBox.setMaximumSize(new java.awt.Dimension(70, 20));
         ContentTypeSelectComboBox.setMinimumSize(new java.awt.Dimension(70, 20));
         ContentTypeSelectComboBox.setPreferredSize(new java.awt.Dimension(70, 25));
         ContentTypeSelectComboBox.addItemListener(new java.awt.event.ItemListener() {
@@ -492,21 +499,21 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         });
         ContentEditorToolbar.add(ContentTypeSelectComboBox);
 
-        jScrollPane3.setViewportView(ContentEditorPane);
+        ContentEditorScrollPane.setViewportView(ContentEditorPane);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(ContentEditorToolbar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
+            .addComponent(ContentEditorScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(ContentEditorToolbar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
+                .addComponent(ContentEditorScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
         );
 
         MessagePanel.addTab("Data", jPanel1);
@@ -1082,6 +1089,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JButton Closebutton;
     private javax.swing.ButtonGroup ContentDisplayTypeGroup;
     private javax.swing.JEditorPane ContentEditorPane;
+    private javax.swing.JScrollPane ContentEditorScrollPane;
     private javax.swing.JToolBar ContentEditorToolbar;
     private javax.swing.JComboBox ContentTypeSelectComboBox;
     private javax.swing.JTextField CorrectionIdTextField;
@@ -1153,6 +1161,5 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane3;
     // End of variables declaration//GEN-END:variables
 }

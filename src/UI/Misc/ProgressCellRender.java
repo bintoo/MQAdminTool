@@ -26,16 +26,25 @@ import javax.swing.table.TableCellRenderer;
             if (isSelected)
             {
                 setBackground(table.getSelectionBackground());
-                setForeground(Color.blue);
+                //setForeground(Color.blue);
             }
             else
             {
                 setBackground(table.getBackground());
-                setForeground(table.getForeground());
+                //setForeground(table.getForeground());
             }
             if(value != null){
                 QueueDepthStatusModel model = (QueueDepthStatusModel)value;
                 int progressValue = model.CurrentDepth * 100 / model.MaxDepth;
+                if(progressValue <= 60){
+                    setForeground(Color.GREEN);
+                }
+                else if(progressValue > 60 && progressValue <= 90){
+                    setForeground(Color.YELLOW);
+                }
+                else{
+                    setForeground(Color.RED);
+                }
                 this.setValue(progressValue);
                 this.setStringPainted(true);
                 this.setString(model.CurrentDepth + " / " + model.MaxDepth);

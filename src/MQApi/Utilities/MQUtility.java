@@ -665,7 +665,11 @@ public class MQUtility {
                             out.write("Message : " + pos);
                             out.write("\r\n"); 
                             out.write("\r\n");
-                            out.write(GetMessageStringContent(message, null));
+                            String content = GetMessageStringContent(message, null);
+//                            if(content.toLowerCase().contains("<?xml")){
+//                                content = XMLStringFormat(content);
+//                            }
+                            out.write(content);
                             out.write("\r\n"); 
                             out.write("\r\n"); 
                             index--;
@@ -1249,4 +1253,5 @@ public class MQUtility {
 
     }
     
+
 }

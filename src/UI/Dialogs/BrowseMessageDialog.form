@@ -7,9 +7,6 @@
       <Dimension value="[700, 500]"/>
     </Property>
     <Property name="modal" type="boolean" value="true"/>
-    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[700, 500]"/>
-    </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -234,7 +231,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <EmptySpace pref="215" max="32767" attributes="0"/>
-                      <Component id="jProgressBar1" min="-2" max="-2" attributes="0"/>
+                      <Component id="ProgressBar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="215" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -243,14 +240,14 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace pref="155" max="32767" attributes="0"/>
-                      <Component id="jProgressBar1" min="-2" max="-2" attributes="0"/>
+                      <Component id="ProgressBar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="155" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JProgressBar" name="jProgressBar1">
+            <Component class="javax.swing.JProgressBar" name="ProgressBar">
               <Properties>
                 <Property name="indeterminate" type="boolean" value="true"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">

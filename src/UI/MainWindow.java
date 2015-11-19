@@ -27,7 +27,6 @@ import UI.Dialogs.ClearMessagesDialog;
 import UI.Dialogs.DialogFactory;
 import UI.Dialogs.HelpDialog;
 import UI.Dialogs.MessageEditDialog;import UI.Dialogs.QueueMonitorDialog;
-;
 import UI.Helpers.*;
 import UI.Models.*;
 import UI.Dialogs.QueueProperitiesDialog;
@@ -41,6 +40,12 @@ import UI.ReferenceObjects.ToolStatusReference;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQMessage;
 import com.ibm.mq.MQQueueManager;
+import com.jtattoo.plaf.acryl.AcrylLookAndFeel;
+import com.jtattoo.plaf.aero.AeroLookAndFeel;
+import com.jtattoo.plaf.bernstein.BernsteinLookAndFeel;
+import com.jtattoo.plaf.luna.LunaLookAndFeel;
+import com.jtattoo.plaf.mcwin.McWinLookAndFeel;
+import com.jtattoo.plaf.smart.SmartLookAndFeel;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -50,6 +55,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -63,7 +69,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
+import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -84,11 +94,10 @@ public class MainWindow extends javax.swing.JFrame {
     IconManager iconManager = new IconManager();
     private String activedSearchString = "";
     StopableTask CurrentUpdateTask= null;
+    private SettingsModel settingsModel = new SettingsModel();
     public MainWindow() {      
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2 - 450, dim.height/2-this.getSize().height/2 - 350);
-        UIManager.put("ProgressBar.background",Color.YELLOW);
-        //UIManager.put("ProgressBar.foreground",Color.RED);
         initComponents();
         initCustomProperties();
     }
@@ -113,6 +122,7 @@ public class MainWindow extends javax.swing.JFrame {
         ChannelTextBox = new javax.swing.JTextField();
         AddtButton = new javax.swing.JButton();
         CancelBitton = new javax.swing.JButton();
+        SkinsButtonGroup = new javax.swing.ButtonGroup();
         SplitPane = new javax.swing.JSplitPane();
         TreeViewPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -145,6 +155,7 @@ public class MainWindow extends javax.swing.JFrame {
         SearchTextField = new javax.swing.JTextField();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         MemoryProgressBar = new javax.swing.JProgressBar();
+        jSeparator4 = new javax.swing.JToolBar.Separator();
         jLabel5 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         ContentTableProgressBar = new javax.swing.JProgressBar();
@@ -153,6 +164,14 @@ public class MainWindow extends javax.swing.JFrame {
         FileMenu = new javax.swing.JMenu();
         TestMenuItem = new javax.swing.JMenuItem();
         AddQueueManagerMenuItem = new javax.swing.JMenuItem("Add Queue Manager",iconManager.DeviceManager());
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        SmartSkinMenuItem = new javax.swing.JRadioButtonMenuItem();
+        AeroSkinMenuItem = new javax.swing.JRadioButtonMenuItem();
+        BernsteinSkinMenuItem = new javax.swing.JRadioButtonMenuItem();
+        LunaSkinMenuItem = new javax.swing.JRadioButtonMenuItem();
+        McwinSkinMenuItem = new javax.swing.JRadioButtonMenuItem();
+        AcrylSkinMenuItem = new javax.swing.JRadioButtonMenuItem();
         MainWindowMenu = new javax.swing.JMenu();
         ChannelStatusToolMenuItem = new javax.swing.JMenuItem();
         SaveQmgrToCsvConverterMenuItem = new javax.swing.JMenuItem();
@@ -246,7 +265,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(900, 700));
-        setPreferredSize(new java.awt.Dimension(900, 700));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -277,9 +295,9 @@ public class MainWindow extends javax.swing.JFrame {
         );
         TreeViewPanelLayout.setVerticalGroup(
             TreeViewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 577, Short.MAX_VALUE)
+            .addGap(0, 679, Short.MAX_VALUE)
             .addGroup(TreeViewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE))
         );
 
         SplitPane.setLeftComponent(TreeViewPanel);
@@ -309,7 +327,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         FilterToolbar.setFloatable(false);
         FilterToolbar.setRollover(true);
-        FilterToolbar.setPreferredSize(new java.awt.Dimension(100, 35));
+        FilterToolbar.setPreferredSize(new java.awt.Dimension(110, 35));
         FilterToolbar.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
         RefreshButton.setIcon(iconManager.RefreshIcon());
@@ -371,8 +389,10 @@ public class MainWindow extends javax.swing.JFrame {
         FilterToolbar.add(SearchTextField);
         FilterToolbar.add(jSeparator3);
 
-        MemoryProgressBar.setPreferredSize(new java.awt.Dimension(100, 25));
+        MemoryProgressBar.setMaximumSize(new java.awt.Dimension(150, 25));
+        MemoryProgressBar.setPreferredSize(new java.awt.Dimension(150, 25));
         FilterToolbar.add(MemoryProgressBar);
+        FilterToolbar.add(jSeparator4);
 
         jLabel5.setText("Memory usage :");
         jLabel5.setPreferredSize(new java.awt.Dimension(90, 25));
@@ -421,8 +441,8 @@ public class MainWindow extends javax.swing.JFrame {
         ContentPanel.setLayout(ContentPanelLayout);
         ContentPanelLayout.setHorizontalGroup(
             ContentPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
-            .addComponent(FilterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
+            .addComponent(FilterPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 693, Short.MAX_VALUE)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         ContentPanelLayout.setVerticalGroup(
@@ -430,7 +450,7 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ContentPanelLayout.createSequentialGroup()
                 .addComponent(FilterPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 511, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 613, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0))
@@ -457,6 +477,69 @@ public class MainWindow extends javax.swing.JFrame {
         FileMenu.add(AddQueueManagerMenuItem);
 
         MainMenuBar.add(FileMenu);
+
+        jMenu1.setText("Settings");
+
+        jMenu2.setText("Skins");
+
+        SkinsButtonGroup.add(SmartSkinMenuItem);
+        SmartSkinMenuItem.setSelected(true);
+        SmartSkinMenuItem.setText("Smart");
+        SmartSkinMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SkinsButtonMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(SmartSkinMenuItem);
+
+        SkinsButtonGroup.add(AeroSkinMenuItem);
+        AeroSkinMenuItem.setText("Aero");
+        AeroSkinMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SkinsButtonMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(AeroSkinMenuItem);
+
+        SkinsButtonGroup.add(BernsteinSkinMenuItem);
+        BernsteinSkinMenuItem.setText("Bernstein");
+        BernsteinSkinMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SkinsButtonMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(BernsteinSkinMenuItem);
+
+        SkinsButtonGroup.add(LunaSkinMenuItem);
+        LunaSkinMenuItem.setText("Luna");
+        LunaSkinMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SkinsButtonMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(LunaSkinMenuItem);
+
+        SkinsButtonGroup.add(McwinSkinMenuItem);
+        McwinSkinMenuItem.setText("Mcwin");
+        McwinSkinMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SkinsButtonMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(McwinSkinMenuItem);
+
+        SkinsButtonGroup.add(AcrylSkinMenuItem);
+        AcrylSkinMenuItem.setText("Acryl");
+        AcrylSkinMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SkinsButtonMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(AcrylSkinMenuItem);
+
+        jMenu1.add(jMenu2);
+
+        MainMenuBar.add(jMenu1);
 
         MainWindowMenu.setText("Tools");
 
@@ -941,7 +1024,8 @@ public class MainWindow extends javax.swing.JFrame {
                 memoryUsage();
             }
         }, 0, 5000);
-        
+        settingsModel = XMLHelper.ReadSettingsModelFromXml();
+        changeSkins(settingsModel.SkinName);
     }
     
     private void initQueueManagerSetting(){
@@ -1473,6 +1557,7 @@ public class MainWindow extends javax.swing.JFrame {
     }    
     
     private void showContentTableLoading(boolean isLoading){
+        this.ContentTableProgressBar.setIndeterminate(isLoading);
         this.ContentTableProgressBar.setVisible(isLoading);    
         if(TreeHelper.ShowSearchBarForCurrentNote(TreeView) && !isLoading){
             this.RefreshButton.setEnabled(true);
@@ -1498,11 +1583,20 @@ public class MainWindow extends javax.swing.JFrame {
         double total = (double)(rt.totalMemory() /1024 /1024);
         double free = (double)(rt.freeMemory() /1024 /1024);
         double used = total - free;
-        double value = (used / total) * 100;
-        this.MemoryProgressBar.setValue((int)value);
+        double progressValue = (used / total) * 100;
+        if(progressValue <= 60){
+            MemoryProgressBar.setForeground(Color.GREEN);
+        }
+        else if(progressValue > 60 && progressValue <= 90){
+            MemoryProgressBar.setForeground(Color.YELLOW);
+        }
+        else{
+            MemoryProgressBar.setForeground(Color.RED);
+        }
+        this.MemoryProgressBar.setValue((int)progressValue);
         this.MemoryProgressBar.setStringPainted(true);
         this.MemoryProgressBar.setString(used + " / " + total + "MB");
-        if(value > 70.0){
+        if(progressValue > 70.0){
             System.gc();
         }
     }
@@ -1645,45 +1739,80 @@ public class MainWindow extends javax.swing.JFrame {
             tool.setLocationRelativeTo(this);
             tool.setVisible(true);
     }//GEN-LAST:event_SaveQmgrToCsvConverterMenuItemActionPerformed
+
+    private void SkinsButtonMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SkinsButtonMenuItem1ActionPerformed
+        JMenuItem item = (JMenuItem)evt.getSource();
+        String selectName = item.getText();
+        changeSkins(selectName);
+    }//GEN-LAST:event_SkinsButtonMenuItem1ActionPerformed
     
+    private void changeSkins(String name){
+        try{
+            Properties props = new Properties();
+            props.put("logoString", "MQ Admin Tool");
+             switch(name){
+                case "Smart":
+                    SmartLookAndFeel smart = new com.jtattoo.plaf.smart.SmartLookAndFeel();
+                    smart.setCurrentTheme(props);
+                    UIManager.setLookAndFeel(smart);
+                    SmartSkinMenuItem.setSelected(true);
+                    break;
+                case "Aero":
+                    AeroLookAndFeel aero = new com.jtattoo.plaf.aero.AeroLookAndFeel();
+                    aero.setCurrentTheme(props);
+                    UIManager.setLookAndFeel(aero);
+                    AeroSkinMenuItem.setSelected(true);
+                    break;
+                case "Bernstein":
+                    BernsteinLookAndFeel bernstein = new com.jtattoo.plaf.bernstein.BernsteinLookAndFeel();
+                    bernstein.setCurrentTheme(props);
+                    UIManager.setLookAndFeel(bernstein);
+                    BernsteinSkinMenuItem.setSelected(true);
+                    break;
+                case "Luna":
+                    LunaLookAndFeel luna = new com.jtattoo.plaf.luna.LunaLookAndFeel();
+                    luna.setCurrentTheme(props);
+                    UIManager.setLookAndFeel(luna);
+                    LunaSkinMenuItem.setSelected(true);
+                    break;
+                case "Mcwin":
+                    McWinLookAndFeel mcwin = new com.jtattoo.plaf.mcwin.McWinLookAndFeel();
+                    mcwin.setCurrentTheme(props);
+                    UIManager.setLookAndFeel(mcwin);
+                    McwinSkinMenuItem.setSelected(true);
+                    break;
+                case "Acryl":
+                    AcrylLookAndFeel acryl = new com.jtattoo.plaf.acryl.AcrylLookAndFeel();
+                    acryl.setCurrentTheme(props);
+                    UIManager.setLookAndFeel(acryl);
+                    AcrylSkinMenuItem.setSelected(true);
+                    break;
+                default:
+                    AcrylLookAndFeel def = new com.jtattoo.plaf.acryl.AcrylLookAndFeel();
+                    def.setCurrentTheme(props);
+                    UIManager.setLookAndFeel(def);
+                    AcrylSkinMenuItem.setSelected(true);
+                    break;
+            }
+            settingsModel.SkinName = name;
+            XMLHelper.WriteSettingModelToXml(settingsModel);
+            SwingUtilities.updateComponentTreeUI(this);
+            UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+            Color color = ContentTable.getSelectionBackground();
+            if (defaults.get("Table.alternateRowColor") == null){
+               defaults.put("Table.alternateRowColor", new Color(color.getRed(), color.getGreen(),color.getBlue(),80)); 
+            }
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+     
     private void addQueueManageMenuItemActionPerformed(java.awt.event.ActionEvent evt){
         this.ConnectionDetailDialog.setLocationRelativeTo(this);
         ConnectionDetailDialog.setVisible(true);
     }
-           
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        
-        try {
-//            UIManager.LookAndFeelInfo[] infos = javax.swing.UIManager.getInstalledLookAndFeels();
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    UIManager.setLookAndFeel(
-//                                UIManager.getSystemLookAndFeelClassName());
-                    break;
-                }
-//                if ("Windows".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-////                    UIManager.setLookAndFeel(
-////                                UIManager.getSystemLookAndFeelClassName());
-//                    break;
-//                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+                
+    public static void main(String args[]) {      
         ExceptionHandler.registerExceptionHandler(Thread.currentThread().getId());
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -1694,8 +1823,11 @@ public class MainWindow extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem AboutMenuItem;
+    private javax.swing.JRadioButtonMenuItem AcrylSkinMenuItem;
     private javax.swing.JMenuItem AddQueueManagerMenuItem;
     private javax.swing.JButton AddtButton;
+    private javax.swing.JRadioButtonMenuItem AeroSkinMenuItem;
+    private javax.swing.JRadioButtonMenuItem BernsteinSkinMenuItem;
     private javax.swing.JButton CancelBitton;
     private javax.swing.JMenuItem ChannelStatusToolMenuItem;
     private javax.swing.JTextField ChannelTextBox;
@@ -1708,8 +1840,10 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JToolBar FilterToolbar;
     private javax.swing.JMenu HelpMenu;
     private javax.swing.JTextField HostTextBox;
+    private javax.swing.JRadioButtonMenuItem LunaSkinMenuItem;
     private javax.swing.JMenuBar MainMenuBar;
     private javax.swing.JMenu MainWindowMenu;
+    private javax.swing.JRadioButtonMenuItem McwinSkinMenuItem;
     private javax.swing.JProgressBar MemoryProgressBar;
     private javax.swing.JTextField PortTextBox;
     private javax.swing.JTextField QueueManagerTextBox;
@@ -1719,6 +1853,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextField SearchTextField;
     private javax.swing.JToggleButton ShowSystemObjectToggleButton;
     private javax.swing.JToggleButton ShowTempObjectToggle;
+    private javax.swing.ButtonGroup SkinsButtonGroup;
+    private javax.swing.JRadioButtonMenuItem SmartSkinMenuItem;
     private javax.swing.JSplitPane SplitPane;
     private javax.swing.JMenuItem TestMenuItem;
     private javax.swing.JTree TreeView;
@@ -1729,11 +1865,14 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
+    private javax.swing.JToolBar.Separator jSeparator4;
     // End of variables declaration//GEN-END:variables
 }

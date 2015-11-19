@@ -197,7 +197,7 @@
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="ContentEditorToolbar" max="32767" attributes="0"/>
-                  <Component id="jScrollPane3" alignment="0" pref="575" max="32767" attributes="0"/>
+                  <Component id="ContentEditorScrollPane" alignment="0" pref="575" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -205,7 +205,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="ContentEditorToolbar" min="-2" pref="25" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                      <Component id="jScrollPane3" pref="422" max="32767" attributes="0"/>
+                      <Component id="ContentEditorScrollPane" pref="422" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -230,6 +230,9 @@
                         <StringItem index="1" value="XML"/>
                       </StringArray>
                     </Property>
+                    <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[70, 20]"/>
+                    </Property>
                     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[70, 20]"/>
                     </Property>
@@ -243,7 +246,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JScrollPane" name="jScrollPane3">
+            <Container class="javax.swing.JScrollPane" name="ContentEditorScrollPane">
               <AuxValues>
                 <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
               </AuxValues>

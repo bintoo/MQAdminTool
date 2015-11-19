@@ -36,6 +36,7 @@ public class TableHelper {
         ToggleContentTable(contentTable, false);
         contentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         contentTable.setAutoCreateRowSorter(true);
+        contentTable.setShowGrid(false);
     }
 
     public static<T> void UpdateContentTable(JTable contentTable, ArrayList<T> dataModel){
