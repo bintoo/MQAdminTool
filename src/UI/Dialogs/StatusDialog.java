@@ -60,6 +60,7 @@ public class StatusDialog<T extends Enum> extends DialogBase {
         this.QueueManagerLabel.setText(queueManagerName);
         this.ProgressBar.setIndeterminate(true);
         this.ProgressBar.setVisible(false);
+        Table.setShowGrid(false);
         TableHelper.ToggleContentTable(Table, false);
         
     }

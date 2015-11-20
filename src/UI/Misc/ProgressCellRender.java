@@ -23,6 +23,9 @@ import javax.swing.table.TableCellRenderer;
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            //setBorderPainted(false);
+            Color color = table.getSelectionBackground();
+            Color progressBarBGColor = new Color(color.getRed(), color.getGreen(),color.getBlue(),80);
             if (isSelected)
             {
                 setBackground(table.getSelectionBackground());
@@ -30,13 +33,18 @@ import javax.swing.table.TableCellRenderer;
             }
             else
             {
-                setBackground(table.getBackground());
-                //setForeground(table.getForeground());
+                if(row %2 != 0){
+                    setBackground(progressBarBGColor);
+                }
+                else{
+                    setBackground(table.getBackground());
+                }
             }
             if(value != null){
                 QueueDepthStatusModel model = (QueueDepthStatusModel)value;
                 int progressValue = model.CurrentDepth * 100 / model.MaxDepth;
                 if(progressValue <= 60){
+
                     setForeground(Color.GREEN);
                 }
                 else if(progressValue > 60 && progressValue <= 90){
@@ -57,6 +65,7 @@ import javax.swing.table.TableCellRenderer;
                 return this;
                 //return new JLabel();
             }
+            
             
         }
 

@@ -1025,6 +1025,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }, 0, 5000);
         settingsModel = XMLHelper.ReadSettingsModelFromXml();
+        UIManager.put("Tree.paintLines", Boolean.FALSE);
         changeSkins(settingsModel.SkinName);
     }
     
