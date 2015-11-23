@@ -154,11 +154,31 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     
     private void loadMessage(MQMessage message){       
         loadMessageMQMD(message);
-        MQDLH dlh = MQUtility.getDLH(message);
-        if(dlh != null){
-            this.MessagePanel.setEnabledAt(2, true);
-            loadMessageDLH(dlh);
+        MQHeaderList list = null;
+        try {
+            list = new MQHeaderList(message, false);
+            message.seek(0);
+        } catch (MQDataException | IOException ex) {
+            Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
+        if(list != null){
+            MQDLH dlh = MQUtility.getDLH(list);
+            if(dlh != null){
+                this.MessagePanel.setEnabledAt(2, true);
+                loadMessageDLH(dlh);
+            }
+            MQRFH2 mqrfh2 = MQUtility.getMQHRF2(list);
+            if(mqrfh2 != null){
+                try {
+                    String[] floders = mqrfh2.getFolderStrings();
+                    
+                } catch (IOException ex) {
+                    Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            }
+        }
+
         content = MQUtility.GetMessageStringContent(message, null); 
         if(XMLHelper.IsXML(content)){
             content = XMLHelper.XMLStringFormat(content);
@@ -506,7 +526,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(ContentEditorToolbar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(ContentEditorScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
+            .addComponent(ContentEditorScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1015,12 +1035,12 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
                     .addComponent(MessagePanel)
                     .addComponent(TitlePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(ProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(ProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(StatusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(StatusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(KeepPositionCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(KeepPositionCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(UpdateButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Closebutton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))

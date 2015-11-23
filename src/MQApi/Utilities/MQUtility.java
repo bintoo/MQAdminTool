@@ -693,7 +693,7 @@ public class MQUtility {
                             out.write("Message position : " + i);
                             out.write("\r\n"); 
                             out.write("\r\n");
-                            out.write(message.readStringOfByteLength(message.getMessageLength()));
+                            out.write(GetMessageStringContent(message, null));
                             out.write("\r\n"); 
                             out.write("\r\n");
                             if(progressBar != null){
@@ -835,18 +835,28 @@ public class MQUtility {
         return new String(hexChars);
     }
     
-    public static MQDLH getDLH(MQMessage message){
+    public static MQDLH getDLH(MQHeaderList list){
          try {
-            MQHeaderList list = new MQHeaderList(message, false);
             if(list.size() > 0 && list.indexOf("MQDLH") >= 0){
                 MQDLH dlh = (MQDLH) list.get(list.indexOf("MQDLH"));
-                message.seek(0);
                 return dlh;
             }
         } catch(Exception ex){
 
         }
         return null;       
+    }
+    
+    public static MQRFH2 getMQHRF2 (MQHeaderList list){
+         try {
+            if(list.size() > 0 && list.indexOf("MQRFH2") >= 0){
+                MQRFH2 mqrfh2 = (MQRFH2) list.get(list.indexOf("MQRFH2"));
+                return mqrfh2;
+            }
+        } catch(Exception ex){
+
+        }
+        return null;          
     }
     
     public static MQMessage RemoveMQDLH(MQMessage message){
