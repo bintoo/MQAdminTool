@@ -114,6 +114,7 @@ public class TableHelper {
             contentTable.getColumn("Queue depth status").setCellRenderer(new ProgressCellRender());
         }
         contentTable.getParent().getParent().setVisible(true);
+        contentTable.getTableHeader().setReorderingAllowed(false); 
     }
 
     public static void setType(TableListObject obj, Object data){
