@@ -49,12 +49,16 @@ public class IconManager {
     private String Pub = "Resources/Images/pub.png";
     private String Sub = "Resources/Images/sub.png";
     private String Monitor = "Resources/Images/Monitor.png";
-    private String Main = "Resources/Images/main.png";
- 
+    private String Main16 = "Resources/Images/main16.png";
+    private String Main32 = "Resources/Images/main32.png";
     
-    public ImageIcon MainIcon(){
-        return getImageIcon(Main);
+    public ImageIcon MainIcon16(){
+        return getImageIconNoScale(Main16);
     }
+    
+    public ImageIcon MainIcon32(){
+        return getImageIconNoScale(Main32);
+    }   
     
     public ImageIcon MonitorIcon(){
         return getImageIcon(Monitor);
@@ -193,6 +197,16 @@ public class IconManager {
             return new ImageIcon(createTransparentImage(1,1));
         }
     }    
+
+    private ImageIcon getImageIconNoScale(String path){
+        try{
+            URL iconPath = getClass().getClassLoader().getResource(path);
+            return new ImageIcon(new ImageIcon(iconPath).getImage());
+        }catch (Exception ex){
+            LogWriter.WriteToLog(ex.fillInStackTrace());
+            return new ImageIcon(createTransparentImage(1,1));
+        }
+    }  
     
     private  BufferedImage createTransparentImage (final int width, final int height)
     {

@@ -161,7 +161,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         } catch (MQDataException | IOException ex) {
             Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if(list != null){
+        if(list != null && list.size() > 0){
             MQDLH dlh = MQUtility.getDLH(list);
             if(dlh != null){
                 this.MessagePanel.setEnabledAt(2, true);

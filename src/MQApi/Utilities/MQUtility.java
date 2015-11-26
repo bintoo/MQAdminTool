@@ -95,7 +95,7 @@ public class MQUtility {
         try {                 
             queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE | CMQC.MQOO_OUTPUT);
             if(matchPosition){
-                setQueueCursor(queue, messageIdModel.position);
+                setQueueCursor(queue, messageIdModel.position - 1);
             }
             queue.get(message, options);
 

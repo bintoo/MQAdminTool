@@ -999,7 +999,10 @@ public class MainWindow extends javax.swing.JFrame {
  // Private methods
     
     private void initCustomProperties(){
-        this.setIconImage(iconManager.MainIcon().getImage()); 
+        List<Image> icons = new ArrayList<Image>();
+        icons.add(iconManager.MainIcon16().getImage());
+        icons.add(iconManager.MainIcon32().getImage());
+        this.setIconImages(icons); 
         this.setTitle("MQ Admin Tool");
         //this.timer = new Timer();
         this.TreeViewPanel.setMinimumSize(new Dimension(200,400));
