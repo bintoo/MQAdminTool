@@ -15,4 +15,7 @@ public class ConnectionDetailModel {
     public String Channel; 
     public String Port;
     
+    public String User;
+    public String Password;
+    
 }

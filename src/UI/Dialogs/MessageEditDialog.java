@@ -673,7 +673,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
 
         ReplyToQueueManagerNameTextField.setPreferredSize(new java.awt.Dimension(380, 25));
 
-        jLabel23.setText("Reply to  manager:");
+        jLabel23.setText("Reply to queue:");
         jLabel23.setPreferredSize(new java.awt.Dimension(150, 25));
 
         ReplyToQueueNameTextField.setPreferredSize(new java.awt.Dimension(380, 25));

@@ -124,6 +124,10 @@ public class MainWindow extends javax.swing.JFrame {
         ChannelTextBox = new javax.swing.JTextField();
         AddtButton = new javax.swing.JButton();
         CancelBitton = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        UserTextBox = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        PasswordTextBox = new javax.swing.JPasswordField();
         SkinsButtonGroup = new javax.swing.ButtonGroup();
         SplitPane = new javax.swing.JSplitPane();
         TreeViewPanel = new javax.swing.JPanel();
@@ -180,8 +184,9 @@ public class MainWindow extends javax.swing.JFrame {
         HelpMenu = new javax.swing.JMenu();
         AboutMenuItem = new javax.swing.JMenuItem();
 
-        ConnectionDetailDialog.setMinimumSize(new java.awt.Dimension(350, 210));
+        ConnectionDetailDialog.setMinimumSize(new java.awt.Dimension(340, 230));
         ConnectionDetailDialog.setModal(true);
+        ConnectionDetailDialog.setPreferredSize(new java.awt.Dimension(340, 230));
         ConnectionDetailDialog.setResizable(false);
 
         jLabel1.setText("Host:");
@@ -206,6 +211,10 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setText("User:");
+
+        jLabel7.setText("Password:");
+
         javax.swing.GroupLayout ConnectionDetailDialogLayout = new javax.swing.GroupLayout(ConnectionDetailDialog.getContentPane());
         ConnectionDetailDialog.getContentPane().setLayout(ConnectionDetailDialogLayout);
         ConnectionDetailDialogLayout.setHorizontalGroup(
@@ -214,31 +223,40 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(ConnectionDetailDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(ConnectionDetailDialogLayout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                        .addGap(10, 10, 10)
-                        .addComponent(ChannelTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(ConnectionDetailDialogLayout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(HostTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(ConnectionDetailDialogLayout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(QueueManagerTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(ConnectionDetailDialogLayout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(ConnectionDetailDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(ConnectionDetailDialogLayout.createSequentialGroup()
-                                .addComponent(AddtButton, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(CancelBitton, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(PortTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ConnectionDetailDialogLayout.createSequentialGroup()
+                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(10, 10, 10))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ConnectionDetailDialogLayout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ConnectionDetailDialogLayout.createSequentialGroup()
+                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ConnectionDetailDialogLayout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ConnectionDetailDialogLayout.createSequentialGroup()
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ConnectionDetailDialogLayout.createSequentialGroup()
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                        .addGroup(ConnectionDetailDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(HostTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(QueueManagerTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ChannelTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(PortTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(UserTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(PasswordTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(10, 10, 10))
+                    .addGroup(ConnectionDetailDialogLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(AddtButton, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(CancelBitton, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
-
-        ConnectionDetailDialogLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {ChannelTextBox, HostTextBox, PortTextBox, QueueManagerTextBox});
-
         ConnectionDetailDialogLayout.setVerticalGroup(
             ConnectionDetailDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ConnectionDetailDialogLayout.createSequentialGroup()
@@ -258,14 +276,22 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(ConnectionDetailDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(PortTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(ConnectionDetailDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(AddtButton)
-                    .addComponent(CancelBitton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(ConnectionDetailDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(UserTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(ConnectionDetailDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(PasswordTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(ConnectionDetailDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(CancelBitton)
+                    .addComponent(AddtButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        ConnectionDetailDialogLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {ChannelTextBox, HostTextBox, PortTextBox, QueueManagerTextBox});
+        ConnectionDetailDialogLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {ChannelTextBox, HostTextBox, PortTextBox, QueueManagerTextBox, UserTextBox});
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(900, 700));
@@ -765,7 +791,12 @@ public class MainWindow extends javax.swing.JFrame {
                     TreeHelper.AddConnectedQueueManagerNode(TreeView);
                 } catch (MQException ex) {
                     LogWriter.WriteToLog("MainWindow", "getTreeViewQueueManagerPopupMenu", ex);
-                    showErrorMessage(MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason()));
+                    if(ex.exceptionSource instanceof String){
+                        showErrorMessage((String)ex.exceptionSource);
+                    }
+                    else{
+                        showErrorMessage(MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason()));
+                    }
                 }
             }
         });
@@ -1069,6 +1100,8 @@ public class MainWindow extends javax.swing.JFrame {
            this.QueueManagerTextBox.setText(model.QueueManager);
            this.ChannelTextBox.setText(model.Channel);
            this.PortTextBox.setText(model.Port);
+           this.UserTextBox.setText(model.User);
+           this.PasswordTextBox.setText(model.Password);
            this.ConnectionDetailDialog.setLocationRelativeTo(this);
            ConnectionDetailDialog.setVisible(true);
         }
@@ -1666,6 +1699,8 @@ public class MainWindow extends javax.swing.JFrame {
             model.Host = this.HostTextBox.getText();
             model.Port = this.PortTextBox.getText();
             model.QueueManager = this.QueueManagerTextBox.getText();
+            model.User = this.UserTextBox.getText();
+            model.Password = this.PasswordTextBox.getText();
             TreeHelper.RefreshTreeView(TreeView, model);
         }
         XMLHelper.WriteConnectionModelToXml(ConnectionDetailModels, SettingFilePath);
@@ -1853,6 +1888,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenu MainWindowMenu;
     private javax.swing.JRadioButtonMenuItem McwinSkinMenuItem;
     private javax.swing.JProgressBar MemoryProgressBar;
+    private javax.swing.JPasswordField PasswordTextBox;
     private javax.swing.JTextField PortTextBox;
     private javax.swing.JTextField QueueManagerTextBox;
     private javax.swing.JButton RefreshButton;
@@ -1868,11 +1904,14 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTree TreeView;
     private javax.swing.JPanel TreeViewPanel;
     private javax.swing.JLabel UpdateTimeStampLabel;
+    private javax.swing.JTextField UserTextBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JPanel jPanel1;

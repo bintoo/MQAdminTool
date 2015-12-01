@@ -52,10 +52,12 @@ public class XMLHelper {
                 Element connectionEle = document.createElement(elementName);
                 for(Field field : model.getClass().getFields()){
                     String name = field.getName();
-                    String value = (field.get(model)).toString();
-                    Element ele = document.createElement(name);
-                    ele.appendChild(document.createTextNode(value));
-                    connectionEle.appendChild(ele);
+                    String value = field.get(model) != null ? (field.get(model)).toString() : null;
+                    if(value != null){
+                        Element ele = document.createElement(name);
+                        ele.appendChild(document.createTextNode(value));
+                        connectionEle.appendChild(ele);
+                    }
                 }
                 rootElement.appendChild(connectionEle);
             }
