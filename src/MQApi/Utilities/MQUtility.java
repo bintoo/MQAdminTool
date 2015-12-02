@@ -93,7 +93,7 @@ public class MQUtility {
         options.options = CMQC.MQGMO_BROWSE_NEXT;
         options.matchOptions = MQConstants.MQMO_MATCH_MSG_ID  | MQConstants.MQMO_MATCH_CORREL_ID;
         try {                 
-            queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE | CMQC.MQOO_OUTPUT);
+            queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE);
             if(matchPosition){
                 setQueueCursor(queue, messageIdModel.position - 1);
             }

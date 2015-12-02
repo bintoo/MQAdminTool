@@ -50,12 +50,6 @@ public class MQConnection {
             if(commandQueue.getOpenInputCount() == 0){
                 throw new MQException(2, 1, "Command server is not running on this queue manager");
             }
-            try{
-                MQQueue defaultModelQueue = queueManager.accessQueue("SYSTEM.DEFAULT.MODEL.QUEUE", CMQC.MQOO_INQUIRE);
-            }
-            catch(Exception ex){
-                throw new MQException(2, 1, "MQ Admin Tool needs to access \"SYSTEM.DEFAULT.MODEL.QUEUE\" to adminster this queue manager");
-            }
             return queueManager;
         }catch(MQException ex){
             if(queueManager != null){

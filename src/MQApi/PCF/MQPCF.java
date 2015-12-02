@@ -36,8 +36,12 @@ import MQApi.QueryModel.MQQueueStatusListResult.QueueStatusDetailModel;
 import MQApi.QueryModel.MQSubListResult;
 import MQApi.QueryModel.MQSubListResult.SubDetailModel;
 import MQApi.Utilities.MQUtility;
+import com.ibm.mq.MQException;
+import com.ibm.mq.MQMessage;
+import com.ibm.mq.MQQueue;
 
 import com.ibm.mq.MQQueueManager;
+import com.ibm.mq.constants.CMQC;
 import java.io.IOException;
 
 import com.ibm.mq.constants.MQConstants;
@@ -70,7 +74,7 @@ public class MQPCF {
         try {
             MQQueueManager queueManager = MQConnection.GetMQQueueManager(connectionDetail);
             int queueType = ConstantConverter.ConvertQueueTypeToConstant(type);
-            PCFMessageAgent agent = new PCFMessageAgent(queueManager);
+            PCFMessageAgent agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_Q_NAMES);
             pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, querySring);
             pcfCmd.addParameter(MQConstants.MQIA_Q_TYPE, queueType);
@@ -127,7 +131,7 @@ public class MQPCF {
         MQQueueListResult result = new MQQueueListResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_Q);        
             pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, queueNameFilter);
             pcfCmd.addParameter(MQConstants.MQIA_Q_TYPE, MQConstants.MQQT_ALL );
@@ -152,7 +156,7 @@ public class MQPCF {
         MQQueuePropertyModel model = null;
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_Q);        
             pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, name);
             agent.setCheckResponses(false);
@@ -200,7 +204,7 @@ public class MQPCF {
             if(isAlias){
                 queueName = MQPCF.ResolveAliasBaseQueueName(queueManager, queueName);
             }
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_CLEAR_Q);
             pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, queueName);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
@@ -223,7 +227,7 @@ public class MQPCF {
         MQCommandResult result = new MQCommandResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_DELETE_Q);
             pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, queueName);
             if(type == QueueType.Local){
@@ -249,7 +253,7 @@ public class MQPCF {
         MQQueueStatusHandleListResult result = new MQQueueStatusHandleListResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_Q_STATUS);        
             pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, nameFilter);
             pcfCmd.addParameter(MQConstants.MQIACF_Q_STATUS_TYPE, MQConstants.MQIACF_Q_HANDLE);
@@ -280,7 +284,7 @@ public class MQPCF {
         MQQueueStatusListResult result = new MQQueueStatusListResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_Q_STATUS);        
             pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, nameFilter);
             pcfCmd.addParameter(MQConstants.MQIACF_Q_STATUS_TYPE, MQConstants.MQIACF_Q_STATUS);
@@ -321,7 +325,7 @@ public class MQPCF {
         MQChannelListResult result = new MQChannelListResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmdQueryDetail = new PCFMessage(MQConstants.MQCMD_INQUIRE_CHANNEL);        
             pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, channelNameFilter);
             pcfCmdQueryDetail.addParameter(MQConstants.MQIACH_CHANNEL_TYPE, MQConstants.MQCHT_ALL );
@@ -352,7 +356,7 @@ public class MQPCF {
         MQChannelStatusListResult result = new MQChannelStatusListResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_CHANNEL_STATUS);        
             pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, nameFilter);
             if(getSaved){
@@ -385,7 +389,7 @@ public class MQPCF {
          MQChannelStatusModel result = new MQChannelStatusModel();
          PCFMessageAgent agent = null;
         try {           
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_CHANNEL_STATUS);
             pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, querySring);
             PCFMessage[] pcfResponse = null;
@@ -414,7 +418,7 @@ public class MQPCF {
         MQChannelPropertyModel model = null;
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_CHANNEL);        
             pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
             agent.setCheckResponses(false);
@@ -449,7 +453,7 @@ public class MQPCF {
         MQCommandResult result = new MQCommandResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmdQueryDetail = new PCFMessage(MQConstants.MQCMD_START_CHANNEL);
             pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
             PCFMessage[] pcfResponse = agent.send(pcfCmdQueryDetail);
@@ -476,7 +480,7 @@ public class MQPCF {
             return result;
         }
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             agent.setCheckResponses(false);
             PCFMessage pcfCmdQueryDetail = new PCFMessage(MQConstants.MQCMD_STOP_CHANNEL);
             pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
@@ -519,7 +523,7 @@ public class MQPCF {
         MQCommandResult result = new MQCommandResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmdQueryDetail = new PCFMessage(MQConstants.MQCMD_RESET_CHANNEL);
             pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
             pcfCmdQueryDetail.addParameter(MQConstants.MQIACH_MSG_SEQUENCE_NUMBER, seq);
@@ -542,7 +546,7 @@ public class MQPCF {
         MQCommandResult result = new MQCommandResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmdQueryDetail = new PCFMessage(MQConstants.MQCMD_RESOLVE_CHANNEL);
             pcfCmdQueryDetail.addParameter(MQConstants.MQCACH_CHANNEL_NAME, name);
             pcfCmdQueryDetail.addParameter(MQConstants.MQIACH_IN_DOUBT, type == ChannelResolveType.Backout ? MQConstants.MQIDO_BACKOUT : MQConstants.MQIDO_COMMIT);
@@ -565,7 +569,7 @@ public class MQPCF {
         MQCommandResult result = new MQCommandResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_DELETE_CHANNEL);
             pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, channelName);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
@@ -600,7 +604,7 @@ public class MQPCF {
         MQChannelAuthListResult result = new MQChannelAuthListResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_CHLAUTH_RECS);        
             pcfCmd.addParameter(MQConstants.MQCACH_CHANNEL_NAME, queueNameFilter);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);        
@@ -642,7 +646,7 @@ public class MQPCF {
         MQPubListResult result = new MQPubListResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_TOPIC);        
             pcfCmd.addParameter(MQConstants.MQCA_TOPIC_NAME, nameFilter);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);        
@@ -682,7 +686,7 @@ public class MQPCF {
         MQSubListResult result = new MQSubListResult();
         PCFMessageAgent agent = null;
         try {
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_SUBSCRIPTION);        
             pcfCmd.addParameter(MQConstants.MQCACF_SUB_NAME, nameFilter);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);        
@@ -908,7 +912,7 @@ public class MQPCF {
         PCFMessageAgent agent = null;
         MQCommandResult result = new MQCommandResult();
         try {           
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(isCreate ? MQConstants.MQCMD_CREATE_Q : MQConstants.MQCMD_CHANGE_Q);
             addParameters(model, pcfCmd);
             if(!isCreate){
@@ -933,7 +937,7 @@ public class MQPCF {
         PCFMessageAgent agent = null;
         MQCommandResult result = new MQCommandResult();
         try {           
-            agent = new PCFMessageAgent(queueManager);
+            agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(isCreate ? MQConstants.MQCMD_CREATE_CHANNEL : MQConstants.MQCMD_CHANGE_CHANNEL);
             addParameters(model, pcfCmd);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
@@ -1009,5 +1013,39 @@ public class MQPCF {
         return msg;
     }
     
-
+    private static PCFMessageAgent getPCFMessageAgent(MQQueueManager queueManager) throws MQDataException{
+        PCFMessageAgent agent = new PCFMessageAgent();
+        MQQueue defaultModelQueue = null;
+        
+        try{
+            defaultModelQueue = queueManager.accessQueue("SYSTEM.DEFAULT.MODEL.QUEUE", CMQC.MQOO_INQUIRE);
+        }
+        catch(MQException ex){
+            setTOMQExplorerReplyQueue(agent);
+        }
+        try {
+            if(defaultModelQueue != null){
+                if(!defaultModelQueue.isOpen() || defaultModelQueue.getInhibitGet() == 1 || defaultModelQueue.getInhibitPut()== 1 ){
+                    setTOMQExplorerReplyQueue(agent);
+                }
+            }
+        } catch (MQException ex) {
+            LogWriter.WriteToLog("MQPCF", "getPCFMessageAgent", ex);
+            setTOMQExplorerReplyQueue(agent);
+        }
+        if(defaultModelQueue != null){
+            try {
+                defaultModelQueue.close();
+            } catch (MQException ex) {
+                Logger.getLogger(MQPCF.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        agent.connect(queueManager);
+        return agent;
+    }
+    
+    private static void setTOMQExplorerReplyQueue(PCFMessageAgent agent){
+        agent.setModelQueueName("SYSTEM.MQEXPLORER.REPLY.MODEL");
+        agent.setReplyQueuePrefix("AMQ.MQEXPLORER.");       
+    }
 }
