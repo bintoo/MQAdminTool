@@ -58,7 +58,7 @@ public class StatusDialog<T extends Enum> extends DialogBase {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         };
         this.QueueManagerLabel.setText(queueManagerName);
-        this.ProgressBar.setIndeterminate(true);
+        this.ProgressBar.setIndeterminate(false);
         this.ProgressBar.setVisible(false);
         Table.setShowGrid(false);
         TableHelper.ToggleContentTable(Table, false);
@@ -66,6 +66,7 @@ public class StatusDialog<T extends Enum> extends DialogBase {
     }
     
     private void initTable(){
+        this.ProgressBar.setIndeterminate(true);
         this.ProgressBar.setVisible(true);
         Thread thread = new Thread(new Runnable() {
 
@@ -241,10 +242,12 @@ public class StatusDialog<T extends Enum> extends DialogBase {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loadTableSuccess(){
+        this.ProgressBar.setIndeterminate(false);
         this.ProgressBar.setVisible(false);
     }
    
     private void loadTableFail(){
+        this.ProgressBar.setIndeterminate(false);
          this.ProgressBar.setVisible(false);
     }
     

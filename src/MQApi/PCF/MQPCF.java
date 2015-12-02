@@ -915,7 +915,7 @@ public class MQPCF {
             agent = getPCFMessageAgent(queueManager);;
             PCFMessage pcfCmd = new PCFMessage(isCreate ? MQConstants.MQCMD_CREATE_Q : MQConstants.MQCMD_CHANGE_Q);
             addParameters(model, pcfCmd);
-            if(!isCreate){
+            if(!isCreate && model.Type != MQConstants.MQQT_MODEL){
                 pcfCmd.addParameter(MQConstants.MQIACF_FORCE, MQConstants.MQFC_YES); //always force change
             }
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
