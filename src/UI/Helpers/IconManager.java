@@ -191,7 +191,8 @@ public class IconManager {
     private ImageIcon getImageIcon(String path){
         try{
             URL iconPath = getClass().getClassLoader().getResource(path);
-            return new ImageIcon(new ImageIcon(iconPath).getImage().getScaledInstance(15, 15, Image.SCALE_DEFAULT));
+            return new ImageIcon(new ImageIcon(iconPath).getImage());
+            //return new ImageIcon(new ImageIcon(iconPath).getImage().getScaledInstance(15, 15, Image.SCALE_DEFAULT));
         }catch (Exception ex){
             LogWriter.WriteToLog(ex.fillInStackTrace());
             return new ImageIcon(createTransparentImage(1,1));
