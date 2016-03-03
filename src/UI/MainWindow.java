@@ -1646,9 +1646,9 @@ public class MainWindow extends javax.swing.JFrame {
  //Event handlers   
     private void ChannelStatusToolMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChannelStatusToolMenuItemActionPerformed
         if(!chToolRef.IsOpen){
-            ChannelStatusTool chTool = new ChannelStatusTool(this, true);
+            ChannelStatusTool chTool = new ChannelStatusTool(this, false, chToolRef);
             chTool.setLocationRelativeTo(this);
-            chTool.start();
+            chTool.setVisible(true);
         }
     }//GEN-LAST:event_ChannelStatusToolMenuItemActionPerformed
 

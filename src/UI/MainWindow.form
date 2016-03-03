@@ -8,9 +8,6 @@
           <Dimension value="[340, 230]"/>
         </Property>
         <Property name="modal" type="boolean" value="true"/>
-        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[340, 230]"/>
-        </Property>
         <Property name="resizable" type="boolean" value="false"/>
       </Properties>
 

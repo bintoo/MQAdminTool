@@ -11,6 +11,8 @@ import UI.Dialogs.DialogBase;
 import UI.ReferenceObjects.ToolStatusReference;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,15 +24,30 @@ public class ChannelStatusTool extends DialogBase  {
     /**
      * Creates new form MainJFrame
      */
-    public ChannelStatusTool(java.awt.Frame parent, boolean modal) {
+    private ToolStatusReference ref; 
+    private CheckChannelTask task;
+    public ChannelStatusTool(java.awt.Frame parent, boolean modal, ToolStatusReference ref) {
         super(parent, modal, null, null);
         initComponents();
+        this.setTitle("Channel Status Tool");
         this.HostTextField.setText("");
         this.ChannelTextField.setText("SYSTEM.ADMIN.SVRCONN");
         this.QueueManagerTextField.setText("");
         this.PortTextField.setText("1414");
-        this.WaitForTextField.setText("60");
+        this.WaitForTextField.setText("1");
         this.DebugTextArea.setText("");
+        this.setAlwaysOnTop(modal);
+        this.ref = ref;
+        this.ref.IsOpen = true;
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                ref.IsOpen = false;
+                if(task != null){
+                    task.StopTask();
+                }
+            }
+        });
     }
 
     /**
@@ -57,6 +74,9 @@ public class ChannelStatusTool extends DialogBase  {
         jLabel5 = new javax.swing.JLabel();
         WaitForTextField = new javax.swing.JTextField();
         CloseButton = new javax.swing.JButton();
+        RepeatCheckBox = new javax.swing.JCheckBox();
+        jLabel6 = new javax.swing.JLabel();
+        DisplayTopTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -76,7 +96,7 @@ public class ChannelStatusTool extends DialogBase  {
 
         jLabel4.setText("Port:");
 
-        ConnectButton.setText("Connect");
+        ConnectButton.setText("Start");
         ConnectButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ConnectButtonActionPerformed(evt);
@@ -88,7 +108,7 @@ public class ChannelStatusTool extends DialogBase  {
         DebugTextArea.setRows(5);
         jScrollPane2.setViewportView(DebugTextArea);
 
-        jLabel5.setText("Wait for:");
+        jLabel5.setText("Wait for(minute):");
 
         CloseButton.setText("Close");
         CloseButton.addActionListener(new java.awt.event.ActionListener() {
@@ -97,43 +117,55 @@ public class ChannelStatusTool extends DialogBase  {
             }
         });
 
+        RepeatCheckBox.setText("Repeat");
+
+        jLabel6.setText("Display Top:");
+
+        DisplayTopTextField.setText("5");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(0, 83, Short.MAX_VALUE)
+                .addComponent(StatusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(0, 56, Short.MAX_VALUE)
-                            .addComponent(StatusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(HostTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(QueueManagerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(HostTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(QueueManagerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(ChannelTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(WaitForTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(ConnectButton)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(CloseButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(PortTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addComponent(PortTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(ConnectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(WaitForTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(CloseButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(RepeatCheckBox, javax.swing.GroupLayout.Alignment.TRAILING)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(DisplayTopTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -158,11 +190,18 @@ public class ChannelStatusTool extends DialogBase  {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(WaitForTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(RepeatCheckBox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(DisplayTopTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ConnectButton)
                     .addComponent(CloseButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                 .addComponent(StatusLabel)
                 .addGap(0, 0, 0))
         );
@@ -172,8 +211,21 @@ public class ChannelStatusTool extends DialogBase  {
 
     private void ConnectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConnectButtonActionPerformed
         if(VarifyInput()){
+            ToggleControl(false);
             ConnectionDetailModel connection = GetConnectionDetailModel();
-            CheckChannelTask task = new CheckChannelTask(connection,Integer.parseInt(this.WaitForTextField.getText()),this.DebugTextArea, this.ConnectButton, this.CloseButton, this);
+            task = new CheckChannelTask(connection,Integer.parseInt(this.WaitForTextField.getText()),this.DebugTextArea, this, this.RepeatCheckBox.isSelected(), Integer.parseInt(this.DisplayTopTextField.getText()));
+            task.AddTaskActionSuccessListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ToggleControl(true);
+                }
+            });
+            task.AddTaskActionFailListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ToggleControl(true);
+                }
+            });
             Thread t = new Thread(task);
             t.start();
         }
@@ -193,14 +245,20 @@ public class ChannelStatusTool extends DialogBase  {
         boolean isValid = true;
         String port = this.PortTextField.getText();
         String waitFor = this.WaitForTextField.getText();
+        String displayTop = this.DisplayTopTextField.getText();
         if(port == null || port.isEmpty() || !VarifyNumber(port)){
             this.DebugTextArea.setText("Port must be a valid number");
             isValid = false;
         }
-          if(waitFor == null || waitFor.isEmpty() || !VarifyNumber(waitFor)){
+        if(waitFor == null || waitFor.isEmpty() || !VarifyNumber(waitFor)){
             this.DebugTextArea.setText("Wait for must be a valid number");
             isValid = false;
-        }      
+        }
+        if(displayTop == null || displayTop.isEmpty() || !VarifyNumber(displayTop)){
+            this.DebugTextArea.setText("Display top must be a valid number");
+            isValid = false;           
+        }
+       
         return isValid;
     }
     
@@ -230,12 +288,14 @@ public class ChannelStatusTool extends DialogBase  {
     }
     
     private void ToggleControl(boolean value){
-        this.HostTextField.setEditable(value);
-        this.ChannelTextField.setEditable(value);
-        this.QueueManagerTextField.setEditable(value);
-        this.PortTextField.setEditable(value);
-        this.WaitForTextField.setEditable(value);    
+        this.HostTextField.setEnabled(value);
+        this.ChannelTextField.setEnabled(value);
+        this.QueueManagerTextField.setEnabled(value);
+        this.PortTextField.setEnabled(value);
+        this.WaitForTextField.setEnabled(value);    
         this.ConnectButton.setEnabled(value);
+        this.RepeatCheckBox.setEnabled(value);
+        this.DisplayTopTextField.setEnabled(value);
     }
     /**
      * @param args the command line arguments
@@ -279,9 +339,11 @@ public class ChannelStatusTool extends DialogBase  {
     private javax.swing.JButton CloseButton;
     private javax.swing.JButton ConnectButton;
     private javax.swing.JTextArea DebugTextArea;
+    private javax.swing.JTextField DisplayTopTextField;
     private javax.swing.JTextField HostTextField;
     private javax.swing.JTextField PortTextField;
     private javax.swing.JTextField QueueManagerTextField;
+    private javax.swing.JCheckBox RepeatCheckBox;
     private javax.swing.JLabel StatusLabel;
     private javax.swing.JTextField WaitForTextField;
     private javax.swing.JLabel jLabel1;
@@ -289,6 +351,7 @@ public class ChannelStatusTool extends DialogBase  {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
 }

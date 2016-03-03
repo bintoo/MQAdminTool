@@ -6,6 +6,7 @@
 package MQApi;
 
 import MQApi.Models.ToolChannelStatusModel;
+import MQApi.Models.ToolChannelStatusResultModel;
 import MQApi.Result.Annotations.MQObjectListtAnnotation;
 import UI.Helpers.DateTimeHelper;
 import java.io.BufferedWriter;
@@ -13,7 +14,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -54,6 +57,33 @@ public class TextWriter {
         {
             System.out.println("Exception ");       
         } 
+    }
+    
+    public static void WriteToolChannelStatusResultModel(ArrayList<ToolChannelStatusResultModel> model, String fileName, int top, boolean header)throws IOException{
+        BufferedWriter out = new BufferedWriter(new FileWriter(new File(fileName),true));
+        String timeStamp = new SimpleDateFormat("yyyy/MM/dd_HH:mm:ss").format(Calendar.getInstance().getTime());
+        if(header){
+            out.write("Time" + ",");
+            out.write("Channel" + ",");
+            out.write("IP"+ ",");
+            out.write("Messages Before"+ ",");
+            out.write("Messages After"+ ",");
+            out.write("Change" + ",");
+            out.write("\r\n"); 
+        }
+        for(int i = 0; i < top; i++){
+            if( model.size() >= i + 1){
+                ToolChannelStatusResultModel m = model.get(i);
+                out.write(timeStamp + ",");
+                out.write(m.Key + ",");
+                out.write(m.Before+ ",");
+                out.write(m.After+ ",");
+                out.write(m.Change + " "); 
+                out.write("\r\n");
+            }
+        }
+        out.write("\r\n");
+        out.close();
     }
     
      public static void WriteHashTableToFile(Hashtable<String, Integer> tableOld, Hashtable<String, Integer> tableNew, String fileName) throws IOException{
