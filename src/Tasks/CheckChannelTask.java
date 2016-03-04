@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 import UI.ChannelStatusTool;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueueManager;
+import com.ibm.mq.commonservices.internal.utils.QueueManager;
 import java.awt.Component;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,12 +58,13 @@ public class CheckChannelTask extends TaskBase{
         this.displayTop = displayTop;
     }
     public void CheckChannelMessageChange(){
+        MQQueueManager queueManager = null;
         try {
             String statusText = "Getting the first sample data....";
             UpdateDebugWindows(waitForTextField,statusText);
             Hashtable<String, Integer> resultTable1 = new Hashtable<String, Integer>();
             Hashtable<String, Integer> resultTable2 = new Hashtable<String, Integer>();
-            MQQueueManager queueManager = MQConnection.GetMQQueueManager(connection);
+            queueManager = MQConnection.GetMQQueueManager(connection);
             MQChannelStatusModel channelStatus1 = MQPCF.GenerateChannelStatus(queueManager, "*");
             if(channelStatus1.QuerySuccess){
                 String temp = statusText + "\r\n" + "Success....Wait for ";
@@ -79,7 +81,7 @@ public class CheckChannelTask extends TaskBase{
                 }                    
                 statusText += "\r\n" + "Getting the second data...";
                 UpdateDebugWindows(waitForTextField,statusText);
-                queueManager = MQConnection.GetMQQueueManager(connection);
+                //queueManager = MQConnection.GetMQQueueManager(connection);
                 MQChannelStatusModel channelStatus2 = MQPCF.GenerateChannelStatus(queueManager, "*");
                 if(channelStatus2.QuerySuccess){
                     statusText += "\r\n" + "Success...Generating result...";
@@ -114,25 +116,33 @@ public class CheckChannelTask extends TaskBase{
                 statusText += "\r\n" + "Please check the parameters and try again later.";
                 UpdateDebugWindows(waitForTextField,statusText);
             }
-            if(queueManager != null && queueManager.isConnected()){
-                queueManager.disconnect();
-            }
+
         } catch (MQException ex) {            
             Logger.getLogger(CheckChannelTask.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(parent, MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason()), "Error",JOptionPane.ERROR_MESSAGE );
             UpdateDebugWindows(waitForTextField,"");
+            if(queueManager != null && queueManager.isConnected()){
+                try {
+                    queueManager.disconnect();
+                } catch (MQException ex1) {
+                    Logger.getLogger(CheckChannelTask.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+            }
+            disconnectQueueManager(queueManager);
             FireActionFailEvent();
         }
+        disconnectQueueManager(queueManager);
         FireActionSuccessEvent();
     }   
     
     public void CheckChannelMessageChangeRepeat(){
+        MQQueueManager queueManager = null;
         try {
             String statusText = "Getting sample data....";
             UpdateDebugWindows(waitForTextField,statusText);
             Hashtable<String, Integer> resultTable1 = new Hashtable<String, Integer>();
             Hashtable<String, Integer> resultTable2 = new Hashtable<String, Integer>();
-            MQQueueManager queueManager = MQConnection.GetMQQueueManager(connection);
+            queueManager = MQConnection.GetMQQueueManager(connection);
             MQChannelStatusModel channelStatus1 = MQPCF.GenerateChannelStatus(queueManager, "*");
             boolean header = true;
             if(channelStatus1.QuerySuccess){
@@ -153,7 +163,7 @@ public class CheckChannelTask extends TaskBase{
                     }    
                     statusText += "\r\n" + "Getting  new data...";
                     UpdateDebugWindows(waitForTextField,statusText);
-                    queueManager = MQConnection.GetMQQueueManager(connection);
+                    //queueManager = MQConnection.GetMQQueueManager(connection);
                     MQChannelStatusModel channelStatus2 = MQPCF.GenerateChannelStatus(queueManager, "*");
                     if(channelStatus2.QuerySuccess){
                         statusText += "\r\n" + "Success...Generating result...";
@@ -200,8 +210,10 @@ public class CheckChannelTask extends TaskBase{
             Logger.getLogger(CheckChannelTask.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(parent, MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason()), "Error",JOptionPane.ERROR_MESSAGE );
             UpdateDebugWindows(waitForTextField,"");
+            disconnectQueueManager(queueManager);
             FireActionFailEvent();
         }
+        disconnectQueueManager(queueManager);
         FireActionSuccessEvent();
     }  
     private void UpdateDebugWindows(JTextArea waitForTextField,String text){
@@ -240,6 +252,16 @@ public class CheckChannelTask extends TaskBase{
         Collections.sort(result);
         Collections.reverse(result);
         return result;
+    }
+    
+    private void disconnectQueueManager(MQQueueManager queueManager){
+        if(queueManager != null && queueManager.isConnected()){
+            try {
+                queueManager.disconnect();
+            } catch (MQException ex) {
+
+            }
+        }       
     }
     @Override
     public void run() {
