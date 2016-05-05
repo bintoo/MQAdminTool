@@ -9,6 +9,7 @@ import MQApi.Enums.LogType;
 import MQApi.Logs.LogWriter;
 import MQApi.Models.MQMessageIdModel;
 import MQApi.Utilities.MQUtility;
+import UI.Helpers.CodeConverter;
 import UI.Helpers.XMLHelper;
 import UI.Models.ComboBoxItemModel;
 import com.ibm.mq.MQException;
@@ -25,6 +26,8 @@ import java.awt.ComponentOrientation;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,7 +65,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         this.isNew = false;
         initComponents();
         initCustomProperties();
-        showMessageDetail();
+        showMessageDetail(false);
     }
     
     public MessageEditDialog(java.awt.Frame parent, boolean modal, MQQueueManager queueManager, String queueName) {
@@ -72,7 +75,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         this.isNew = true;
         initComponents();
         initCustomProperties();
-        showMessageDetail();
+        showMessageDetail(false);
     }
 
     private void initCustomProperties(){
@@ -112,20 +115,20 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         
     }
     
-    private void showMessageDetail(){
+    private void showMessageDetail(boolean asEBCDIC){
         Thread thread = new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try {
                     if(isNew == false){
-                        MQMessage selectedMessage = MQUtility.GetMessage(queueManager, queueName, messageId, false);
+                        MQMessage selectedMessage = MQUtility.GetMessage(queueManager, queueName, messageId, false, asEBCDIC);
                         message = selectedMessage;
                     }
                     else{
                         message = new MQMessage();
                     }
-                    processMessage();
+                    processMessage(asEBCDIC);
                 } catch (MQException ex) {
                     Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
                     JOptionPane.showMessageDialog(ParentJFrame, MQUtility.getMQReturnMessage(ex.getCompCode(), ex.getReason()), "Error", JOptionPane.ERROR_MESSAGE);
@@ -140,11 +143,11 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         thread.start();
     }
     
-    private void processMessage(){
+    private void processMessage(boolean asEBCDIC){
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                loadMessage(message);
+                loadMessage(message, asEBCDIC);
             }
         });
         thread.start();
@@ -152,7 +155,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
 
     }
     
-    private void loadMessage(MQMessage message){       
+    private void loadMessage(MQMessage message, boolean asEBCDIC){       
         loadMessageMQMD(message);
         MQHeaderList list = null;
         try {
@@ -178,8 +181,33 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
                 
             }
         }
+        
+        if(!asEBCDIC){
+            content = MQUtility.GetMessageStringContent(message, null); 
+        }
+        else{
+            content = CodeConverter.convertEBDICtoASCII(message);
+        }
 
-        content = MQUtility.GetMessageStringContent(message, null); 
+        
+        
+        try {
+            MQMessage msg = MQUtility.GetMessage(queueManager, queueName, messageId, false, false);
+             String aa = CodeConverter.convertEBDICtoASCII(message);
+             String ada = "ASD";
+        } catch (MQException ex) {
+            Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //String c = CodeConverter.convertEBDICtoASCII(content);
+        
+//        try {
+//            String charSet = MQUtility.getDefaultCharSet();
+//            byte[] by = content.getBytes(charSet);
+//            String aa = new String(by, charSet);
+//            content = aa;
+//        } catch (UnsupportedEncodingException ex) {
+//            Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         if(XMLHelper.IsXML(content)){
             content = XMLHelper.XMLStringFormat(content);
             ContentTypeSelectComboBox.setSelectedIndex(1);
@@ -372,6 +400,8 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         jPanel1 = new javax.swing.JPanel();
         ContentEditorToolbar = new javax.swing.JToolBar();
         ContentTypeSelectComboBox = new javax.swing.JComboBox();
+        jSeparator1 = new javax.swing.JToolBar.Separator();
+        DecodeButton = new javax.swing.JToggleButton();
         ContentEditorScrollPane = new javax.swing.JScrollPane();
         ContentEditorPane = new javax.swing.JEditorPane();
         MQMDScrollPanel = new javax.swing.JScrollPane();
@@ -518,6 +548,18 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
             }
         });
         ContentEditorToolbar.add(ContentTypeSelectComboBox);
+        ContentEditorToolbar.add(jSeparator1);
+
+        DecodeButton.setText("Decode EBCDIC ");
+        DecodeButton.setFocusable(false);
+        DecodeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        DecodeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        DecodeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DecodeButtonActionPerformed(evt);
+            }
+        });
+        ContentEditorToolbar.add(DecodeButton);
 
         ContentEditorScrollPane.setViewportView(ContentEditorPane);
 
@@ -1100,6 +1142,15 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         
     }//GEN-LAST:event_ContentTypeSelectComboBoxItemStateChanged
 
+    private void DecodeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DecodeButtonActionPerformed
+        if(this.DecodeButton.isSelected()){
+            showMessageDetail(true);
+        }
+        else{
+            showMessageDetail(false);
+        }
+    }//GEN-LAST:event_DecodeButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField AccountTokenTextField;
     private javax.swing.JTextField ApplicationIdDataTextField;
@@ -1121,6 +1172,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JTextField DLHPutTypeTextField;
     private javax.swing.JTextField DLHQmgrTextField;
     private javax.swing.JTextField DLHReasonTextField;
+    private javax.swing.JToggleButton DecodeButton;
     private javax.swing.JSpinner ExpirySpinner;
     private javax.swing.JComboBox FeedbackCombobox;
     private javax.swing.JTextField FormatTextField;
@@ -1181,5 +1233,6 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JToolBar.Separator jSeparator1;
     // End of variables declaration//GEN-END:variables
 }

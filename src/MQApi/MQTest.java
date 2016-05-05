@@ -6,8 +6,11 @@
 package MQApi;
 
 import MQApi.Logs.LogWriter;
+import MQApi.Models.MQMessageIdModel;
 import MQApi.QueryModel.MQQueueListResult;
 import MQApi.Utilities.MQUtility;
+import UI.Helpers.MQCommandParser;
+import UI.Models.MQOuput.MQOuputModel;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQGetMessageOptions;
 import com.ibm.mq.MQMessage;
@@ -24,8 +27,14 @@ import com.ibm.mq.headers.pcf.MQCFH;
 import com.ibm.mq.headers.pcf.PCFMessage;
 import com.ibm.mq.headers.pcf.PCFMessageAgent;
 import com.ibm.mq.headers.pcf.PCFParameter;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -107,6 +116,154 @@ public class MQTest {
 
     
     }
+    
+    public static void test4(MQQueueManager queueManager, String queueName){
+        
+        FileReader input = null;
+        MQOuputModel model = new MQOuputModel();
+        try {
+            input = new FileReader("RESP.FAIL.txt");
+            BufferedReader bufRead = new BufferedReader(input);
+            String line = null;
+            ArrayList<String> msgs = new ArrayList<String>();
+            StringBuilder sb = new StringBuilder();
+            while ( (line = bufRead.readLine()) != null){
+                line = line.trim();
+                if(line.length() > 0 && line != "" && !line.contains("Message :")){
+                    MQMessage message = new MQMessage();
+                    message.userId = "MULERESP";
+                    message.replyToQueueManagerName = "MQP1";
+                    message.replyToQueueName = null;
+                    message.format = "MQSTR";
+                    message.putDateTime = new GregorianCalendar();      
+                    message.characterSet = 1208;
+                    message.putApplicationName = "MuleContainerBootstrap";
+                    message.putApplicationType = 28;
+                    message.persistence = MQConstants.MQPER_PERSISTENT;
+                    message.priority = 4;
+                    String content = line;
+                    
+//                    try {
+//                        MQMessage sampleMessage = GetMessage(queueManager, queueName);
+//                        message.correlationId = sampleMessage.correlationId;  
+//                    } catch (MQException ex) {
+//                        Logger.getLogger(MQTest.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+                    try {
+                        message.writeString(content);
+                    } catch (IOException ex) {
+                        Logger.getLogger(MQTest.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    MQUtility.PutMessage(queueManager, queueName, message);
+                }
+            }
+            
+            
+            String aa = "ADas";
+
+        } catch (FileNotFoundException ex) {
+            LogWriter.WriteToLog(ex.fillInStackTrace());
+            Logger.getLogger(MQCommandParser.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            LogWriter.WriteToLog(ex.fillInStackTrace());
+            Logger.getLogger(MQCommandParser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+//        for(int i = 0; i < 50000; i++){
+//            MQMessage message = new MQMessage();
+//            String content = String.valueOf(i);
+//            try {
+//                message.writeString(content);
+//            } catch (IOException ex) {
+//                Logger.getLogger(MQTest.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//            MQUtility.PutMessage(queueManager, queueName, message);
+//        }
+//        String aa = "ADS";
+        
+    }
+    
+    public static void test5(MQQueueManager queueManager, String queueName){
+        
+        FileReader input = null;
+        MQOuputModel model = new MQOuputModel();
+        try {
+            input = new FileReader("aa.txt");
+            BufferedReader bufRead = new BufferedReader(input);
+            String line = null;
+            ArrayList<String> msgs = new ArrayList<String>();
+            StringBuilder sb = new StringBuilder();
+            while ( (line = bufRead.readLine()) != null){
+                line = line.trim();
+                if(line.length() > 0 && line != "" && !line.contains("Message :")){
+                    MQMessage message = new MQMessage();
+                    message.userId = "MULERESP";
+                    message.replyToQueueManagerName = "MQQ1";
+                    message.replyToQueueName = null;
+                    message.format = "MQSTR";
+                    message.putDateTime = new GregorianCalendar();      
+                    message.characterSet = 1208;
+                    message.putApplicationName = "MuleContainerBootstrap";
+                    message.putApplicationType = 28;
+                    message.persistence = MQConstants.MQPER_PERSISTENT;
+                    message.priority = 4;
+                    String content = line;
+                    
+//                    try {
+//                        MQMessage sampleMessage = GetMessage(queueManager, queueName);
+//                        message.correlationId = sampleMessage.correlationId;  
+//                    } catch (MQException ex) {
+//                        Logger.getLogger(MQTest.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+                    try {
+                        message.writeString(content);
+                    } catch (IOException ex) {
+                        Logger.getLogger(MQTest.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    MQUtility.PutMessage(queueManager, queueName, message);
+                }
+            }
+            
+            
+            String aa = "ADas";
+
+        } catch (FileNotFoundException ex) {
+            LogWriter.WriteToLog(ex.fillInStackTrace());
+            Logger.getLogger(MQCommandParser.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            LogWriter.WriteToLog(ex.fillInStackTrace());
+            Logger.getLogger(MQCommandParser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+//        for(int i = 0; i < 50000; i++){
+//            MQMessage message = new MQMessage();
+//            String content = String.valueOf(i);
+//            try {
+//                message.writeString(content);
+//            } catch (IOException ex) {
+//                Logger.getLogger(MQTest.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//            MQUtility.PutMessage(queueManager, queueName, message);
+//        }
+//        String aa = "ADS";
+        
+    }
+    
+    public static MQMessage GetMessage(MQQueueManager queueManager, String queueName) throws MQException{
+        MQQueue queue = null;
+        MQMessage message = new MQMessage();
+        MQGetMessageOptions options = new MQGetMessageOptions();
+        options.options = CMQC.MQGMO_BROWSE_NEXT;
+        try {                 
+            queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE);
+            queue.get(message, options);
+
+        } catch (MQException ex) {
+            LogWriter.WriteToLog("MQUtility", "GetMessage", ex);
+            closeQueue(queue);
+            throw ex;           
+        }
+        closeQueue(queue);
+        return message;                
+    }
     public static void GetMessageTest(MQQueueManager queueManager, String queueName) throws MQException{
         PCFMessageAgent agent = null;
         try {
@@ -124,7 +281,7 @@ public class MQTest {
                
     }
     
-    public static MQMessage GetMessage(MQQueueManager queueManager, String queueName) throws MQException{
+    public static MQMessage GetMessage2(MQQueueManager queueManager, String queueName) throws MQException{
         MQQueue queue = null;
         MQMessage message = new MQMessage();
         MQGetMessageOptions options = new MQGetMessageOptions();

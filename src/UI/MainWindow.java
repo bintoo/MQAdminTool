@@ -1730,13 +1730,15 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_ContentTableMouseClicked
 
     private void TestMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TestMenuItemActionPerformed
-//        MQQueueManager manager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
+        MQQueueManager manager = TreeHelper.GetCurrentSelectedQueueManager(TreeView);
 //        try {
 //            MQTest.GetMessage(manager, "SYSTEM.ADMIN.ACCOUNTING.QUEUE");
 //            //MQCommandParser.ProcessFiles(new String[]{"mqcommand.txt", "mqcommand2.txt"});
 //        } catch (MQException ex) {
 //            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
 //        }
+    
+        MQTest.test5(manager,"LQ.TEST1");
         
     }//GEN-LAST:event_TestMenuItemActionPerformed
 

@@ -30,6 +30,7 @@ import com.ibm.mq.headers.internal.Header;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +39,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
@@ -84,13 +86,17 @@ public class MQUtility {
         return result;
     }
     
-    public static MQMessage GetMessage(MQQueueManager queueManager, String queueName, MQMessageIdModel messageIdModel, boolean matchPosition) throws MQException{
+    public static MQMessage GetMessage(MQQueueManager queueManager, String queueName, MQMessageIdModel messageIdModel, boolean matchPosition, boolean asEBCDIC) throws MQException{
         MQQueue queue = null;
         MQMessage message = new MQMessage();
         message.messageId = messageIdModel.MessageId;
         message.correlationId = messageIdModel.CorrelationdId;
+        if(asEBCDIC){
+            message.characterSet = 500;
+            message.encoding = 785;
+        }
         MQGetMessageOptions options = new MQGetMessageOptions();
-        options.options = CMQC.MQGMO_BROWSE_NEXT;
+        options.options = asEBCDIC ? CMQC.MQGMO_BROWSE_NEXT | CMQC.MQGMO_CONVERT : CMQC.MQGMO_BROWSE_NEXT;
         options.matchOptions = MQConstants.MQMO_MATCH_MSG_ID  | MQConstants.MQMO_MATCH_CORREL_ID;
         try {                 
             queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE);
@@ -105,8 +111,10 @@ public class MQUtility {
             throw ex;           
         }
         closeQueue(queue);
+        //String aa = getDefaultCharSet();   
         return message;                
     }
+    
     
     public static MQMessage GetMessageWithInterval(MQQueueManager queueManager, String queueName, int interval) throws MQException{
         MQQueue queue = null;
@@ -782,7 +790,7 @@ public class MQUtility {
             for(int i = 0; i < totalNumOfMessages; i++){
                 try{
                     MQMessage message = readMessageFromStream(objectInputStream);
-                    if(message.format.contains("MQXMIT")){
+                    if(message.format != null && message.format.contains("MQXMIT")){
                         Field versionField = message.getClass().getSuperclass().getDeclaredField("version");
                         versionField.setAccessible(true);
                         versionField.set(message, 1);
@@ -1261,6 +1269,13 @@ public class MQUtility {
             message = new MQMessage();
         }
 
+    }
+    
+    //try to get the current system encoding
+    public static String getDefaultCharSet() {
+    	OutputStreamWriter writer = new OutputStreamWriter(new ByteArrayOutputStream());
+    	String enc = writer.getEncoding();
+    	return enc;
     }
     
 
