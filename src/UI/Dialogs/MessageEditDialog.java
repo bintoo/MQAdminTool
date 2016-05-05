@@ -106,10 +106,12 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
             this.UpdateButton.setText("Put");
             this.KeepPositionCheckBox.setVisible(false);
             this.MessagePanel.setEnabledAt(1, false);
+            this.DecodeButton.setEnabled(false);
         }
         else{
             this.UpdateButton.setText("Update");
             this.KeepPositionCheckBox.setVisible(true);
+            this.DecodeButton.setEnabled(true);
         }
         this.MessagePanel.setEnabledAt(2, false);
         
@@ -189,25 +191,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
             content = CodeConverter.convertEBDICtoASCII(message);
         }
 
-        
-        
-        try {
-            MQMessage msg = MQUtility.GetMessage(queueManager, queueName, messageId, false, false);
-             String aa = CodeConverter.convertEBDICtoASCII(message);
-             String ada = "ASD";
-        } catch (MQException ex) {
-            Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //String c = CodeConverter.convertEBDICtoASCII(content);
-        
-//        try {
-//            String charSet = MQUtility.getDefaultCharSet();
-//            byte[] by = content.getBytes(charSet);
-//            String aa = new String(by, charSet);
-//            content = aa;
-//        } catch (UnsupportedEncodingException ex) {
-//            Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+       
         if(XMLHelper.IsXML(content)){
             content = XMLHelper.XMLStringFormat(content);
             ContentTypeSelectComboBox.setSelectedIndex(1);
