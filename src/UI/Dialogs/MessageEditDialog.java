@@ -9,7 +9,7 @@ import MQApi.Enums.LogType;
 import MQApi.Logs.LogWriter;
 import MQApi.Models.MQMessageIdModel;
 import MQApi.Utilities.MQUtility;
-import UI.Helpers.CodeConverter;
+import MQApi.Utilities.CodeConverter;
 import UI.Helpers.XMLHelper;
 import UI.Models.ComboBoxItemModel;
 import com.ibm.mq.MQException;
@@ -196,6 +196,10 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
             content = XMLHelper.XMLStringFormat(content);
             ContentTypeSelectComboBox.setSelectedIndex(1);
             this.ContentEditorPane.setContentType("XML");
+        }
+        else{
+            ContentTypeSelectComboBox.setSelectedIndex(0);
+            this.ContentEditorPane.setContentType("Text");
         }
         this.ContentEditorPane.setText(content); 
     }
