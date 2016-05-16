@@ -205,7 +205,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="ContentEditorToolbar" min="-2" pref="25" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                      <Component id="ContentEditorScrollPane" pref="422" max="32767" attributes="0"/>
+                      <Component id="ContentEditorScrollPane" pref="719" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -286,7 +286,7 @@
             <Container class="javax.swing.JPanel" name="jPanel2">
               <Properties>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                  <Dimension value="[610, 705]"/>
+                  <Dimension value="[610, 735]"/>
                 </Property>
               </Properties>
 
@@ -299,7 +299,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                                  <Component id="MessageIdTextField" max="32767" attributes="0"/>
+                                  <Component id="MessageIdTextField" pref="430" max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
@@ -405,6 +405,11 @@
                                   <Component id="jLabel24" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                                   <Component id="UserIdTextField" pref="402" max="32767" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="jLabel25" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                                  <Component id="MessageTypeTextField" pref="430" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -524,7 +529,12 @@
                               <Component id="jLabel24" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="UserIdTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="18" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="jLabel25" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="MessageTypeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace pref="24" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -921,6 +931,22 @@
                     </Property>
                   </Properties>
                 </Component>
+                <Component class="javax.swing.JLabel" name="jLabel25">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Message type:"/>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[150, 25]"/>
+                    </Property>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="MessageTypeTextField">
+                  <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[380, 25]"/>
+                    </Property>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>
@@ -1028,7 +1054,7 @@
                           <Component id="jLabel40" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="DLHPutTimeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="454" max="32767" attributes="0"/>
+                      <EmptySpace pref="491" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>

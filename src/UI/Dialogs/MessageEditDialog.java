@@ -176,6 +176,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
             if(mqrfh2 != null){
                 try {
                     String[] floders = mqrfh2.getFolderStrings();
+                    String aa = "ASDAS";
                     
                 } catch (IOException ex) {
                     Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
@@ -240,6 +241,8 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         this.ReplyToQueueManagerNameTextField.setText(message.replyToQueueManagerName);
         this.ReplyToQueueNameTextField.setText(message.replyToQueueName);
         this.UserIdTextField.setText(message.userId);
+        this.MessageTypeTextField.setText(message.messageType + "");
+        //message.
     }
  
     private void setMessageMQMD(MQMessage message){
@@ -438,6 +441,8 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         ReplyToQueueNameTextField = new javax.swing.JTextField();
         jLabel24 = new javax.swing.JLabel();
         UserIdTextField = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        MessageTypeTextField = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel33 = new javax.swing.JLabel();
         DLHReasonTextField = new javax.swing.JTextField();
@@ -563,12 +568,12 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(ContentEditorToolbar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(ContentEditorScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE))
+                .addComponent(ContentEditorScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 719, Short.MAX_VALUE))
         );
 
         MessagePanel.addTab("Data", jPanel1);
 
-        jPanel2.setPreferredSize(new java.awt.Dimension(610, 705));
+        jPanel2.setPreferredSize(new java.awt.Dimension(610, 735));
 
         jLabel3.setText("Message id:");
         jLabel3.setPreferredSize(new java.awt.Dimension(150, 25));
@@ -713,6 +718,12 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
 
         UserIdTextField.setPreferredSize(new java.awt.Dimension(380, 25));
 
+        jLabel25.setText("Message type:");
+        jLabel25.setPreferredSize(new java.awt.Dimension(150, 25));
+
+        MessageTypeTextField.setEditable(false);
+        MessageTypeTextField.setPreferredSize(new java.awt.Dimension(380, 25));
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -723,7 +734,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(MessageIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(MessageIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -807,7 +818,11 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(UserIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)))
+                        .addComponent(UserIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(MessageTypeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -901,7 +916,11 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(UserIdTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(MessageTypeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         MQMDScrollPanel.setViewportView(jPanel2);
@@ -1040,7 +1059,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(DLHPutTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(454, Short.MAX_VALUE))
+                .addContainerGap(491, Short.MAX_VALUE))
         );
 
         MessagePanel.addTab("DLH", jPanel3);
@@ -1171,6 +1190,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JTextField MessageIdTextField;
     private javax.swing.JTabbedPane MessagePanel;
     private javax.swing.JSpinner MessageSequenceNumberSpinner;
+    private javax.swing.JTextField MessageTypeTextField;
     private javax.swing.JSpinner OffsetSpinner;
     private javax.swing.JSpinner OriginalLengthSpinner;
     private javax.swing.JComboBox PersistenceCombobox;
@@ -1203,6 +1223,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel34;

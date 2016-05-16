@@ -25,6 +25,7 @@ public abstract class TaskBase implements Runnable, StopableTask {
         ActionFailListeners.add(listener);
     }   
     
+    @Override
     public void StopTask(){
         stopTask = true;
     }
