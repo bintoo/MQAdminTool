@@ -126,7 +126,19 @@ public class MQQueueListResult extends MQQueryResultBase{
         @MQObjectListtAnnotation(DisplayName = "Backout threshold", MQConstant = MQConstants.MQIA_BACKOUT_THRESHOLD, VarType = VariableType.Number,  QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
         public Integer BackoutThreshold;
         @MQObjectListtAnnotation(DisplayName = "Definition type", MQConstant = MQConstants.MQIA_DEFINITION_TYPE, VarType = VariableType.QueueDefinitionType,  QueryType = QueryType.QueueDetial, TrueFalseDisplayValue = {""})
-        public String DefinitionType;
+        public String DefinitionType;        
+        @MQObjectListtAnnotation(DisplayName = "Creation date", MQConstant = MQConstants.MQCA_CREATION_DATE, VarType = VariableType.Text, QueryType = QueryType.QueueDetial, ShowOnCSV = false, ShowOnTable = false)
+        public String CreationDate;
+        @MQObjectListtAnnotation(DisplayName = "Creation time", MQConstant = MQConstants.MQCA_CREATION_TIME, VarType = VariableType.Text, QueryType = QueryType.QueueDetial, ShowOnCSV = false, ShowOnTable = false)
+        public String CreationTime;
+        @MQObjectListtAnnotation(DisplayName = "Alteration date", MQConstant = MQConstants.MQCA_ALTERATION_DATE, VarType = VariableType.Text, QueryType = QueryType.QueueDetial, ShowOnCSV = false, ShowOnTable = false)
+        public String AlterationDate;
+        @MQObjectListtAnnotation(DisplayName = "Alteration time", MQConstant = MQConstants.MQCA_ALTERATION_TIME, VarType = VariableType.Text, QueryType = QueryType.QueueDetial, ShowOnCSV = false, ShowOnTable = false)
+        public String AlterationTime;        
+        @MQObjectListtAnnotation(DisplayName = "Creation", MQConstant = MQConstants.MQCA_CREATION_DATE, VarType = VariableType.Text, QueryType = QueryType.QueueDetial, GetValue = false)
+        public DateTimeModel Creation;
+        @MQObjectListtAnnotation(DisplayName = "Alteration", MQConstant = MQConstants.MQCA_ALTERATION_DATE, VarType = VariableType.Text, QueryType = QueryType.QueueDetial, GetValue = false)
+        public DateTimeModel Alteration;
 
         @Override
         public void setDisplayValues() {
@@ -137,6 +149,20 @@ public class MQQueueListResult extends MQQueryResultBase{
             }
             else{
                 CurrentQueueDepthStatus = null;
+            }
+            
+            if(CreationDate != null && CreationTime != null){
+                Creation = new DateTimeModel(CreationDate, CreationTime);
+            }
+            else{
+                Creation = null;
+            }
+            
+            if(AlterationDate != null && AlterationTime != null){
+                Alteration = new DateTimeModel(AlterationDate, AlterationTime);
+            }
+            else{
+                AlterationDate = null;
             }
         }
     }

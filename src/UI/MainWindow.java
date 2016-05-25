@@ -186,7 +186,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         ConnectionDetailDialog.setMinimumSize(new java.awt.Dimension(340, 230));
         ConnectionDetailDialog.setModal(true);
-        ConnectionDetailDialog.setPreferredSize(new java.awt.Dimension(340, 230));
         ConnectionDetailDialog.setResizable(false);
 
         jLabel1.setText("Host:");
@@ -395,6 +394,11 @@ public class MainWindow extends javax.swing.JFrame {
         ShowTempObjectToggle.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 ShowTempObjectToggleItemStateChanged(evt);
+            }
+        });
+        ShowTempObjectToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ShowTempObjectToggleActionPerformed(evt);
             }
         });
         FilterToolbar.add(ShowTempObjectToggle);
@@ -1790,6 +1794,10 @@ public class MainWindow extends javax.swing.JFrame {
         String selectName = item.getText();
         changeSkins(selectName);
     }//GEN-LAST:event_SkinsButtonMenuItem1ActionPerformed
+
+    private void ShowTempObjectToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShowTempObjectToggleActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ShowTempObjectToggleActionPerformed
     
     private void changeSkins(String name){
         try{
