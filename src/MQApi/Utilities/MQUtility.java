@@ -46,6 +46,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -114,7 +117,6 @@ public class MQUtility {
         //String aa = getDefaultCharSet();   
         return message;                
     }
-    
     
     public static MQMessage GetMessageWithInterval(MQQueueManager queueManager, String queueName, int interval) throws MQException{
         MQQueue queue = null;
@@ -273,7 +275,7 @@ public class MQUtility {
                     else if(ex.getReason() == MQConstants.MQRC_NO_MSG_AVAILABLE){
                         break;
                     }
-                    else{
+                    else{ 
                         LogWriter.WriteToLog("MQUtility", "ComsumeAllMessages",ex);
                         throw ex;
                     }
@@ -282,11 +284,11 @@ public class MQUtility {
             if(forceOpenGet == true && isGetOpen == false){
                 queue.setInhibitGet(MQConstants.MQQA_GET_INHIBITED);
             }
-            closeQueue(queue);
+            closeQueue(queue);      
         } catch (MQException ex) {
-            LogWriter.WriteToLog("MQUtility", "ComsumeAllMessages",ex);
+            LogWriter.WriteToLog("MQUtility", "ComsumeAllMessages",ex);     
             closeQueue(queue);
-        }        
+        }  
     }
     public static void ComsumeAllMessagesMultiThread(MQQueueManager queueManager, String queueName, JProgressBar progressBar, boolean forceOpenGet, boolean isAlias) throws MQException{
         MQQueue queue = null;
@@ -343,16 +345,18 @@ public class MQUtility {
                 }
                 if(thread1Finish.IsFinish && thread2Finish.IsFinish && thread3Finish.IsFinish && thread4Finish.IsFinish){
                     progressBar.setValue(100);
+                    LogWriter.WriteActivityToLog("MQUtility (ComsumeAllMessagesMultiThread) : Removed " + processed.MessageDeleted + " msgs from " + queueName + "(" + queueManager.getName() + ")");
                     break;
                 }
             }
         }
         catch (MQException ex){
-            ComsumeAllMessages(queueManager,queueName, progressBar, forceOpenGet, isAlias );
+            ComsumeAllMessages(queueManager, queueName, progressBar, forceOpenGet, isAlias);
         }
     }
     public static void ComsumeAllMessages(MQQueueManager queueManager, String queueName, JProgressBar progressBar, boolean forceOpenGet, boolean isAlias) throws MQException{
         MQQueue queue = null;
+        int removedMsgCount = 0;
         try {
             int openQueueOptions;
             
@@ -381,14 +385,15 @@ public class MQUtility {
                     queue.get(message, options, 1);
                 }
                 catch(MQException ex){
-                    if(ex.getReason() == MQConstants.MQRC_TRUNCATED_MSG_ACCEPTED){                        
+                    if(ex.getReason() == MQConstants.MQRC_TRUNCATED_MSG_ACCEPTED){       
+                        removedMsgCount++;                 
                         continue;
                     }  
                     else if(ex.getReason() == MQConstants.MQRC_NO_MSG_AVAILABLE){
                         break;
                     }
                     else{
-                        LogWriter.WriteToLog("MQUtility", "ComsumeAllMessages",ex);
+                        LogWriter.WriteToLog("MQUtility", "ComsumeAllMessages", ex);
                         throw ex;
                     }
                 }               
@@ -397,19 +402,20 @@ public class MQUtility {
                 queue.setInhibitGet(MQConstants.MQQA_GET_INHIBITED);
             }
             closeQueue(queue);
+            LogWriter.WriteActivityToLog("MQUtility (ComsumeAllMessages) : Removed " + removedMsgCount + " msgs from " + queueName + "(" + queueManager.getName() + ")");
             if(progressBar != null){
                 progressBar.setValue(100);
             }
         } catch (MQException ex) {
             LogWriter.WriteToLog("MQUtility", "ComsumeAllMessages",ex);
+            LogWriter.WriteActivityToLog("MQUtility (ComsumeAllMessages) : Removed " + removedMsgCount + " msgs from " + queueName + "(" + queueManager.getName() + ")");
             closeQueue(queue);
             throw ex;
         }
-
     }
-   
     public static void ComsumeAllMessagesWithFilter(MQQueueManager queueManager, String queueName, JProgressBar progressBar, boolean forceOpenGet, boolean isAlias, String stringfilter) throws MQException{
         MQQueue queue = null;
+        int removedMsgCount = 0;
         try {
             int openQueueOptions;
             
@@ -424,7 +430,7 @@ public class MQUtility {
             MQMessage message = new MQMessage();
             options.matchOptions = MQConstants.MQMO_NONE;
             options.options = CMQC.MQGMO_BROWSE_NEXT;
-            ArrayList<MQMessageIdModel>ids = new ArrayList<MQMessageIdModel>();
+            ArrayList<MQMessageIdModel> ids = new ArrayList<MQMessageIdModel>();
             if(progressBar != null){
                 progressBar.setValue(0);
             }
@@ -438,6 +444,7 @@ public class MQUtility {
                         resetMessage(message);
                         options.options = CMQC.MQGMO_MSG_UNDER_CURSOR;
                         queue.get(message, options);
+                        removedMsgCount++;
                     }
                     resetMessage(message);
                 }
@@ -455,6 +462,7 @@ public class MQUtility {
         if(progressBar != null){
             progressBar.setValue(100);
         }
+        LogWriter.WriteToLog("MQUtility (ComsumeAllMessagesWithFilter) : Removed " + removedMsgCount + " msgs from " + queueName + "(" + queueManager.getName() + ")");
     }    
     public static void ComsumeSelectedMessages(MQQueueManager queueManager, String queueName, MQMessageIdModel id) throws MQException{
         ArrayList<MQMessageIdModel> ids = new ArrayList<MQMessageIdModel>();
@@ -462,9 +470,9 @@ public class MQUtility {
         queueName = MQPCF.ResolveAliasBaseQueueName(queueManager, queueName);
         ComsumeSelectedMessages(queueManager, queueName, ids, null, false, false);
     }
-    
     public static void ComsumeSelectedMessages(MQQueueManager queueManager, String queueName, ArrayList<MQMessageIdModel>ids, JProgressBar progressBar, boolean forceOpenGet, boolean isAlias) throws MQException {
         MQQueue queue = null;
+        int removedMsgCount = 0;
         try {
             int openQueueOptions;
             if(isAlias){
@@ -495,6 +503,7 @@ public class MQUtility {
                 }
                 catch(MQException ex){
                     if(ex.getReason() == MQConstants.MQRC_TRUNCATED_MSG_ACCEPTED || ex.getReason() == MQConstants.MQRC_NO_MSG_AVAILABLE){
+                        removedMsgCount++;
                         continue;
                     }   
                     else{
@@ -508,13 +517,14 @@ public class MQUtility {
             closeQueue(queue);
             if(progressBar != null){
                 progressBar.setValue(100);
+                LogWriter.WriteActivityToLog("MQUtility (ComsumeSelectedMessages) : Removed " + removedMsgCount + " msgs from " + queueName + "(" + queueManager.getName() + ")");
             }
         } catch (MQException ex) {
             LogWriter.WriteToLog("MQUtility", "ComsumeSelectedMessages",ex);
+            LogWriter.WriteActivityToLog("MQUtility (ComsumeSelectedMessages) : Removed " + removedMsgCount + " msgs from " + queueName + "(" + queueManager.getName() + ")");
             closeQueue(queue);
             throw ex;
         }
-
     }
     
     public static String getMQReturnMessage(int compCode, int reason){
@@ -801,7 +811,13 @@ public class MQUtility {
                         progressBar.setValue(value);
                     }
                 }
-                catch(IOException | ClassNotFoundException | MQException ex){    
+                catch(IOException | ClassNotFoundException | MQException ex){ 
+//                    if(ex instanceof MQException){
+//                        MQException mqEx = (MQException)ex;
+//                        if(mqEx.reasonCode == 2142){
+//                            continue;
+//                        }
+//                    }
                     if(progressBar != null){
                         progressBar.setValue(100);
                     }
@@ -872,11 +888,13 @@ public class MQUtility {
             MQHeaderList list = new MQHeaderList(message, true);
             if(list.size() > 0 && list.indexOf("MQDLH") >= 0){
                 MQDLH dlh = (MQDLH) list.get(list.indexOf("MQDLH"));
+                String originalFormat = dlh.getFormat();
                 list.remove(dlh);
                 MQMessage newMessage = new MQMessage();
                 copyMessageMQMD(newMessage, message);
                 list.write(newMessage, true);
-                newMessage.format = !list.getFormat().trim().contains( "MQDEAD") ? list.getFormat() : null;            
+                //newMessage.format = !list.getFormat().trim().contains( "MQDEAD") ? list.getFormat() : null;   
+                newMessage.format = originalFormat; 
                 return newMessage;
             }
         } catch (MQDataException ex) {
@@ -889,6 +907,76 @@ public class MQUtility {
         return message;
     }
     
+    public static void SortOutDLQ(MQQueueManager queueManager, String queueName){
+        HashMap<String, ArrayList<MQMessage>> msgHash = new HashMap<>();
+        MQQueue queue = null;
+        try {
+            queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE);
+            int queueDepth = queue.getCurrentDepth();
+            int index = queueDepth;
+            MQMessage message = new MQMessage();
+            MQGetMessageOptions options = new MQGetMessageOptions();
+            options.options = CMQC.MQGMO_BROWSE_NEXT;
+            //options.matchOptions = MQConstants.MQMO_MATCH_MSG_ID  | MQConstants.MQMO_MATCH_CORREL_ID;
+            while(index > 0){ 
+                message = new MQMessage();
+                try{
+                    queue.get(message, options);
+                    try {
+                        MQHeaderList list = new MQHeaderList(message, true);
+                        if(list.size() > 0 && list.indexOf("MQDLH") >= 0){
+                            MQDLH dlh = (MQDLH) list.get(list.indexOf("MQDLH"));
+                            String targetName = dlh.getDestQMgrName().trim() + "." + dlh.getDestQName().trim();
+                            message.seek(0);
+                            if(msgHash.containsKey(targetName)){
+                                ((ArrayList<MQMessage>)msgHash.get(targetName)).add(message);
+                            }
+                            else{
+                                ArrayList<MQMessage> msgList = new ArrayList<>();
+                                msgList.add(message);
+                                msgHash.put(targetName, msgList);
+                            }
+                        }
+                    } catch (MQDataException ex) {
+                        Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch(Exception ex){
+
+                    }
+                }
+                catch(MQException ex){
+                    if(ex.getReason() == MQConstants.MQRC_NO_MSG_AVAILABLE){
+                        break;
+                    }
+                    else{
+                        LogWriter.WriteToLog("MQUtility", "GetMessageList", ex);
+                        throw ex;
+                    }
+                }
+                index--;
+            }            
+        } catch (MQException ex) {
+            LogWriter.WriteToLog("MQUtility", "GetMessageList", ex);
+            closeQueue(queue);
+        }
+        closeQueue(queue);
+        
+        Iterator it = msgHash.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            String fileName = (String)pair.getKey();
+            ArrayList<MQMessage> list = (ArrayList<MQMessage>)pair.getValue();
+//            it.remove(); // avoids a ConcurrentModificationException
+            try {
+                BackupMessageToFile(fileName, list, true, false);
+            } catch (Exception ex) {
+                Logger.getLogger(MQUtility.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+    }
+        
     //Msc
     
     public static int GetMessageContentLength(MQMessage message){     
@@ -1271,12 +1359,61 @@ public class MQUtility {
 
     }
     
+    private static void BackupMessageToFile(String fileName, ArrayList<MQMessage> messages, boolean isCompress, boolean removeDLH) throws Exception{
+            FileOutputStream fileOutPutStream = null;
+            BufferedOutputStream bufferedOutputStream = null;
+            ObjectOutputStream  objectOutputStream = null;
+            GZIPOutputStream gzipOutStream = null;            
+            try{
+                int queueDepth = messages.size();     
+                String dlq = removeDLH? "NoDLH":"DLH";
+                if(queueDepth > 0){
+                    fileOutPutStream = new FileOutputStream(fileName + "." + queueDepth + "." + dlq +".msg");
+                    bufferedOutputStream = new BufferedOutputStream(fileOutPutStream);
+                    if(isCompress == true){
+                        gzipOutStream = new GZIPOutputStream(bufferedOutputStream);
+                        objectOutputStream = new ObjectOutputStream(gzipOutStream);
+                    }
+                    else{
+                        objectOutputStream = new ObjectOutputStream(bufferedOutputStream);
+                    }
+                    objectOutputStream.writeObject("MQAdminToolQueueDataFile");
+                    objectOutputStream.writeInt(0x10001);
+                    objectOutputStream.writeObject(fileName);
+                    objectOutputStream.writeInt(queueDepth);
+                    int index = queueDepth;
+                    
+                    for(MQMessage message : messages){
+                        if(removeDLH){
+                            message = RemoveMQDLH(message);
+                        }
+                        writeMessageToStream(message, objectOutputStream);
+                        
+                    }
+                    objectOutputStream.flush();
+                    if(gzipOutStream != null){
+                        gzipOutStream.flush();
+                    }
+                    bufferedOutputStream.flush();
+                    disposeOutputStreamObject(fileOutPutStream, bufferedOutputStream,gzipOutStream, objectOutputStream);
+                }
+                else {
+                    throw new Exception("Queue depth is 0");
+                }
+            }
+            catch(MQException ex){
+                LogWriter.WriteToLog("MQUtility", "BackupMessageToFile",ex);
+                disposeOutputStreamObject(fileOutPutStream, bufferedOutputStream, gzipOutStream, objectOutputStream);
+                throw new Exception(getMQReturnMessage(ex.getCompCode(), ex.getReason()));                
+            }
+    
+        
+    }
+    
     //try to get the current system encoding
     public static String getDefaultCharSet() {
     	OutputStreamWriter writer = new OutputStreamWriter(new ByteArrayOutputStream());
     	String enc = writer.getEncoding();
     	return enc;
     }
-    
-
 }

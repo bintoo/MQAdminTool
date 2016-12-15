@@ -51,7 +51,6 @@ public class LogWriter {
             Logger.getLogger(LogWriter.class.getName()).log(Level.SEVERE, null, ex);
             isLoggerReady = false;
         }
-        
     }
     
     public static void Close(){
@@ -82,6 +81,18 @@ public class LogWriter {
         }
         else{
             logger.log(Level.SEVERE, message);
+        }      
+        Close();
+    }
+    public static void WriteActivityToLog(String message){
+        if(!isLoggerReady){
+            SetFile();
+            if(isLoggerReady){
+                logger.log(Level.INFO, message);
+            }
+        }
+        else{
+            logger.log(Level.INFO, message);
         }      
         Close();
     }

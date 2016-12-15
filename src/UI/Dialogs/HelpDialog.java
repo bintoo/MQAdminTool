@@ -24,23 +24,29 @@ public class HelpDialog extends javax.swing.JDialog {
     public HelpDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        String text = "<p>This project is developed by Jianbin Zhou for study purpose.</p>" +
-                      "<p>It is writen in Java 1.8 and using IBM MQ client ver 8.0.</p>" +
-                        "<p>Please report any bug or suggestion to my email address " +
+        String text = "<p>This project is developed by Jianbin Zhou for study purposes.</p>" +
+                      "<p>It is writen in Java 1.8 and uses IBM MQ client ver 8.0.</p>" +
+                      "<p>Please report any bug or suggestions to my email address " +
                         "<a href='mailto:curtiszhou1981@gmail.com'>curtiszhou1981@gmail.com</a></p>"+
-                        "<p>Icons from Icon8 <a href=\"https://icons8.com/\">https://icons8.com/</a>" +
-                        "<p>Known issues :<ul>\n" +
-                        "  <li>Update message feature not working correctly when the queue has more then 1 message with same id.</li>" +
-                        " <li>Currently not support local connection to queue manager</li>" +
-                        " <li>Message with header will fail to update</li>" +
-                            "</ul> </p>";
+                      "<p>Icons from Icon8 <a href=\"https://icons8.com/\">https://icons8.com/</a>" +
+                      "<p>Known issues :\n" +
+                        "<ul>" +
+                          " <li>Update message feature not working correctly when the queue has more then 1 message with same id.</li>" +
+                          " <li>Currently not support local connection to queue manager</li>" +
+                          " <li>Message with header will fail to update</li>" +
+                        "</ul>" +
+                      "</p>" +
+                      "<p>Features :\n" +
+                        "<ul>" +
+                          " <li>Generate Inactive Subs Report : Right click on subs of a connected queue manager. Checks for those with 0 Input/Output destination queues.</li>" +
+                          " <li>Log queue clear activities : A log entry of date/time/queue(qmgr)/number of msgs believed to have cleared will be in ./app/log/</li>" +
+                        "</ul>" +
+                      "</p>";
         
-                        
         this.TextPane.setContentType("text/html");
         this.TextPane.setText(text);
         this.TextPane.setEditable(false);
         this.TextPane.addHyperlinkListener(new HyperlinkListener() {
-
             @Override
             public void hyperlinkUpdate(HyperlinkEvent e) {
                 if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -52,10 +58,8 @@ public class HelpDialog extends javax.swing.JDialog {
                             }
                         }
                         catch (URISyntaxException ex) {
-
                         }                        
-                    }
-                else{
+                    } else{
                         try {
                             Desktop.getDesktop().mail(new URI(e.getURL() + ""));
                         } catch (IOException e1) {
@@ -66,7 +70,6 @@ public class HelpDialog extends javax.swing.JDialog {
                     }
                 }
             }
-
         });
     }
 
@@ -86,12 +89,12 @@ public class HelpDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("About");
         setModal(true);
-        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        jLabel1.setText("       MQ Admin Tool (BETA build 1.0.067)");
+        jLabel1.setText("       MQ Admin Tool (BETA build 1.0.068)");
         jLabel1.setPreferredSize(new java.awt.Dimension(300, 50));
 
+        TextPane.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jScrollPane2.setViewportView(TextPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

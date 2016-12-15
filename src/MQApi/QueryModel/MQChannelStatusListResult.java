@@ -11,7 +11,16 @@ import MQApi.Enums.QueryType;
 import MQApi.Enums.VariableType;
 import MQApi.Result.Annotations.MQObjectListtAnnotation;
 import com.ibm.mq.constants.MQConstants;
+import com.sun.javafx.animation.TickCalculation;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import javafx.util.converter.LocalDateStringConverter;
 
 /**
  *
@@ -50,11 +59,47 @@ public class MQChannelStatusListResult extends MQQueryResultBase{
         public String LocalAddress;
         @MQObjectListtAnnotation(DisplayName = "MCA user id", MQConstant = MQConstants.MQCACH_MCA_USER_ID, VarType = VariableType.Text, QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""})
         public String MCAUserIdentifier;
+        @MQObjectListtAnnotation(DisplayName = "Ave MSGS", MQConstant = MQConstants.MQIACH_MSGS, VarType = VariableType.Number,QueryType = QueryType.ChannelStatus, TrueFalseDisplayValue = {""}, ShowOnTable = false, GetValue = false)
+        public Integer AveMSGS;
 //        @MQObjectListtAnnotation(DisplayName = "MCA status",MQConstant = MQConstants.MQIACH_MCA_STATUS, VarType = VariableType.TrueFalse, QueryType = QueryType.DataModels, TrueFalseDisplayValue = {"Stopped", "Running"})
 //        public String MCAStatus;
 
         @Override
         public void setDisplayValues() {
+            String pattern = "yyyy-MM-dd";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+            LocalDateStringConverter converter = new LocalDateStringConverter(formatter, null);
+            LocalDate startDate = converter.fromString(StartDate);
+            LocalDate endDate = converter.fromString(LastMsgDate);
+            LocalDate today = LocalDate.now();
+            if(startDate != null && endDate != null){
+
+                boolean isEndDateToday = Period.between(today, endDate).getDays() == 0;
+                if(isEndDateToday && MSGS != null){
+                    int dayDiff = getDayDiff(StartDate, LastMsgDate) + 1;
+                    AveMSGS = MSGS / dayDiff;
+                }
+            }
+                      
+        }
+        
+        private int getDayDiff(String startDate, String endDate){
+            double DAY_MILLIS = 1000.0 * 24.0 * 60.0 * 60.0;
+            String[] startStrings = startDate.split("-");
+            String[] endStrings = endDate.split("-");
+            
+            Calendar c1=Calendar.getInstance();
+            c1.set(Integer.parseInt(startStrings[0]),Integer.parseInt(startStrings[1]), Integer.parseInt(startStrings[2]) );
+            Calendar c2=Calendar.getInstance();
+            c2.set(Integer.parseInt(endStrings[0]),Integer.parseInt(endStrings[1]), Integer.parseInt(endStrings[2]));
+
+            Date d1=c1.getTime();
+            Date d2=c2.getTime();
+
+            long diff=d2.getTime()-d1.getTime();
+            double noofdays= Math.abs(diff/DAY_MILLIS);
+            return (int )noofdays;
+
         }
     }
 }

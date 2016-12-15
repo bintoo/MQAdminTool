@@ -22,7 +22,6 @@ public class MQSubListResult extends MQQueryResultBase  {
     public ArrayList<SubDetailModel> DataModels = new ArrayList<SubDetailModel>(); 
     
     public ArrayList<SubDetailModel> GetFilterDataModels(String searchString, boolean showSystem){
-        
         if(DataModels != null && DataModels.size() > 0){
             searchString = searchString.trim();
             if(searchString == null || searchString.isEmpty()){
@@ -62,9 +61,8 @@ public class MQSubListResult extends MQQueryResultBase  {
         }
         return null;
     }
-        
     
-    public class SubDetailModel extends DetailModelCore{
+    public class SubDetailModel extends DetailModelCore {
         @MQObjectListtAnnotation(DisplayName = "Subscription name", MQConstant = MQConstants.MQCACF_SUB_NAME, VarType = VariableType.Text, QueryType = QueryType.SubDetail)
         public String Name;
         @MQObjectListtAnnotation(DisplayName = "Subscription type", MQConstant = MQConstants.MQIACF_SUB_TYPE, VarType = VariableType.Number, QueryType = QueryType.SubDetail, ShowOnTable = false, ShowOnCSV = false)

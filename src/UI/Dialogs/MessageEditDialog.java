@@ -313,6 +313,7 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
                 setMessageMQMD(message);
             }
             message.writeString(ContentEditorPane.getText());
+            message.format = "MQSTR";
         } catch (IOException ex) {
             Logger.getLogger(MessageEditDialog.class.getName()).log(Level.SEVERE, null, ex);
         }

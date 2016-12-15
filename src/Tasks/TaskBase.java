@@ -37,7 +37,7 @@ public abstract class TaskBase implements Runnable, StopableTask {
             listener.actionPerformed(evt);
             id++;
         }
-    } 
+    }
     protected void FireActionFailEvent(){
         int id = 0;
         for(ActionListener listener : ActionFailListeners){

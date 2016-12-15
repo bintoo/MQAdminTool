@@ -15,6 +15,7 @@ import MQApi.MQTest;
 import MQApi.Models.Query.ConnectionDetailModel;
 import MQApi.PCF.MQPCF;
 import MQApi.QueryModel.MQCommandResult;
+import MQApi.QueryModel.MQSubListResult;
 import MQApi.TextWriter;
 import MQApi.Utilities.MQUtility;
 import Tasks.*;
@@ -26,19 +27,18 @@ import UI.Dialogs.StatusDialog;
 import UI.Dialogs.ClearMessagesDialog;
 import UI.Dialogs.DialogFactory;
 import UI.Dialogs.HelpDialog;
-import UI.Dialogs.MessageEditDialog;import UI.Dialogs.QueueMonitorDialog;
+import UI.Dialogs.MessageEditDialog;
+import UI.Dialogs.QueueMonitorDialog;
 import UI.Helpers.*;
 import UI.Models.*;
 import UI.Dialogs.QueueProperitiesDialog;
 import UI.Dialogs.ResetChannelDialog;
 import UI.Dialogs.ResolveChannelDialog;
 import UI.Dialogs.StopChannelDialog;
-import UI.Misc.CustomTableCellRender;
 import UI.Misc.CustomTreeRender;
 import UI.Misc.ExceptionHandler;
 import UI.ReferenceObjects.ToolStatusReference;
 import com.ibm.mq.MQException;
-import com.ibm.mq.MQMessage;
 import com.ibm.mq.MQQueueManager;
 import com.jtattoo.plaf.acryl.AcrylLookAndFeel;
 import com.jtattoo.plaf.aero.AeroLookAndFeel;
@@ -49,12 +49,14 @@ import com.jtattoo.plaf.smart.SmartLookAndFeel;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -623,7 +625,6 @@ public class MainWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
 // Popup menu creation    
     private JPopupMenu getTreeViewQueueManagerFolderPopupMenu(){
         JPopupMenu popup = new JPopupMenu();
@@ -641,15 +642,16 @@ public class MainWindow extends javax.swing.JFrame {
     
     private JPopupMenu getTreeViewQueuePopupMenu(){
         JPopupMenu popup = new JPopupMenu();
-        JMenuItem exportQueuePropertiesMenuItem = new JMenuItem("Export queue properties",iconManager.CSVIcon());
         JMenu CreateQueueMenu = new JMenu("Create");
         CreateQueueMenu.setIcon(iconManager.AddNewIcon());
         JMenuItem CreateLocalQueueMenuItem = new JMenuItem("Local queue", iconManager.Queue());
         JMenuItem CreateRemoteQueueMenuItem = new JMenuItem("Remote queue", iconManager.Queue());
         JMenuItem CreateAliasQueueMenuItem = new JMenuItem("Alias queue", iconManager.Queue());
         JMenuItem CreateModelQueueMenuItem = new JMenuItem("Model queue", iconManager.Queue());
-        JMenuItem DeleteCSQOEXXMenuItem = new JMenuItem("Delete CSQOREXX",iconManager.Delete());
-        JMenuItem QueueMonitorMenuItem = new JMenuItem("Queue monitor",iconManager.MonitorIcon());
+        JMenuItem DeleteCSQOEXXMenuItem = new JMenuItem("Delete CSQOREXX", iconManager.Delete());
+        JMenuItem QueueMonitorMenuItem = new JMenuItem("Queue monitor", iconManager.MonitorIcon());
+        JMenuItem exportQueuePropertiesMenuItem = new JMenuItem("Export queue properties", iconManager.CSVIcon());
+        
         CreateLocalQueueMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -674,13 +676,6 @@ public class MainWindow extends javax.swing.JFrame {
                 createQueue(QueueType.Model);
             }
         });
-        exportQueuePropertiesMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exportProperties(MQObjectType.Queue);
-            }
-        });
-        
         DeleteCSQOEXXMenuItem.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -693,6 +688,13 @@ public class MainWindow extends javax.swing.JFrame {
                 startQueueMonitor();
             }
         });
+        exportQueuePropertiesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportProperties(MQObjectType.Queue);
+            }
+        });
+        
         CreateQueueMenu.add(CreateLocalQueueMenuItem);
         CreateQueueMenu.add(CreateRemoteQueueMenuItem);
         CreateQueueMenu.add(CreateAliasQueueMenuItem);
@@ -722,6 +724,7 @@ public class MainWindow extends javax.swing.JFrame {
                 exportProperties(MQObjectType.Channel);
             }
         });
+        
         exportQueueStatusMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportProperties(MQObjectType.ChannelStatus);
@@ -778,7 +781,7 @@ public class MainWindow extends javax.swing.JFrame {
         CreateChannelMenu.add(CreateClusterReceiverMenuItem);
         popup.add(CreateChannelMenu);
         popup.add(exportQueuePropertiesMenuItem);
-         popup.add(exportQueueStatusMenuItem);
+        popup.add(exportQueueStatusMenuItem);
         return popup;
     }
     
@@ -1031,6 +1034,21 @@ public class MainWindow extends javax.swing.JFrame {
               
     }
 
+    private JPopupMenu getTreeViewSubPopupMenu(){
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem exportInactiveSubsReportMenuItem = new JMenuItem("Generate inactive subs report", iconManager.CSVIcon());
+        
+        exportInactiveSubsReportMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                generateInactiveSubsReport();
+            }
+        });
+        
+        popup.add(exportInactiveSubsReportMenuItem);
+        return popup;
+    }
+        
  // Private methods
     
     private void initCustomProperties(){
@@ -1374,7 +1392,6 @@ public class MainWindow extends javax.swing.JFrame {
         return task;
     }
 
-    
     private void exportProperties(MQObjectType type){
         JFileChooser fileChooser = new JFileChooser();
         FileFilter filter = new FileNameExtensionFilter("csv files","csv");
@@ -1412,6 +1429,31 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
     
+    private void generateInactiveSubsReport(){
+        JFileChooser fileChooser = new JFileChooser();
+        FileFilter filter = new FileNameExtensionFilter("csv files","csv");
+        fileChooser.setFileFilter(filter);
+        int returnVal = fileChooser.showSaveDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION){
+            File file = fileChooser.getSelectedFile();
+            String fileName = file.getPath();
+            MQSubListResult inactiveSubs = MQPCF.GetInactiveSubList(TreeHelper.GetCurrentSelectedQueueManager(TreeView));
+            
+            if(inactiveSubs.QuerySuccess){
+                try{
+                    TextWriter.WriteModelToCSV((ArrayList<Object>)(Object)inactiveSubs.DataModels, fileName, false);
+                    JOptionPane.showMessageDialog(this, "File saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }catch(IOException | HeadlessException ex){
+                    LogWriter.WriteToLog("MainWindow", "generateInactiveSubsReport", ex);
+                    JOptionPane.showMessageDialog(this, "Error on saving file.", "File Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else{
+                 JOptionPane.showMessageDialog(this, inactiveSubs.ErrorMessage, "Warning", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+        
     private void deleteCRQOREXX(){
         int dialogResult = JOptionPane.showConfirmDialog (this, "Are you sure that you want to delete all CSQOREXX queue?","Warning",JOptionPane.YES_NO_OPTION);
         if(dialogResult == JOptionPane.YES_OPTION){
@@ -1646,7 +1688,6 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
     
-    
  //Event handlers   
     private void ChannelStatusToolMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ChannelStatusToolMenuItemActionPerformed
         if(!chToolRef.IsOpen){
@@ -1679,7 +1720,11 @@ public class MainWindow extends javax.swing.JFrame {
                     case Channel:
                         JPopupMenu channelQueue = getTreeViewChannelPopupMenu();
                         channelQueue.show(evt.getComponent(), evt.getPoint().x, evt.getPoint().y);
-                        break;                        
+                        break;   
+                    case Sub:
+                        JPopupMenu popupSub = getTreeViewSubPopupMenu();
+                        popupSub.show(evt.getComponent(), evt.getPoint().x, evt.getPoint().y);
+                        break;
                     default:
                         break;
                 }              
@@ -1742,7 +1787,8 @@ public class MainWindow extends javax.swing.JFrame {
 //            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
 //        }
     
-        MQTest.test5(manager,"LQ.TEST1");
+        //MQTest.test5(manager,"LQ.TEST2");
+        MQUtility.SortOutDLQ(manager, "LQ.TEST1");
         
     }//GEN-LAST:event_TestMenuItemActionPerformed
 
@@ -1775,7 +1821,7 @@ public class MainWindow extends javax.swing.JFrame {
         HelpDialog dialog = new HelpDialog(this, true);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);   
-        
+        dialog.setResizable(true);
     }//GEN-LAST:event_AboutMenuItemActionPerformed
 
     private void AddQueueManagerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddQueueManagerMenuItemActionPerformed

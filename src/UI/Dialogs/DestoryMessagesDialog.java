@@ -138,13 +138,12 @@ public class DestoryMessagesDialog extends DialogBase {
         DestoryMessageTask task;
         final String successMessage = isDeleteAllMessages? "The queue has been cleared of messages" : "The selected messages have been deleted";
         if(isDeleteAllMessages){
-            task  = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, forceOpenGet,isAlias, stringFilter, this.MultiThreadCheckBox.isVisible() && this.MultiThreadCheckBox.isSelected());
+            task = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, forceOpenGet, isAlias, stringFilter, this.MultiThreadCheckBox.isVisible() && this.MultiThreadCheckBox.isSelected());
         }
         else{
-            task  = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, ids, forceOpenGet,isAlias, stringFilter);
+            task = new DestoryMessageTask(queueManager, selectedObject.ObjectName, ClearMessageProgressBar, component, ids, forceOpenGet, isAlias, stringFilter);
         }
         task.AddTaskActionSuccessListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 JOptionPane.showMessageDialog(component, successMessage, "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -154,7 +153,6 @@ public class DestoryMessagesDialog extends DialogBase {
             }
         });
         task.AddTaskActionFailListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 toggleButtons(true);
@@ -177,14 +175,13 @@ public class DestoryMessagesDialog extends DialogBase {
         }
         this.ClearMessageProgressBar.setValue(0);
         this.ClearMessageProgressBar.setStringPainted(true);
-        this.StateLabel.setText("Are you sure you want to clear this messages?");
+        this.StateLabel.setText("Are you sure you want to clear this message(s)?");
         if(stringFilter != null){
             stringFilter = stringFilter.trim();
         }
         if(isDeleteAllMessages && !forceOpenGet && (stringFilter == null || stringFilter.isEmpty())){
             this.MultiThreadCheckBox.setVisible(true);
-        }
-        else{
+        } else{
             this.MultiThreadCheckBox.setVisible(false);
         }
     }

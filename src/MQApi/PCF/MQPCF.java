@@ -49,6 +49,7 @@ import com.ibm.mq.headers.MQDataException;
 import com.ibm.mq.headers.pcf.PCFException;
 import com.ibm.mq.headers.pcf.PCFMessage;
 import com.ibm.mq.headers.pcf.PCFMessageAgent;
+import com.ibm.mq.pcf.PCFAgent;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -132,7 +133,7 @@ public class MQPCF {
         PCFMessageAgent agent = null;
         try {
             agent = getPCFMessageAgent(queueManager);
-            PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_Q);        
+            PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_INQUIRE_Q); 
             pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, queueNameFilter);
             pcfCmd.addParameter(MQConstants.MQIA_Q_TYPE, MQConstants.MQQT_ALL );
             PCFMessage[] pcfResponse = agent.send(pcfCmd);           
@@ -165,7 +166,6 @@ public class MQPCF {
                 model = new MQQueuePropertyModel();
                 readToPropertyModel(pcfResponse[0], model);
             }
-        
         } catch (MQDataException ex) {
             disconnectAgent(agent);
             LogWriter.WriteToLog("MQPCF", "GetQueueProperties", ex);
@@ -200,22 +200,22 @@ public class MQPCF {
         PCFMessageAgent agent = null;
         MQCommandResult result = new MQCommandResult();        
         try {
-
+            int numMsgsToClear = MQPCF.GetQueueProperties(queueManager, queueName).CurrentQDepth;
             if(isAlias){
                 queueName = MQPCF.ResolveAliasBaseQueueName(queueManager, queueName);
             }
-            agent = getPCFMessageAgent(queueManager);;
+            agent = getPCFMessageAgent(queueManager);
             PCFMessage pcfCmd = new PCFMessage(MQConstants.MQCMD_CLEAR_Q);
             pcfCmd.addParameter(MQConstants.MQCA_Q_NAME, queueName);
             PCFMessage[] pcfResponse = agent.send(pcfCmd);
+            LogWriter.WriteActivityToLog("MQPCF (ClearQueue) : Removed " + numMsgsToClear + " msgs from " + queueName + "(" + queueManager.getName() + ")");
             assignCommandReturnResult(pcfResponse[0], result);
-            
         } catch (MQDataException ex) {
             LogWriter.WriteToLog("MQPCF", "ClearQueue", ex);
             result.QuerySuccess = false;
             result.ErrorMessage = getMQReturnMessage(ex.getCompCode(), ex.getReason());
-        } catch (IOException ex) {
-            LogWriter.WriteToLog("MQPCF", "ClearQueue",ex);
+        } catch (IOException | MQException ex) {
+            LogWriter.WriteToLog("MQPCF", "ClearQueue", ex);
             result.QuerySuccess = false;
             result.ErrorMessage = ex.getMessage();
         }
@@ -693,7 +693,7 @@ public class MQPCF {
             WriteToDetailModel(pcfResponse, result, SubDetailModel.class, null); 
             result.QuerySuccess = true;
         } catch (MQDataException ex) {
-            if(ex.getReason() == MQConstants.MQRCCF_CFH_COMMAND_ERROR ||ex.getReason() == MQConstants.MQRCCF_MQOPEN_FAILED ){
+            if(ex.getReason() == MQConstants.MQRCCF_CFH_COMMAND_ERROR || ex.getReason() == MQConstants.MQRCCF_MQOPEN_FAILED ){
                 result.QuerySuccess = true;
                 disconnectAgent(agent);
                 return result;
@@ -712,6 +712,33 @@ public class MQPCF {
         disconnectAgent(agent);        
         return result;
     }
+    
+    public static MQSubListResult GetInactiveSubList(MQQueueManager queueManager){
+        MQSubListResult allSubs = MQPCF.GetSubList(queueManager, "*", null, true);
+        MQSubListResult result = new MQSubListResult();
+        ArrayList<SubDetailModel> resultSubDetailModel = new ArrayList<SubDetailModel>();
+        if(allSubs.QuerySuccess){
+            ArrayList<SubDetailModel> subs = allSubs.GetFilterDataModels("*", false);
+            for(SubDetailModel sub : subs){
+                MQQueueListResult destQueue = MQPCF.GetQueueList(queueManager, sub.Destination, new QueueType[]{QueueType.Local});
+                ArrayList<MQQueueListResult.QueueDetailModel> finalDestQueue = destQueue.GetFilterDataModels(sub.Destination, false, false);
+                if(finalDestQueue != null){
+                    if(finalDestQueue.size() > 0 && finalDestQueue.get(0).OpenInputCount != null && finalDestQueue.get(0).OpenOutputCount != null && finalDestQueue.get(0).CurrentQueueDepth != null){
+                        if((finalDestQueue.get(0).OpenInputCount == 0 && finalDestQueue.get(0).OpenOutputCount == 0) && finalDestQueue.get(0).CurrentQueueDepth > 0){      
+                            resultSubDetailModel.add(sub);
+                        }
+                    }
+                }
+            }
+            result.QuerySuccess = true;
+            result.DataModels = resultSubDetailModel;
+        } else{
+            result.QuerySuccess = false;
+            result.ErrorMessage = "There are no inactive subs at this time to be reported.";
+        }
+        return result;
+    }
+    
     //private
     private static <T, Y> void WriteToDetailModel(PCFMessage[] pcfResponse , T model, Class<Y> modelClass,  Object[] type){
         for(PCFMessage response : pcfResponse){     
@@ -740,7 +767,7 @@ public class MQPCF {
             if(field.getAnnotation(MQObjectListtAnnotation.class).GetValue() == true){
                 int mqConstant = field.getAnnotation(MQObjectListtAnnotation.class).MQConstant();
                 VariableType varType = field.getAnnotation(MQObjectListtAnnotation.class).VarType();
-                SetFieldValue(field, response, model, mqConstant,varType);
+                SetFieldValue(field, response, model, mqConstant, varType);
             }
         }        
     }
@@ -1046,6 +1073,6 @@ public class MQPCF {
     
     private static void setTOMQExplorerReplyQueue(PCFMessageAgent agent){
         agent.setModelQueueName("SYSTEM.MQEXPLORER.REPLY.MODEL");
-        agent.setReplyQueuePrefix("AMQ.MQEXPLORER.");       
+        agent.setReplyQueuePrefix("AMQ.MQEXPLORER.");  
     }
 }

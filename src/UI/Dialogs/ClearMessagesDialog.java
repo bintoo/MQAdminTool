@@ -229,9 +229,8 @@ public class ClearMessagesDialog extends DialogBase {
            if(result.QuerySuccess){
                FireActionEvent();
                JOptionPane.showMessageDialog(this, "Queue has been cleared", "Success", JOptionPane.INFORMATION_MESSAGE);
-               Close();               
-           }
-           else{
+               Close();      
+           } else{
                JOptionPane.showMessageDialog(this, result.ErrorMessage, "Error", JOptionPane.ERROR_MESSAGE);
            }           
        }
@@ -253,8 +252,7 @@ public class ClearMessagesDialog extends DialogBase {
             this.StringFilterTextField.setVisible(false);
             this.StringFilterTextField.setText("");
             this.StringFilterLabel.setVisible(false);
-        }
-        else{
+        } else{
             this.StringFilterTextField.setVisible(true);
             this.StringFilterLabel.setVisible(true);            
         }
@@ -273,7 +271,6 @@ public class ClearMessagesDialog extends DialogBase {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);        
     }
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ClearButton;
