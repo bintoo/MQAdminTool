@@ -264,6 +264,12 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         message.replyToQueueManagerName = this.ReplyToQueueManagerNameTextField.getText().trim();
         message.replyToQueueName = this.ReplyToQueueNameTextField.getText().trim();
         message.userId = this.UserIdTextField.getText().trim();
+        try{
+            message.messageType = Integer.parseInt(this.MessageTypeTextField.getText().trim());
+        }
+        catch(Exception e){
+            String aa = "asd";
+        }
     }
     
     private void updateMessage(final MQMessage message){
@@ -583,25 +589,21 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         jLabel4.setPreferredSize(new java.awt.Dimension(150, 25));
 
         MessageIdTextField.setEditable(false);
-        MessageIdTextField.setFocusable(false);
         MessageIdTextField.setPreferredSize(new java.awt.Dimension(380, 25));
 
         CorrectionIdTextField.setEditable(false);
-        CorrectionIdTextField.setFocusable(false);
         CorrectionIdTextField.setPreferredSize(new java.awt.Dimension(380, 25));
 
         jLabel5.setText("Group id:");
         jLabel5.setPreferredSize(new java.awt.Dimension(150, 25));
 
         GroupIdTextField.setEditable(false);
-        GroupIdTextField.setFocusable(false);
         GroupIdTextField.setPreferredSize(new java.awt.Dimension(380, 25));
 
         jLabel6.setText("Account token:");
         jLabel6.setPreferredSize(new java.awt.Dimension(150, 25));
 
         AccountTokenTextField.setEditable(false);
-        AccountTokenTextField.setFocusable(false);
         AccountTokenTextField.setPreferredSize(new java.awt.Dimension(380, 25));
 
         jLabel7.setText("Application id data:");
@@ -722,7 +724,6 @@ public class MessageEditDialog extends ObjectPropertiesDialogBase {
         jLabel25.setText("Message type:");
         jLabel25.setPreferredSize(new java.awt.Dimension(150, 25));
 
-        MessageTypeTextField.setEditable(false);
         MessageTypeTextField.setPreferredSize(new java.awt.Dimension(380, 25));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
