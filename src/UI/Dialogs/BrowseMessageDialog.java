@@ -128,7 +128,8 @@ public class BrowseMessageDialog extends DialogBase {
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //showTableData(true);
+                    updateTable();
+                    FireActionEvent();
                 }
             });
             dialog.setLocationRelativeTo(this);

@@ -537,7 +537,7 @@ public class MQUtility {
             return msg;
     }
 
-    public static void BackupMessageToFile(MQQueueManager queueManager, String queueName, String filePath, JProgressBar progressBar, ArrayList<MQMessageIdModel>ids, boolean isCompress, boolean isAlias, boolean removeDLH, String filterString) throws Exception{
+    public static void BackupMessageToFile(MQQueueManager queueManager, String queueName, String filePath, JProgressBar progressBar, ArrayList<MQMessageIdModel>ids, boolean isCompress, boolean isAlias, boolean removeDLH, boolean removeAfter, String filterString) throws Exception{
             FileOutputStream fileOutPutStream = null;
             BufferedOutputStream bufferedOutputStream = null;
             ObjectOutputStream  objectOutputStream = null;
@@ -546,7 +546,7 @@ public class MQUtility {
             if(isAlias)
                 queueName = MQPCF.ResolveAliasBaseQueueName(queueManager, queueName);
             try{
-                queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE);
+                queue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE | CMQC.MQOO_BROWSE | CMQC.MQOO_INPUT_SHARED);
                 int queueDepth = queue.getCurrentDepth();            
                 if(queueDepth > 0){
                     fileOutPutStream = new FileOutputStream(filePath);
@@ -567,9 +567,12 @@ public class MQUtility {
                         while(index > 0){
                             MQMessage message = new MQMessage();
                             MQGetMessageOptions options = new MQGetMessageOptions();
+                           
                             options.options = CMQC.MQGMO_BROWSE_NEXT;
+ 
                             try{
                                 queue.get(message, options);
+                                
                             }
                             catch(MQException ex){
                                 if(ex.getReason() == MQConstants.MQRC_NO_MSG_AVAILABLE){
@@ -594,6 +597,11 @@ public class MQUtility {
                             else{                           
                                 writeMessageToStream(message, objectOutputStream);
                             }
+                            if(removeAfter){
+                                 resetMessage(message);
+                                 options.options = CMQC.MQGMO_MSG_UNDER_CURSOR;
+                                 queue.get(message, options);                                
+                            }
                             index--;
                             if(progressBar != null){
                                 int value = ((queueDepth - index)*100)/queueDepth;
@@ -615,6 +623,11 @@ public class MQUtility {
                                 message = RemoveMQDLH(message);
                             }
                             writeMessageToStream(message, objectOutputStream);
+                            if(removeAfter){
+                                 resetMessage(message);
+                                 options.options = CMQC.MQGMO_MSG_UNDER_CURSOR;
+                                 queue.get(message, options);                                
+                            }
                             if(progressBar != null){
                                 int value = (i*100)/ids.size();
                                 progressBar.setValue(value);

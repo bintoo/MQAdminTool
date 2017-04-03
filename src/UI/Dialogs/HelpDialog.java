@@ -91,7 +91,7 @@ public class HelpDialog extends javax.swing.JDialog {
         setModal(true);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        jLabel1.setText("       MQ Admin Tool (BETA build 1.0.069)");
+        jLabel1.setText("       MQ Admin Tool (BETA build 1.0.070)");
         jLabel1.setPreferredSize(new java.awt.Dimension(300, 50));
 
         TextPane.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
