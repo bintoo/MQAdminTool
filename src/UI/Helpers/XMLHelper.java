@@ -6,6 +6,7 @@
 package UI.Helpers;
 
 import MQApi.Models.Query.ConnectionDetailModel;
+import UI.MainWindow;
 import UI.Models.MQRC.MQRCParentModel;
 import UI.Models.SettingsModel;
 import java.io.File;
@@ -75,6 +76,8 @@ public class XMLHelper {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             File file = new File(filePath);
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, file.getAbsolutePath().toString(), new NullPointerException());
+
             if(file.exists() && !file.isDirectory()) {
                FileInputStream fileStream = new FileInputStream(file);
                Document document = db.parse(fileStream);

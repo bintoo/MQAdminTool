@@ -17,5 +17,14 @@ public class ConnectionDetailModel {
     
     public String User;
     public String Password;
-    
+ 
+    public String toString() {
+        return "<html>\nhost: " + Host + 
+                "<br/>\nqueue manager: " + QueueManager + 
+                "<br/>\nchannel: " + Channel + 
+                "<br/>\nport: " + Port + 
+                "<br/>\nuser: " + User + 
+                "<br/>\npassword: " + Password +
+                "</html>";
+    }
 }
